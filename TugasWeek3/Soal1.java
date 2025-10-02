@@ -52,7 +52,7 @@ public class Soal1 {
     // Method bantu untuk cek segitiga siku-siku
     static boolean isRightTriangle(double a, double b, double c) {
         double[] arr = {a, b, c};
-        java.util.Arrays.sort(arr); // urutkan sisi
+        java.util.Arrays.sort(arr);
         double x = arr[0], y = arr[1], z = arr[2]; // z terbesar
         return Math.abs(z*z - (x*x + y*y)) < 1e-9;
     }
