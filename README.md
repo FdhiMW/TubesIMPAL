@@ -1,38 +1,88 @@
-# TubesIMPAL
+# Tubes IMPAL - PSPEC
 
-## Soal 1
-DETERMINE TRIANGLE
-Dari masukan 3 bilangan a, b, c bebas (boleh bulat, boleh pecahan), segitiga apa dapat dibangun?
-- Jika ada yang negatif atau 0, tidak ada segitiga dapat dibangun.
-- Jika bilangan yang terbesar lebih besar atau sama dengan penjumlahan dua bilangan lainnya yang lebih kecil, tidak ada segitiga dapat dibangun.
-- Jika a=b atau b=c atau a=c (namun tidak sama dengan salah satu yang lain maka segitiga SAMA KAKI. (ISOSCELES)
-- Jika a=b dan b=c maka segitiga SAMA SISI. (EQUILATERAL)
-- Jika kuadrat bilangan terbesar = penjumlahan dari kuadrat dua bilangan lainnya, maka SEGITIGA SIKU-SIKU. (RIGHT TRIANGLE)
-- Jika bukan sama kaki, sama sisi atau siku-siku, namun bilangan terbesarnya lebih kecil daripada penjumlahan dua bilangan lainnya, maka SEGITIGA BEBAS.
-### SOAL
-1. Buat code (Pascal/C/PHP) untuk masukan bilangan bulat
-2. Buat untuk bilangan pecahan dengan ketelitian 0.01 (1%) .Ketelitian 1% berarti selisih panjang
-sisi-sisinya tidak lebih dari 1%. Selisih lebih dari 1% dianggap beda. Selisih 1% atau kurang dianggap
-sama.
+## Soal 1 — Determine Triangle
 
-## Soal 2
-### DO CASE
-- CASE computer-amount = 1 OR 2
-  set base-fee = $50 and additional-fee = 0
-- CASE computer-amount = 3 to 10
-  set base-fee = $100 and additional-fee = $10 per peripheral
-- CASE computer-amount > 10
-  set base-fee = $500 and additional-fee = $10 per peripheral
-### IF 
-- IF service-time is NOT in business hours base-fee is doubled
-- IF customer is willing to drop off and pick up total-base-fee is reduced to one-half
+### Problem Statement
+Menentukan jenis segitiga berdasarkan tiga sisi `a`, `b`, `c` yang dapat berupa bilangan bulat atau pecahan.
 
-## Soal 3
-- Precondition 1
-  Customer arrives with account-number matching an account number in ACCOUNTS, whose status-code is set to “valid.”
-- Postcondition 1
-  Invoice is produced containing account-number and amount-of-sale.
-- Precondition 2
-  Precondition 1 fails for any reason (account-number can’t be found on ACCOUNTS or status-code is not equal to “valid”).
-- Postcondition 2
-  Error message is produced. 
+### Inputs
+- Tiga buah bilangan `a`, `b`, `c` (integer atau float).
+
+### Outputs
+- Jenis segitiga yang terbentuk, yaitu:
+  - Tidak ada segitiga
+  - Sama Sisi (Equilateral)
+  - Sama Kaki (Isosceles)
+  - Siku-Siku (Right Triangle)
+  - Bebas/Scalene
+
+### Processing
+1. Jika ada sisi ≤ 0 → Tidak ada segitiga.  
+2. Jika sisi terbesar ≥ jumlah dua sisi lainnya → Tidak ada segitiga.  
+3. Jika `a = b = c` → Segitiga Sama Sisi.  
+4. Jika dua sisi sama → Segitiga Sama Kaki.  
+5. Jika `(sisi terbesar)² = (sisi1)² + (sisi2)²` → Segitiga Siku-Siku.  
+6. Jika tidak memenuhi kriteria di atas namun tetap membentuk segitiga → Segitiga Bebas.  
+
+### Constraints
+- Untuk bilangan pecahan: gunakan ketelitian 0.01 (1%).  
+  - Selisih ≤ 1% → dianggap sama.  
+  - Selisih > 1% → dianggap berbeda.  
+
+---
+
+## Soal 2 — Menghitung Biaya Service
+
+### Problem Statement
+Menghitung biaya service berdasarkan jumlah komputer dan kondisi tambahan.
+
+### Inputs
+- `computer-amount` (jumlah komputer).
+- `peripheral` (jumlah peripheral, jika ada).
+- `service-time` (waktu pelayanan).
+- `customer-choice` (drop-off & pick-up atau tidak).
+
+### Outputs
+- Total biaya service (`total-fee`).
+
+### Processing
+1. Tentukan `base-fee` dan `additional-fee` berdasarkan jumlah komputer:
+   - 1–2 komputer → base-fee = $50, additional = 0.
+   - 3–10 komputer → base-fee = $100, additional = $10 per peripheral.
+   - >10 komputer → base-fee = $500, additional = $10 per peripheral.
+2. Jika service-time di luar jam kerja → base-fee dilipatgandakan.  
+3. Jika customer drop-off & pick-up → total base-fee dikurangi 50%.  
+4. Hitung `total-fee = base-fee + additional-fee`.  
+
+### Constraints
+- Jumlah komputer > 0.  
+- Peripheral bisa 0 atau lebih.  
+
+---
+
+## Soal 3 — ACCOUNTS
+
+### Problem Statement
+Mengecek validitas account-number untuk menghasilkan invoice atau error message.
+
+### Inputs
+- `account-number` (dari customer).  
+- `ACCOUNTS` (database berisi daftar akun dan status-code).  
+
+### Outputs
+- Invoice berisi `account-number` dan `amount-of-sale`, **atau**  
+- Error message jika account tidak valid.  
+
+### Processing
+1. Cek apakah `account-number` ada dalam **ACCOUNTS**.  
+2. Jika ada dan `status-code = "valid"` → cetak invoice.  
+3. Jika tidak ditemukan atau status-code ≠ "valid"` → tampilkan error message.  
+
+### Constraints
+- Account-number harus unik dalam **ACCOUNTS**.  
+- Status-code hanya boleh `"valid"` atau `"invalid"`.  
+
+---
+
+## Struktur Proyek (Java)
+
