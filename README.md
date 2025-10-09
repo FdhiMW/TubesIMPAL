@@ -7,17 +7,16 @@ CAK3BAB3 – IMPLEMENTASI DAN PENGUJIAN PERANGKAT LUNAK – IF-47-08 – Kelompo
 - **Auditor:**  
   1. Bintang Saputra / 103012300070 / Kelompok 1  
 
-- **Programmer:**  
-  1. Arfian Ghifari Mahya / 103012300337 / Kelompok 1  
-  2. Ezra Mangasi Andika Sibuea / 103012300117 / Kelompok 1  
-  3. Almadinatul Munawara / 10301230425 / Kelompok 1  
+- **Desainer:**  
+  1. Sena Rizky pratama / 103012300375 / Kelompok 1  
+  2. Fadhilla M. Wiryasukma / 103012300303 
+  3. Ahmad Refi Widi Katibin / 10301230 / 
 
 - **Customer:**  
-  1. Bintang Saputra / 103012300070 / Kelompok 1  
-  2.  / 103012330436 / Kelompok 1  
+  1. Bintang Saputra / 103012300070 / Kelompok 1
 
 - **Configuration Manager (CM):**  
-  1.  / 103012300203 / Kelompok 1  
+  1.  Fadhilla M. Wiryasukma / 103012300303 
 
 - **Repository:** [Hall-Of-Fame-Mahasiswa](https://github.com/velinihan/Hall-Of-Fame-Mahasiswa)
 
