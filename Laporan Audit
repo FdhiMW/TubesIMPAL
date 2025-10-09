@@ -1,0 +1,37 @@
+# Laporan Audit Simulasi GitHub
+CAK3BAB3 – IMPLEMENTASI DAN PENGUJIAN PERANGKAT LUNAK – IF-47-08 – Kelompok 1
+
+## Informasi Audit
+-Tanggal Audit: 25/09/2025
+
+-Auditor: 
+1. Bintang Saputra / 103012300070 / Kelompok 1
+
+-Programmer: 
+1. Arfian ghifari mahya / 103012300337 / Kelompok 1
+2. Ezra mangasi andika sibuea/ 103012300117 / Kelompok 1
+3. almadinatul munawara / 10301230425 / Kelompok 1
+
+-Customer:
+1. Fadhilla M. Wiryasukma / 103012300303 / Kelompok 1
+2. M. fazlur rahman / 103012330436 / Kelompok 1
+
+-CM: 
+1.Velisia Nihan / 103012300203 / Kelompok 1
+
+Repo: https://github.com/velinihan/Hall-Of-Fame-Mahasiswa
+
+## Ringkasan
+Audit dilakukan terhadap Issue, Pull Request, dan Commit yang dibuat oleh Programmer, serta proses review oleh Configuration Manager.
+
+## Tabel Hasil Audit
+| No | Issue ID | PR ID | Programmer | Configuration Manager | Status     | Catatan                       |
+|----|----------|-------|------------|-----------------------|------------|-------------------------------|
+| 1  | #1       |   #4  | Ezra Mangasi Andika Sibuea | Velisia Nihan                   | Sesuai | Commit rapi dan tanpa Issue, Berjalan |
+| 2  | #2       |   #5  | Arfian Ghifari Mahya       | Velisia Nihan                   | Sesuai | Commit rapi dan tanpa Issue , Berjalan | 
+
+## Temuan Utama
+- Jumlah Issue dibuat: X
+- Jumlah PR di-merge: Y
+- Jumlah pelanggaran: Z
+- Kualitas commit message: Baik
