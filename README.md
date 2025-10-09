@@ -32,8 +32,8 @@ Audit dilakukan terhadap *Issue*, *Pull Request*, dan *Commit* yang dibuat oleh 
 | No | Issue ID |Desainer | Configuration Manager | Status | Catatan |
 |----|-----------|-------------|------------------------|---------|----------|
 | 1  | #1        | Ahmad Refi Widi Katibin | Fadhilla M. Wiryasukma | ✅ Sesuai | Commit rapi dan tanpa Issue, Berjalan |
-| 2  | #2        | Sena Rizky Pratama |  | ✅ Sesuai | Commit rapi dan tanpa Issue, Berjalan |
-| 3  | #3        | Fadhilla M. Wiryasukma | ✅ Sesuai | Commit sesuai standar dan sudah diverifikasi |
+| 2  | #2        | Sena Rizky Pratama | Fadhilla M. Wiryasukma | ✅ Sesuai | Commit rapi dan tanpa Issue, Berjalan |
+| 3  | #3        | Fadhilla M. Wiryasukma | Fadhilla M. Wiryasukma| ✅ Sesuai | Commit sesuai standar dan sudah diverifikasi |
 
 
 ---
