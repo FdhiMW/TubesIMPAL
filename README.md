@@ -29,11 +29,11 @@ Audit dilakukan terhadap *Issue*, *Pull Request*, dan *Commit* yang dibuat oleh 
 
 ## Tabel Hasil Audit
 
-| No | Issue ID | Programmer | Configuration Manager | Status | Catatan |
+| No | Issue ID |Desainer | Configuration Manager | Status | Catatan |
 |----|-----------|-------------|------------------------|---------|----------|
-| 1  | #1        | Ezra Mangasi Andika Sibuea | Velisia Nihan | ✅ Sesuai | Commit rapi dan tanpa Issue, Berjalan |
-| 2  | #2        | Arfian Ghifari Mahya | Velisia Nihan | ✅ Sesuai | Commit rapi dan tanpa Issue, Berjalan |
-| 3  | #3        | Almadinatul Munawara | Velisia Nihan | ✅ Sesuai | Commit sesuai standar dan sudah diverifikasi |
+| 1  | #1        | Ahmad Refi Widi Katibin | Fadhilla M. Wiryasukma | ✅ Sesuai | Commit rapi dan tanpa Issue, Berjalan |
+| 2  | #2        | Sena Rizky Pratama |  | ✅ Sesuai | Commit rapi dan tanpa Issue, Berjalan |
+| 3  | #3        | Fadhilla M. Wiryasukma | ✅ Sesuai | Commit sesuai standar dan sudah diverifikasi |
 
 
 ---
