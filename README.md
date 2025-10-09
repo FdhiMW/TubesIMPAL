@@ -33,6 +33,7 @@ Audit dilakukan terhadap *Issue*, *Pull Request*, dan *Commit* yang dibuat oleh 
 |----|-----------|-------------|------------------------|---------|----------|
 | 1  | #1        | Ezra Mangasi Andika Sibuea | Velisia Nihan | ✅ Sesuai | Commit rapi dan tanpa Issue, Berjalan |
 | 2  | #2        | Arfian Ghifari Mahya | Velisia Nihan | ✅ Sesuai | Commit rapi dan tanpa Issue, Berjalan |
+| 3  | #3        | Almadinatul Munawara | Velisia Nihan | ✅ Sesuai | Commit sesuai standar dan sudah diverifikasi |
 
 
 ---
