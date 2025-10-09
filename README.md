@@ -38,5 +38,5 @@ Audit dilakukan terhadap *Issue*,  dan *Commit* yang dibuat oleh Desainer, serta
 ---
 
 ## Temuan Utama
-- **Jumlah Issue : 23
+- **Jumlah Issue** : 3
 - **Kualitas commit message:** Baik
