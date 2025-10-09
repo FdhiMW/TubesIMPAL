@@ -32,7 +32,7 @@ Audit dilakukan terhadap *Issue*,  dan *Commit* yang dibuat oleh Desainer, serta
 |----|-----------|-------------|------------------------|---------|----------|
 | 1  | #1        | Ahmad Refi Widi Katibin | Fadhilla M. Wiryasukma | ✅ Sesuai | Commit rapi dan tanpa Issue bermasalah, Berjalan |
 | 2  | #2        | Sena Rizky Pratama | Fadhilla M. Wiryasukma | ✅ Sesuai | Commit rapi dan tanpa Issue bermasalah, Berjalan |
-| 3  | #3        | Fadhilla M. Wiryasukma | Fadhilla M. Wiryasukma| ✅ Sesuai | Commit sesuai standar dan sudah diverifikasi |
+| 3  | #3        | Fadhilla M. Wiryasukma | Fadhilla M. Wiryasukma| ❌ tidak Sesuai | Sistem tidak dapat menampilkan sisa cuti karyawan dan tidak dapat di filter|
 
 
 ---
