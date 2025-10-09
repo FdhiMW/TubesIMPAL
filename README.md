@@ -2,7 +2,7 @@
 CAK3BAB3 – IMPLEMENTASI DAN PENGUJIAN PERANGKAT LUNAK – IF-47-08 – Kelompok 1
 
 ## Informasi Audit
-- **Tanggal Audit:** 25/09/2025  
+- **Tanggal Audit:** 09/10/2025  
 
 - **Auditor:**  
   1. Bintang Saputra / 103012300070 / Kelompok 1  
@@ -13,11 +13,11 @@ CAK3BAB3 – IMPLEMENTASI DAN PENGUJIAN PERANGKAT LUNAK – IF-47-08 – Kelompo
   3. Almadinatul Munawara / 10301230425 / Kelompok 1  
 
 - **Customer:**  
-  1. Fadhilla M. Wiryasukma / 103012300303 / Kelompok 1  
-  2. M. Fazlur Rahman / 103012330436 / Kelompok 1  
+  1. Bintang Saputra / 103012300070 / Kelompok 1  
+  2.  / 103012330436 / Kelompok 1  
 
 - **Configuration Manager (CM):**  
-  1. Velisia Nihan / 103012300203 / Kelompok 1  
+  1.  / 103012300203 / Kelompok 1  
 
 - **Repository:** [Hall-Of-Fame-Mahasiswa](https://github.com/velinihan/Hall-Of-Fame-Mahasiswa)
 
