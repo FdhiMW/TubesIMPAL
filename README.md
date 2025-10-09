@@ -5,25 +5,24 @@ CAK3BAB3 – IMPLEMENTASI DAN PENGUJIAN PERANGKAT LUNAK – IF-47-08 – Kelompo
 - **Tanggal Audit:** 09/10/2025  
 
 - **Auditor:**  
-  1. Bintang Saputra / 103012300070 / Kelompok 1  
+  1. Bintang Saputra / 103012300070 / 
 
 - **Desainer:**  
-  1. Sena Rizky pratama / 103012300375 / Kelompok 1  
+  1. Sena Rizky pratama / 103012300375 / K
   2. Fadhilla M. Wiryasukma / 103012300303 
-  3. Ahmad Refi Widi Katibin / 10301230 / 
+  3. Ahmad Refi Widi Katibin / 103012300231  / 
 
 - **Customer:**  
-  1. Bintang Saputra / 103012300070 / Kelompok 1
+  1. Bintang Saputra / 103012300070 / 
 
 - **Configuration Manager (CM):**  
   1.  Fadhilla M. Wiryasukma / 103012300303 
 
-- **Repository:** [Hall-Of-Fame-Mahasiswa](https://github.com/velinihan/Hall-Of-Fame-Mahasiswa)
 
 ---
 
 ## Ringkasan
-Audit dilakukan terhadap *Issue*, *Pull Request*, dan *Commit* yang dibuat oleh Programmer, serta proses review oleh Configuration Manager.
+Audit dilakukan terhadap *Issue*,  dan *Commit* yang dibuat oleh Desainer, serta proses review oleh Configuration Manager.
 
 ---
 
@@ -31,13 +30,13 @@ Audit dilakukan terhadap *Issue*, *Pull Request*, dan *Commit* yang dibuat oleh 
 
 | No | Issue ID |Desainer | Configuration Manager | Status | Catatan |
 |----|-----------|-------------|------------------------|---------|----------|
-| 1  | #1        | Ahmad Refi Widi Katibin | Fadhilla M. Wiryasukma | ✅ Sesuai | Commit rapi dan tanpa Issue, Berjalan |
-| 2  | #2        | Sena Rizky Pratama | Fadhilla M. Wiryasukma | ✅ Sesuai | Commit rapi dan tanpa Issue, Berjalan |
+| 1  | #1        | Ahmad Refi Widi Katibin | Fadhilla M. Wiryasukma | ✅ Sesuai | Commit rapi dan tanpa Issue bermasalah, Berjalan |
+| 2  | #2        | Sena Rizky Pratama | Fadhilla M. Wiryasukma | ✅ Sesuai | Commit rapi dan tanpa Issue bermasalah, Berjalan |
 | 3  | #3        | Fadhilla M. Wiryasukma | Fadhilla M. Wiryasukma| ✅ Sesuai | Commit sesuai standar dan sudah diverifikasi |
 
 
 ---
 
 ## Temuan Utama
-- **Jumlah Issue 
+- **Jumlah Issue : 23
 - **Kualitas commit message:** Baik
