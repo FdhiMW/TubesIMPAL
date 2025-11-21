@@ -73,7 +73,7 @@ export default {
         const res = await login(this.email, this.password)
         // Simpan data user di localStorage (sementara, tanpa JWT)
         localStorage.setItem('user', JSON.stringify(res.data))
-        this.$router.push('/') // ke beranda
+        this.$router.push('/')
       } catch (e) {
         this.error =
           e.response?.data?.message || 'Email atau password salah'
