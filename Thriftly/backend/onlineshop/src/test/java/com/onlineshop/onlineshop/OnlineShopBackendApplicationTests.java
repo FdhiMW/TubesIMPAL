@@ -1,4 +1,4 @@
-package com.onlineshop.onlineshop;
+package com.onlineshop;
 
 // Placeholder test class
 public class OnlineShopBackendApplicationTests {

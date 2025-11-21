@@ -7,6 +7,13 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
-  "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+    "@vue/cli-service": "^5.0.9",
+    "vue-template-compiler": "^2.7.16"
+  },
+  "dependencies": {
+    "axios": "^1.13.2",
+    "vue": "^2.7.16",
+    "vue-router": "^3.6.5"
+  }
 }
