@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:8080, http://localhost:8081") // sesuaikan dengan port frontend
+@CrossOrigin(origins = "http://localhost:8081") // sesuaikan dengan port frontend
 public class AuthController {
 
     private final AuthService authService;
