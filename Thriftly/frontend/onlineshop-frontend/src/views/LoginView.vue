@@ -71,9 +71,15 @@ export default {
       this.loading = true
       try {
         const res = await login(this.email, this.password)
+        const user = res.data
         // Simpan data user di localStorage (sementara, tanpa JWT)
-        localStorage.setItem('user', JSON.stringify(res.data))
-        this.$router.push('/')
+        localStorage.setItem('user', JSON.stringify(user))
+
+        if (user.peranPengguna === 'admin') {
+          this.$router.push('/admin')     // admin → dashboard admin
+        } else {
+          this.$router.push('/')          // customer → beranda user
+        }
       } catch (e) {
         this.error =
           e.response?.data?.message || 'Email atau password salah'
@@ -83,6 +89,7 @@ export default {
     },
   },
 }
+
 </script>
 
 <style scoped>

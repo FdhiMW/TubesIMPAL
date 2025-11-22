@@ -1,124 +1,602 @@
 <template>
-  <div class="page">
-    <Navbar :showSearch="true" />
+  <div class="user-home">
+    <!-- TOP NAV -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="logo-badge"></div>
+        <span class="logo-text">KlikMall Thrift</span>
+      </div>
 
-    <div class="home-container">
-      <section class="hero">
-        <div class="hero-main"></div>
-        <div class="hero-side">
-          <div class="hero-side-top"></div>
-          <div class="hero-side-bottom"></div>
-        </div>
-      </section>
+      <div class="search-wrapper">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Cari pakaian bekas berkualitas..."
+        />
+      </div>
 
-      <section class="chips">
-        <div
-          v-for="n in 8"
-          :key="n"
-          class="chip"
-        ></div>
-      </section>
+      <div class="topbar-right">
+        <a href="#" class="topbar-link">Lacak Paket</a>
+        <a href="#" class="topbar-link">Keranjang</a>
 
-      <section class="kategori-section">
-        <h3>KATEGORI</h3>
-        <div class="kategori-grid">
-          <div
-            v-for="n in 12"
-            :key="n"
-            class="kategori-card"
-          >
-            <span>Elektronik</span>
+        <!-- PROFILE DROPDOWN -->
+        <div class="profile-wrapper" @click.stop="toggleProfileMenu">
+          <span class="topbar-link">
+            Profil ▾
+          </span>
+          <div v-if="showProfileMenu" class="profile-dropdown">
+            <button class="dropdown-item" @click.stop="logout">
+              Logout
+            </button>
           </div>
         </div>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <!-- HERO + BANNER -->
+      <section class="hero-section">
+        <div class="hero-main skeleton"></div>
+        <div class="hero-side">
+          <div class="hero-side-item skeleton"></div>
+          <div class="hero-side-item skeleton"></div>
+        </div>
       </section>
-    </div>
+
+      <!-- CATEGORY CHIPS -->
+      <section class="category-chips">
+        <button
+          v-for="chip in chips"
+          :key="chip"
+          class="chip"
+        >
+          <span class="chip-circle"></span>
+          <span class="chip-label">{{ chip }}</span>
+        </button>
+      </section>
+
+      <!-- KATEGORI PAKAIAN -->
+      <section class="section-block">
+        <div class="section-header">
+          <div>
+            <h2>Kategori Pakaian</h2>
+            <p class="section-subtitle">
+              Pilih kategori pakaian bekas yang kamu inginkan.
+            </p>
+          </div>
+          <button class="link-button">Lihat semua ›</button>
+        </div>
+
+        <div class="category-grid">
+          <article
+            v-for="item in categoryItems"
+            :key="item.id"
+            class="category-card"
+          >
+            <div class="category-thumb skeleton"></div>
+            <div class="category-body">
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.subtitle }}</p>
+              <span class="category-hint">{{ item.hint }}</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- BARANG TERLARIS -->
+      <section class="section-block">
+        <h2 class="section-title-center">BARANG TERLARIS</h2>
+
+        <div class="best-seller-grid">
+          <article
+            v-for="item in bestSellers"
+            :key="item.id"
+            class="best-card"
+          >
+            <div class="best-thumb skeleton">
+              <span class="discount-badge">-{{ item.discount }}%</span>
+            </div>
+
+            <div class="best-body">
+              <h3>{{ item.title }}</h3>
+              <p class="best-tagline">{{ item.tagline }}</p>
+
+              <div class="label-row">
+                <span
+                  v-for="label in item.labels"
+                  :key="label"
+                  class="pill"
+                >
+                  {{ label }}
+                </span>
+              </div>
+
+              <div class="price-row">
+                <span class="price">Rp{{ formatPrice(item.price) }}</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+    </main>
   </div>
 </template>
 
 <script>
-import Navbar from '../components/layout/Navbar.vue'
-
 export default {
   name: 'HomeView',
-  components: { Navbar },
+  data() {
+    return {
+      showProfileMenu: false,
+
+      chips: [
+        'Kemeja',
+        'Kaos',
+        'Hoodie',
+        'Jaket',
+        'Jas',
+        'Celana',
+        'Rok',
+        'Dress',
+      ],
+      categoryItems: [
+        {
+          id: 1,
+          title: 'Kemeja Pria Vintage',
+          subtitle: 'Mulai dari Rp30.000',
+          hint: 'Look santai & rapi',
+        },
+        {
+          id: 2,
+          title: 'Kemeja Wanita Motif',
+          subtitle: 'Motif retro & floral',
+          hint: 'Statement outfit',
+        },
+        {
+          id: 3,
+          title: 'Kaos Band / Graphic Tee',
+          subtitle: 'Oversize & streetwear',
+          hint: 'Cocok buat ootd',
+        },
+        {
+          id: 4,
+          title: 'Hoodie & Sweatshirt',
+          subtitle: 'Hangat & comfy',
+          hint: 'Cocok untuk kuliah',
+        },
+        {
+          id: 5,
+          title: 'Jaket Denim & Bomber',
+          subtitle: 'Look klasik & edgy',
+          hint: 'Outer andalan',
+        },
+        {
+          id: 6,
+          title: 'Celana Jeans & Chino',
+          subtitle: 'High waist, momfit, slim',
+          hint: 'Mix & match mudah',
+        },
+        {
+          id: 7,
+          title: 'Rok & Dress',
+          subtitle: 'Casual sampai kondangan',
+          hint: 'Feminine style',
+        },
+        {
+          id: 8,
+          title: 'Paket Bundle Mystery',
+          subtitle: 'Isi random hemat',
+          hint: 'Cocok buat reseller',
+        },
+      ],
+      bestSellers: [
+        {
+          id: 1,
+          title: 'Kemeja Flanel Pria Vintage',
+          tagline: 'Stok Terbatas',
+          labels: ['Stok Terbatas'],
+          price: 35000,
+          discount: 40,
+        },
+        {
+          id: 2,
+          title: 'Kaos Band Oversize Hitam',
+          tagline: 'Favorit Anak Kost',
+          labels: ['Favorit Anak Kost'],
+          price: 28000,
+          discount: 30,
+        },
+        {
+          id: 3,
+          title: 'Hoodie Basic Cream Unisex',
+          tagline: 'Best Seller',
+          labels: ['Best Seller'],
+          price: 45000,
+          discount: 55,
+        },
+        {
+          id: 4,
+          title: 'Jaket Denim Wash Light',
+          tagline: 'Look Vintage',
+          labels: ['Look Vintage'],
+          price: 60000,
+          discount: 35,
+        },
+        {
+          id: 5,
+          title: 'Jeans Momfit High Waist',
+          tagline: 'Ukuran Terbatas',
+          labels: ['Ukuran Terbatas'],
+          price: 55000,
+          discount: 25,
+        },
+        {
+          id: 6,
+          title: 'Dress Floral Summer',
+          tagline: 'Cocok Liburan',
+          labels: ['Cocok Liburan'],
+          price: 42000,
+          discount: 50,
+        },
+      ],
+    }
+  },
+  methods: {
+    formatPrice(value) {
+      return value.toLocaleString('id-ID')
+    },
+    toggleProfileMenu() {
+      this.showProfileMenu = !this.showProfileMenu
+    },
+    logout() {
+      localStorage.removeItem('user')
+      this.showProfileMenu = false
+      this.$router.push('/login')
+    },
+    handleClickOutside() {
+      this.showProfileMenu = false
+    },
+  },
+  mounted() {
+    document.addEventListener('click', this.handleClickOutside)
+  },
+  beforeDestroy() {
+    document.removeEventListener('click', this.handleClickOutside)
+  },
 }
 </script>
 
 <style scoped>
-.page {
+.user-home {
   min-height: 100vh;
+  background: #f5f7fb;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    sans-serif;
+  color: #222;
+}
+
+/* TOPBAR */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  padding: 10px 32px;
+  background: linear-gradient(90deg, #ff5a3c, #ff9f1c);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+  gap: 24px;
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #ffd46c;
+}
+
+.logo-text {
+  font-weight: 700;
+  font-size: 18px;
+  color: #fff;
+}
+
+.search-wrapper {
+  flex: 1;
+}
+
+.search-input {
+  width: 100%;
+  border-radius: 999px;
+  border: none;
+  padding: 10px 18px;
+  font-size: 14px;
+  outline: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.profile-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 32px;
   background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
+  padding: 6px 0;
+  min-width: 120px;
+  z-index: 20;
 }
 
-.home-container {
-  padding: 24px 32px 40px 32px;
+.dropdown-item {
+  width: 100%;
+  padding: 6px 14px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  color: #e11d48;
 }
 
-/* hero banner */
-.hero {
+.dropdown-item:hover {
+  background: #fee2e2;
+}
+
+
+.topbar-link {
+  font-size: 13px;
+  color: #fff;
+  text-decoration: none;
+}
+
+/* CONTENT */
+
+.page-content {
+  padding: 20px 40px 40px;
+}
+
+/* Hero */
+
+.hero-section {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 16px;
   margin-bottom: 20px;
 }
 
-.hero-main,
-.hero-side-top,
-.hero-side-bottom {
-  border-radius: 24px;
-  background: linear-gradient(90deg, #f97316, #fb7185);
-  opacity: 0.4;
-}
-
 .hero-main {
-  height: 200px;
-}
-
-.hero-side-top {
-  height: 120px;
-  margin-bottom: 10px;
-}
-
-.hero-side-bottom {
-  height: 70px;
-}
-
-/* chips */
-.chips {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.chip {
-  width: 70px;
-  height: 70px;
-  border-radius: 24px;
-  background: linear-gradient(135deg, #f97316, #fb7185);
-  opacity: 0.7;
-}
-
-/* kategori grid */
-.kategori-section h3 {
-  font-size: 16px;
-  margin-bottom: 12px;
-}
-
-.kategori-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 10px;
-  background: #f5f5f5;
-  padding: 16px;
+  height: 180px;
   border-radius: 18px;
 }
 
-.kategori-card {
-  background: #e5e5e5;
-  height: 80px;
+.hero-side {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 12px;
+}
+
+.hero-side-item {
+  border-radius: 18px;
+}
+
+/* Skeleton */
+
+.skeleton {
+  background: linear-gradient(135deg, #ffe0cf, #ffd4bf);
+}
+
+/* Chips */
+
+.category-chips {
   display: flex;
-  justify-content: center;
+  gap: 14px;
+  padding: 14px 10px;
+  background: #fff;
+  border-radius: 18px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+}
+
+.chip {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  gap: 6px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.chip-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #ff7b56, #ffb094);
+}
+
+.chip-label {
+  font-size: 11px;
+  color: #555;
+}
+
+/* Sections */
+
+.section-block {
+  background: #fff;
+  border-radius: 20px;
+  padding: 18px 20px 22px;
+  margin-bottom: 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.section-subtitle {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #777;
+}
+
+.link-button {
+  border: none;
+  background: none;
+  color: #ff6b3d;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* Category cards */
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.category-card {
+  background: #f7f8fc;
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.category-thumb {
+  height: 90px;
+}
+
+.category-body {
+  padding: 10px 10px 12px;
+}
+
+.category-body h3 {
+  margin: 0 0 2px;
   font-size: 13px;
+}
+
+.category-body p {
+  margin: 0 0 4px;
+  font-size: 11px;
+  color: #777;
+}
+
+.category-hint {
+  font-size: 11px;
+  color: #ff6b3d;
+}
+
+/* Best seller */
+
+.section-title-center {
+  text-align: center;
+  font-size: 16px;
+  margin: 0 0 14px;
+}
+
+.best-seller-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.best-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #ffe1d3;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.best-thumb {
+  position: relative;
+  height: 100px;
+}
+
+.discount-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #ff4b4b;
+  color: #fff;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.best-body {
+  padding: 10px 10px 12px;
+}
+
+.best-body h3 {
+  margin: 0 0 4px;
+  font-size: 13px;
+}
+
+.best-tagline {
+  margin: 0 0 8px;
+  font-size: 11px;
+  color: #777;
+}
+
+.label-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.pill {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: #ffe9e0;
+  color: #ff6b3d;
+}
+
+.price-row .price {
+  font-weight: 700;
+  font-size: 13px;
+  color: #ff4b4b;
+}
+
+/* Responsive sederhana */
+
+@media (max-width: 1024px) {
+  .hero-section {
+    grid-template-columns: 1fr;
+  }
+
+  .category-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .best-seller-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 </style>
