@@ -92,6 +92,7 @@
             v-for="item in bestSellers"
             :key="item.id"
             class="best-card"
+            @click="goToProductDetail(item.id)"
           >
             <div class="best-thumb skeleton">
               <span class="discount-badge">-{{ item.discount }}%</span>
@@ -123,6 +124,8 @@
 </template>
 
 <script>
+import http from '@/api/httpClient'
+
 export default {
   name: 'HomeView',
   data() {
@@ -189,60 +192,14 @@ export default {
           hint: 'Cocok buat reseller',
         },
       ],
-      bestSellers: [
-        {
-          id: 1,
-          title: 'Kemeja Flanel Pria Vintage',
-          tagline: 'Stok Terbatas',
-          labels: ['Stok Terbatas'],
-          price: 35000,
-          discount: 40,
-        },
-        {
-          id: 2,
-          title: 'Kaos Band Oversize Hitam',
-          tagline: 'Favorit Anak Kost',
-          labels: ['Favorit Anak Kost'],
-          price: 28000,
-          discount: 30,
-        },
-        {
-          id: 3,
-          title: 'Hoodie Basic Cream Unisex',
-          tagline: 'Best Seller',
-          labels: ['Best Seller'],
-          price: 45000,
-          discount: 55,
-        },
-        {
-          id: 4,
-          title: 'Jaket Denim Wash Light',
-          tagline: 'Look Vintage',
-          labels: ['Look Vintage'],
-          price: 60000,
-          discount: 35,
-        },
-        {
-          id: 5,
-          title: 'Jeans Momfit High Waist',
-          tagline: 'Ukuran Terbatas',
-          labels: ['Ukuran Terbatas'],
-          price: 55000,
-          discount: 25,
-        },
-        {
-          id: 6,
-          title: 'Dress Floral Summer',
-          tagline: 'Cocok Liburan',
-          labels: ['Cocok Liburan'],
-          price: 42000,
-          discount: 50,
-        },
-      ],
+
+      // akan diisi dari backend
+      bestSellers: [],
     }
   },
   methods: {
     formatPrice(value) {
+      if (!value && value !== 0) return ''
       return value.toLocaleString('id-ID')
     },
     toggleProfileMenu() {
@@ -256,15 +213,99 @@ export default {
     handleClickOutside() {
       this.showProfileMenu = false
     },
+    goToProductDetail(id) {
+      this.$router.push(`/produk/${id}`)
+    },
+
+    async loadBestSellers() {
+      try {
+        console.log('Memanggil API barang terlaris...')
+        // ⚠️ SESUAIKAN DENGAN baseURL DI httpClient:
+        // - Kalau baseURL = 'http://localhost:8080/api'  → pakai '/produk/terlaris'
+        // - Kalau baseURL = 'http://localhost:8080'      → pakai '/api/produk/terlaris'
+        const res = await http.get('/produk/terlaris?limit=6')
+
+        console.log('Respon barang terlaris:', res.data)
+
+        // Asumsi backend kirim DTO: { idProduk, namaProduk, harga, totalTerjual }
+        this.bestSellers = res.data.map(p => ({
+          id: p.idProduk,
+          title: p.namaProduk,
+          tagline: `${p.totalTerjual} terjual`,
+          labels: ['Best Seller'],
+          price: p.harga,
+          discount: 30, // sementara; nanti bisa ambil dari backend
+        }))
+
+        console.log('bestSellers terisi:', this.bestSellers)
+      } catch (err) {
+        console.error('Gagal memuat barang terlaris, pakai dummy dulu:', err)
+
+        // Fallback: pakai data dummy lama supaya UI tidak kosong
+        this.bestSellers = [
+          {
+            id: 1,
+            title: 'Kemeja Flanel Pria Vintage',
+            tagline: 'Stok Terbatas',
+            labels: ['Stok Terbatas'],
+            price: 35000,
+            discount: 40,
+          },
+          {
+            id: 2,
+            title: 'Kaos Band Oversize Hitam',
+            tagline: 'Favorit Anak Kost',
+            labels: ['Favorit Anak Kost'],
+            price: 28000,
+            discount: 30,
+          },
+          {
+            id: 3,
+            title: 'Hoodie Basic Cream Unisex',
+            tagline: 'Best Seller',
+            labels: ['Best Seller'],
+            price: 45000,
+            discount: 55,
+          },
+          {
+            id: 4,
+            title: 'Jaket Denim Wash Light',
+            tagline: 'Look Vintage',
+            labels: ['Look Vintage'],
+            price: 60000,
+            discount: 35,
+          },
+          {
+            id: 5,
+            title: 'Jeans Momfit High Waist',
+            tagline: 'Ukuran Terbatas',
+            labels: ['Ukuran Terbatas'],
+            price: 55000,
+            discount: 25,
+          },
+          {
+            id: 6,
+            title: 'Dress Floral Summer',
+            tagline: 'Cocok Liburan',
+            labels: ['Cocok Liburan'],
+            price: 42000,
+            discount: 50,
+          },
+        ]
+      }
+    },
   },
   mounted() {
     document.addEventListener('click', this.handleClickOutside)
+    this.loadBestSellers()
   },
   beforeDestroy() {
     document.removeEventListener('click', this.handleClickOutside)
   },
 }
 </script>
+
+
 
 <style scoped>
 .user-home {
@@ -530,7 +571,15 @@ export default {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  cursor: pointer;        /* ⬅️ tambahin ini */
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
+
+.best-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
 
 .best-thumb {
   position: relative;

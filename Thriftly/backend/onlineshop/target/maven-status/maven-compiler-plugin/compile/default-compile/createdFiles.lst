@@ -1,9 +1,0 @@
-com/onlineshop/model/User.class
-com/onlineshop/service/AuthService.class
-com/onlineshop/repository/UserRepository.class
-com/onlineshop/dto/AuthDtos$RegisterRequest.class
-com/onlineshop/dto/AuthDtos$LoginRequest.class
-com/onlineshop/OnlineShopBackendApplication.class
-com/onlineshop/dto/AuthDtos.class
-com/onlineshop/dto/AuthDtos$UserResponse.class
-com/onlineshop/controller/AuthController.class

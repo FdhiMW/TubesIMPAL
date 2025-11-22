@@ -11,6 +11,9 @@ import HomeView from './views/HomeView.vue'
 // ADMIN
 import AdminDashboardView from './views/admin/AdminDashboardView.vue'
 
+// PRODUK DETAIL
+import ProdukDetailView from './views/ProdukDetailView.vue'
+
 Vue.use(Router)
 
 const router = new Router({
@@ -22,6 +25,14 @@ const router = new Router({
       name: 'home',
       component: HomeView,
       meta: { requiresAuth: true },
+    },
+
+    {
+      path: '/produk/:id',
+      name: 'ProdukDetail',
+      component: ProdukDetailView,
+      // kalau detail produk juga harus login:
+      // meta: { requiresAuth: true },
     },
 
     // AUTH
@@ -48,6 +59,8 @@ const router = new Router({
 
     // fallback
     { path: '*', redirect: '/login' },
+
+    { path: '/produk/:id', name: 'ProdukDetail', component: ProdukDetailView },
   ],
 })
 
