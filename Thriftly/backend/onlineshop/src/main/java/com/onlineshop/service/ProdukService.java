@@ -26,9 +26,33 @@ public class ProdukService {
     }
 
     public List<BarangTerlarisDto> getBarangTerlaris(int limit) {
-        if (limit <= 0) limit = 5;
+        if (limit <= 0) {
+            limit = 5;
+        }
+
         Pageable pageable = PageRequest.of(0, limit);
-        return pesananItemRepository.findBestSellersByStatus("selesai", pageable);
+
+        // statusPesanan disesuaikan dengan yang kamu pakai di DB,
+        // misal "SELESAI" atau "SELESAI_BAYAR"
+        String statusSelesai = "SELESAI";
+
+        List<BarangTerlarisDto> hasil =
+                pesananItemRepository.findBestSellersByStatus(statusSelesai, pageable);
+
+        // Kalau belum ada pesanan sama sekali, bisa fallback ke produk biasa
+        if (hasil.isEmpty()) {
+            return produkRepository
+                    .findAll(pageable)
+                    .map(p -> new BarangTerlarisDto(
+                            p.getIdProduk(),
+                            p.getNamaProduk(),
+                            p.getHarga(),
+                            0L
+                    ))
+                    .getContent();
+        }
+
+        return hasil;
     }
 
     public ProdukDetailDto getProdukDetail(Long idProduk) {

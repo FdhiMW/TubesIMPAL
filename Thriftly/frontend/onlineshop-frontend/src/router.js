@@ -14,6 +14,9 @@ import AdminDashboardView from './views/admin/AdminDashboardView.vue'
 // PRODUK DETAIL
 import ProdukDetailView from './views/ProdukDetailView.vue'
 
+//PEMBAYARAN
+import CheckoutView from './views/CheckoutView.vue'
+
 Vue.use(Router)
 
 const router = new Router({
@@ -31,10 +34,16 @@ const router = new Router({
       path: '/produk/:id',
       name: 'ProdukDetail',
       component: ProdukDetailView,
-      // kalau detail produk juga harus login:
-      // meta: { requiresAuth: true },
+      meta: { requiresAuth: true },
     },
 
+    {
+      path: '/checkout',
+      name: 'Checkout',
+      component: CheckoutView,
+      meta: { requiresAuth: true },
+    },
+    
     // AUTH
     {
       path: '/login',

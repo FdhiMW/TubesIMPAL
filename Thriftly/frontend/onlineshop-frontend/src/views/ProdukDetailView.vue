@@ -194,8 +194,15 @@ export default {
       alert('Masukkan keranjang (belum diimplementasi)')
     },
     buyNow() {
-      // nanti bisa diarahkan ke halaman checkout
-      alert('Beli sekarang (belum diimplementasi)')
+      if (!this.produk) return
+
+      this.$router.push({
+        name: 'Checkout',
+        query: {
+          id: this.produk.idProduk,
+          qty: this.qty,
+        },
+      })
     },
   },
 }
