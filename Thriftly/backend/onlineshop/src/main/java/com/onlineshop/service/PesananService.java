@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-
+import org.springframework.data.domain.Sort;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class PesananService {
         Pesanan pesanan = new Pesanan();
         pesanan.setUser(user);
         pesanan.setTanggalPesanan(LocalDateTime.now());
-        pesanan.setStatusPesanan("MENUNGGU_PEMBAYARAN");
+        pesanan.setStatusPesanan("DIKEMAS");
         pesanan.setMetodePembayaran(req.getMetodePembayaran());
 
         pesanan.setNamaPenerima(req.getNamaPenerima());
@@ -118,6 +118,69 @@ public class PesananService {
 
         pesanan.setKodePesanan(generateKodePesanan());
 
+        Pesanan saved = pesananRepository.save(pesanan);
+
+        PesananDtos.PesananResponse resp = new PesananDtos.PesananResponse();
+        resp.setIdPesanan(saved.getIdPesanan());
+        resp.setKodePesanan(saved.getKodePesanan());
+        resp.setStatusPesanan(saved.getStatusPesanan());
+        resp.setTotalBarang(saved.getTotalBarang());
+        resp.setOngkosKirim(saved.getOngkosKirim());
+        resp.setTotalPembayaran(saved.getTotalPembayaran());
+
+        return resp;
+    }
+
+    @Transactional(readOnly = true)
+    public List<PesananDtos.PesananResponse> getPesananForAdmin(String kodePesanan) {
+        List<Pesanan> pesananList;
+
+        if (kodePesanan != null && !kodePesanan.trim().isEmpty()) {
+            pesananList = pesananRepository
+                    .findByKodePesananContainingIgnoreCaseOrderByTanggalPesananDesc(kodePesanan.trim());
+        } else {
+            pesananList = pesananRepository.findAll(
+                    Sort.by(Sort.Direction.DESC, "tanggalPesanan")
+            );
+        }
+
+        List<PesananDtos.PesananResponse> result = new ArrayList<>();
+        for (Pesanan p : pesananList) {
+            PesananDtos.PesananResponse resp = new PesananDtos.PesananResponse();
+            resp.setIdPesanan(p.getIdPesanan());
+            resp.setKodePesanan(p.getKodePesanan());
+            resp.setStatusPesanan(p.getStatusPesanan());
+            resp.setTotalBarang(p.getTotalBarang());
+            resp.setOngkosKirim(p.getOngkosKirim());
+            resp.setTotalPembayaran(p.getTotalPembayaran());
+            result.add(resp);
+        }
+
+        return result;
+    }
+
+    @Transactional
+    public PesananDtos.PesananResponse updateStatusPesanan(Long idPesanan, String statusBaru) {
+        if (statusBaru == null || statusBaru.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status pesanan wajib diisi");
+        }
+
+        String normalized = statusBaru.trim().toUpperCase();
+
+        // boleh kamu atur sendiri daftar status validnya
+        if (!normalized.equals("DIKEMAS") &&
+                !normalized.equals("DALAM_PERJALANAN") &&
+                !normalized.equals("SELESAI") &&
+                !normalized.equals("MENUNGGU_PEMBAYARAN")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Status pesanan tidak valid");
+        }
+
+        Pesanan pesanan = pesananRepository.findById(idPesanan)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Pesanan tidak ditemukan"
+                ));
+
+        pesanan.setStatusPesanan(normalized);
         Pesanan saved = pesananRepository.save(pesanan);
 
         PesananDtos.PesananResponse resp = new PesananDtos.PesananResponse();

@@ -92,4 +92,16 @@ public class PesananDtos {
         public BigDecimal getTotalPembayaran() { return totalPembayaran; }
         public void setTotalPembayaran(BigDecimal totalPembayaran) { this.totalPembayaran = totalPembayaran; }
     }
+
+    public static class UpdateStatusRequest {
+        private String statusPesanan;
+    
+        public String getStatusPesanan() {
+            return statusPesanan;
+        }
+    
+        public void setStatusPesanan(String statusPesanan) {
+            this.statusPesanan = statusPesanan;
+        }
+    }    
 }

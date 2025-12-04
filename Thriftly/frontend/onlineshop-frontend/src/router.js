@@ -17,6 +17,9 @@ import ProdukDetailView from './views/ProdukDetailView.vue'
 //PEMBAYARAN
 import CheckoutView from './views/CheckoutView.vue'
 
+//LIHAT PESANAN (ADMIN)
+import AdminOrderListView from './views/admin/AdminOrderListView.vue'
+
 Vue.use(Router)
 
 const router = new Router({
@@ -63,6 +66,14 @@ const router = new Router({
       path: '/admin',
       name: 'admin-dashboard',
       component: AdminDashboardView,
+      meta: { requiresAuth: true, adminOnly: true },
+    },
+
+    // ADMIN: LIHAT PESANAN
+    {
+      path: '/admin/pesanan',
+      name: 'admin-order-list',
+      component: AdminOrderListView,
       meta: { requiresAuth: true, adminOnly: true },
     },
 

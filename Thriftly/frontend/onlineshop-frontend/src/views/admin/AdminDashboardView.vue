@@ -43,7 +43,7 @@
           <h3>Tambah / Hapus Barang</h3>
           <p>Kelola katalog dengan cepat.</p>
         </div>
-        <div class="qa-card qa-orders">
+        <div class="qa-card qa-orders" @click="goToOrders">
           <h3>Lihat Pesanan</h3>
           <p>Pantau status pesanan terbaru.</p>
         </div>
@@ -132,7 +132,7 @@
                 Ringkasan 5 pesanan terakhir
               </p>
             </div>
-            <button class="ghost-btn small">Lihat Semua</button>
+            <button class="ghost-btn small" @click="goToOrders">Lihat Semua</button>
           </header>
 
           <ul class="orders-list">
@@ -158,6 +158,8 @@
 </template>
 
 <script>
+import { fetchAdminOrders } from '@/api/pesananApi'
+
 export default {
   name: 'AdminDashboardView',
   data() {
@@ -192,48 +194,7 @@ export default {
           statusClass: 'status-active',
         },
       ],
-      recentOrders: [
-        {
-          id: 1,
-          code: 'INV-2025-00123',
-          items: 2,
-          total: 1350000,
-          customer: 'Raihan A.',
-          time: '5 menit lalu',
-          statusLabel: 'Menunggu Konfirmasi',
-          statusClass: 'status-pending',
-        },
-        {
-          id: 2,
-          code: 'INV-2025-00122',
-          items: 1,
-          total: 450000,
-          customer: 'Dinda P.',
-          time: '15 menit lalu',
-          statusLabel: 'Diproses',
-          statusClass: 'status-processing',
-        },
-        {
-          id: 3,
-          code: 'INV-2025-00121',
-          items: 3,
-          total: 2750000,
-          customer: 'Samuel K.',
-          time: '32 menit lalu',
-          statusLabel: 'Selesai',
-          statusClass: 'status-done',
-        },
-        {
-          id: 4,
-          code: 'INV-2025-00120',
-          items: 1,
-          total: 299000,
-          customer: 'Putri N.',
-          time: '50 menit lalu',
-          statusLabel: 'Menunggu Konfirmasi',
-          statusClass: 'status-pending',
-        },
-      ],
+      recentOrders: [],
     }
   },
   methods: {
@@ -251,9 +212,52 @@ export default {
     handleClickOutside() {
       this.showProfileMenu = false
     },
+    goToOrders() {
+      this.$router.push('/admin/pesanan')
+    },
+    mapStatusToLabel(status) {
+      const map = {
+        MENUNGGU_PEMBAYARAN: 'Menunggu Pembayaran',
+        DIKEMAS: 'Dikemas',
+        DALAM_PERJALANAN: 'Dalam Perjalanan',
+        SELESAI: 'Selesai',
+      }
+      return map[status] || status || '-'
+    },
+    mapStatusToClass(status) {
+      if (!status) return ''
+      const s = status.toUpperCase()
+      if (s === 'MENUNGGU_PEMBAYARAN') return 'status-pending'
+      if (s === 'DIKEMAS') return 'status-processing'
+      if (s === 'DALAM_PERJALANAN') return 'status-processing'
+      if (s === 'SELESAI') return 'status-done'
+      return ''
+    },
+    async loadRecentOrders() {
+      try {
+        const res = await fetchAdminOrders() // tanpa filter, ambil semua pesanan
+        const list = Array.isArray(res.data) ? res.data.slice(0, 5) : []
+
+        this.recentOrders = list.map((p, idx) => ({
+          id: p.idPesanan || idx,
+          code: p.kodePesanan || '-',
+          items: p.totalBarang || 0,
+          total: p.totalPembayaran || 0,
+          // kalau nanti DTO kamu ditambah nama & tanggal, bisa diganti:
+          customer: 'Pengguna',
+          time: '',
+          statusLabel: this.mapStatusToLabel(p.statusPesanan),
+          statusClass: this.mapStatusToClass(p.statusPesanan),
+        }))
+      } catch (err) {
+        console.error('Gagal memuat pesanan terbaru', err)
+        // optional: bisa kamu tampilkan ke UI kalau mau
+      }
+    },
   },
   mounted() {
     document.addEventListener('click', this.handleClickOutside)
+    this.loadRecentOrders()
   },
   beforeDestroy() {
     document.removeEventListener('click', this.handleClickOutside)
@@ -377,6 +381,7 @@ export default {
   padding: 16px 18px;
   color: #fff;
   font-size: 14px;
+  cursor: pointer;
 }
 
 .qa-card h3 {

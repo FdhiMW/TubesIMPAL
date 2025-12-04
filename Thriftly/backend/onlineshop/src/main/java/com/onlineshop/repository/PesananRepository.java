@@ -9,4 +9,7 @@ public interface PesananRepository extends JpaRepository<Pesanan, Long> {
 
     // untuk nanti kalau mau ambil riwayat pesanan per user
     List<Pesanan> findByUser_IdUserOrderByTanggalPesananDesc(Long idUser);
+
+    // untuk admin cari berdasarkan kode_pesanan (nomor pesanan)
+    List<Pesanan> findByKodePesananContainingIgnoreCaseOrderByTanggalPesananDesc(String kodePesanan);
 }
