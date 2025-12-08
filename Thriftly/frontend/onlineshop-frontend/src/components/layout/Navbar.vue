@@ -1,23 +1,43 @@
 <template>
-  <header class="navbar">
-    <div class="navbar-left">
-      <div class="logo-box">
-        <!-- pakai tulisan dulu, logo bisa diganti gambar -->
-        <span class="logo-icon">🛍️</span>
-        <span class="logo-text">KlikMall</span>
-      </div>
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="logo-badge"></div>
+      <span class="logo-text">KlikMall Thrift</span>
     </div>
-    <div class="navbar-center" v-if="showSearch">
+
+    <div class="search-wrapper" v-if="showSearch">
       <input
         type="text"
         class="search-input"
-        placeholder="Search ..."
+        placeholder="Cari pakaian bekas berkualitas..."
       />
     </div>
-    <div class="navbar-right">
-      <i class="icon">📦</i>
-      <i class="icon">🛒</i>
-      <i class="icon">👤</i>
+
+    <div class="topbar-right">
+      <!-- Lacak Paket + icon 📦 -->
+      <router-link to="/lacak-paket" class="topbar-link">
+        <span class="link-icon">📦</span>
+        <span>Lacak Paket</span>
+      </router-link>
+
+      <!-- Keranjang + icon 🛒 -->
+      <router-link to="/keranjang" class="topbar-link nav-cart">
+        <span class="link-icon">🛒</span>
+        <span>Keranjang</span>
+      </router-link>
+
+      <!-- PROFILE DROPDOWN + icon 👤 -->
+      <div class="profile-wrapper" @click.stop="toggleProfileMenu">
+        <span class="topbar-link">
+          <span class="link-icon">👤</span>
+          <span>Profil ▾</span>
+        </span>
+        <div v-if="showProfileMenu" class="profile-dropdown">
+          <button class="dropdown-item" @click.stop="logout">
+            Logout
+          </button>
+        </div>
+      </div>
     </div>
   </header>
 </template>
@@ -28,54 +48,128 @@ export default {
   props: {
     showSearch: {
       type: Boolean,
-      default: false,
+      default: true, // bisa di-off per halaman nanti jika perlu
     },
+  },
+  data() {
+    return {
+      showProfileMenu: false,
+    }
+  },
+  methods: {
+    toggleProfileMenu() {
+      this.showProfileMenu = !this.showProfileMenu
+    },
+    logout() {
+      localStorage.removeItem('user')
+      this.showProfileMenu = false
+      this.$router.push('/login')
+    },
+    handleClickOutside() {
+      this.showProfileMenu = false
+    },
+  },
+  mounted() {
+    document.addEventListener('click', this.handleClickOutside)
+  },
+  beforeDestroy() {
+    document.removeEventListener('click', this.handleClickOutside)
   },
 }
 </script>
 
 <style scoped>
-.navbar {
-  height: 70px;
-  padding: 0 32px;
+.topbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(90deg, #ef4444, #f97316);
-  color: #fff;
+  padding: 10px 32px;
+  background: linear-gradient(90deg, #ff5a3c, #ff9f1c);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+  gap: 24px;
 }
 
-.logo-box {
+.topbar-left {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
-.logo-icon {
-  font-size: 28px;
+.logo-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: #ffd46c;
 }
 
 .logo-text {
   font-weight: 700;
-  font-size: 22px;
+  font-size: 18px;
+  color: #fff;
+}
+
+.search-wrapper {
+  flex: 1;
 }
 
 .search-input {
-  width: 400px;
-  padding: 8px 14px;
-  border-radius: 24px;
+  width: 100%;
+  border-radius: 999px;
   border: none;
-  outline: none;
+  padding: 10px 18px;
   font-size: 14px;
+  outline: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
 
-.navbar-right {
+.topbar-right {
   display: flex;
-  gap: 20px;
+  align-items: center;
+  gap: 16px;
 }
 
-.icon {
-  font-size: 22px;
+.topbar-link {
+  font-size: 13px;
+  color: #fff;
+  text-decoration: none;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.link-icon {
+  font-size: 18px;
+}
+
+.profile-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 32px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
+  padding: 6px 0;
+  min-width: 120px;
+  z-index: 20;
+}
+
+.dropdown-item {
+  width: 100%;
+  padding: 6px 14px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  color: #e11d48;
+}
+
+.dropdown-item:hover {
+  background: #fee2e2;
 }
 </style>

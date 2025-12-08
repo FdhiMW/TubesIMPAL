@@ -1,36 +1,6 @@
 <template>
   <div class="admin-page">
-    <!-- TOP NAV -->
-    <header class="topbar">
-      <div class="topbar-left">
-        <div class="logo-badge"></div>
-        <span class="logo-text">KlikMall Admin</span>
-      </div>
-
-      <div class="search-wrapper">
-        <input
-          type="text"
-          class="search-input"
-          placeholder="Cari barang di katalog admin..."
-        />
-      </div>
-
-      <nav class="topbar-right">
-        <a href="#" class="topbar-link">Dashboard</a>
-        <a href="#" class="topbar-link">Pesanan</a>
-
-        <div class="profile-wrapper" @click.stop="toggleProfileMenu">
-          <span class="topbar-link">
-            Profil ▾
-          </span>
-          <div v-if="showProfileMenu" class="profile-dropdown">
-            <button class="dropdown-item" @click.stop="logout">
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
-    </header>
+    <!-- NAVBAR ADMIN -->
 
     <main class="page-content">
       <!-- QUICK ACTIONS -->
@@ -132,11 +102,17 @@
                 Ringkasan 5 pesanan terakhir
               </p>
             </div>
-            <button class="ghost-btn small" @click="goToOrders">Lihat Semua</button>
+            <button class="ghost-btn small" @click="goToOrders">
+              Lihat Semua
+            </button>
           </header>
 
           <ul class="orders-list">
-            <li v-for="order in recentOrders" :key="order.id" class="order-item">
+            <li
+              v-for="order in recentOrders"
+              :key="order.id"
+              class="order-item"
+            >
               <div class="order-main">
                 <p class="order-code">{{ order.code }}</p>
                 <p class="order-info">
@@ -159,12 +135,13 @@
 
 <script>
 import { fetchAdminOrders } from '@/api/pesananApi'
+import NavbarAdmin from '@/components/layout/NavbarAdmin.vue'
 
 export default {
   name: 'AdminDashboardView',
+  components: { NavbarAdmin },
   data() {
     return {
-      showProfileMenu: false,
       inventory: [
         {
           id: 1,
@@ -201,20 +178,14 @@ export default {
     formatPrice(value) {
       return value.toLocaleString('id-ID')
     },
-    toggleProfileMenu() {
-      this.showProfileMenu = !this.showProfileMenu
-    },
-    logout() {
-      localStorage.removeItem('user')
-      this.showProfileMenu = false
-      this.$router.push('/login')
-    },
-    handleClickOutside() {
-      this.showProfileMenu = false
-    },
+
+    // Pindah ke halaman /admin/pesanan, tapi hindari NavigationDuplicated
     goToOrders() {
-      this.$router.push('/admin/pesanan')
+      if (this.$route.path !== '/admin/pesanan') {
+        this.$router.push('/admin/pesanan')
+      }
     },
+
     mapStatusToLabel(status) {
       const map = {
         MENUNGGU_PEMBAYARAN: 'Menunggu Pembayaran',
@@ -224,6 +195,7 @@ export default {
       }
       return map[status] || status || '-'
     },
+
     mapStatusToClass(status) {
       if (!status) return ''
       const s = status.toUpperCase()
@@ -233,9 +205,10 @@ export default {
       if (s === 'SELESAI') return 'status-done'
       return ''
     },
+
     async loadRecentOrders() {
       try {
-        const res = await fetchAdminOrders() // tanpa filter, ambil semua pesanan
+        const res = await fetchAdminOrders()
         const list = Array.isArray(res.data) ? res.data.slice(0, 5) : []
 
         this.recentOrders = list.map((p, idx) => ({
@@ -243,7 +216,6 @@ export default {
           code: p.kodePesanan || '-',
           items: p.totalBarang || 0,
           total: p.totalPembayaran || 0,
-          // kalau nanti DTO kamu ditambah nama & tanggal, bisa diganti:
           customer: 'Pengguna',
           time: '',
           statusLabel: this.mapStatusToLabel(p.statusPesanan),
@@ -251,16 +223,11 @@ export default {
         }))
       } catch (err) {
         console.error('Gagal memuat pesanan terbaru', err)
-        // optional: bisa kamu tampilkan ke UI kalau mau
       }
     },
   },
   mounted() {
-    document.addEventListener('click', this.handleClickOutside)
     this.loadRecentOrders()
-  },
-  beforeDestroy() {
-    document.removeEventListener('click', this.handleClickOutside)
   },
 }
 </script>
@@ -274,101 +241,12 @@ export default {
   color: #222;
 }
 
-/* TOPBAR */
-
-.topbar {
-  display: flex;
-  align-items: center;
-  padding: 10px 32px;
-  background: linear-gradient(90deg, #ff5a3c, #ff9f1c);
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
-  gap: 24px;
-}
-
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo-badge {
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  background: #ffd46c;
-}
-
-.logo-text {
-  font-weight: 700;
-  font-size: 18px;
-  color: #fff;
-}
-
-.search-wrapper {
-  flex: 1;
-}
-
-.search-input {
-  width: 100%;
-  border-radius: 999px;
-  border: none;
-  padding: 10px 18px;
-  font-size: 14px;
-  outline: none;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
-}
-
-.topbar-right {
-  display: flex;
-  gap: 16px;
-}
-
-.profile-wrapper {
-  position: relative;
-  cursor: pointer;
-}
-
-.profile-dropdown {
-  position: absolute;
-  right: 0;
-  top: 32px;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
-  padding: 6px 0;
-  min-width: 120px;
-  z-index: 20;
-}
-
-.dropdown-item {
-  width: 100%;
-  padding: 6px 14px;
-  border: none;
-  background: transparent;
-  font-size: 13px;
-  text-align: left;
-  cursor: pointer;
-  color: #e11d48;
-}
-
-.dropdown-item:hover {
-  background: #fee2e2;
-}
-
-.topbar-link {
-  font-size: 13px;
-  color: #fff;
-  text-decoration: none;
-}
-
 /* CONTENT */
-
 .page-content {
   padding: 20px 32px 32px;
 }
 
 /* Quick actions */
-
 .quick-actions {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -407,7 +285,6 @@ export default {
 }
 
 /* Summary */
-
 .summary-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -440,7 +317,6 @@ export default {
 }
 
 /* Main grid */
-
 .main-grid {
   display: grid;
   grid-template-columns: 2.2fr 1.2fr;
@@ -448,7 +324,6 @@ export default {
 }
 
 /* Inventory */
-
 .inventory-card {
   background: #fff;
   border-radius: 20px;
@@ -478,6 +353,15 @@ export default {
   margin-bottom: 12px;
 }
 
+.search-input {
+  flex: 1;
+  border-radius: 999px;
+  border: 1px solid #d3d7e6;
+  padding: 8px 14px;
+  font-size: 13px;
+  outline: none;
+}
+
 .round-btn {
   border-radius: 999px;
   border: none;
@@ -489,7 +373,6 @@ export default {
 }
 
 /* Buttons */
-
 .ghost-btn {
   border-radius: 999px;
   border: 1px solid #d3d7e6;
@@ -514,7 +397,6 @@ export default {
 }
 
 /* Table */
-
 .inventory-table-wrapper {
   overflow-x: auto;
 }
@@ -572,7 +454,6 @@ export default {
 }
 
 /* Orders */
-
 .orders-card {
   background: #fff;
   border-radius: 20px;
@@ -657,7 +538,6 @@ export default {
 }
 
 /* Responsive */
-
 @media (max-width: 1024px) {
   .quick-actions,
   .summary-row {

@@ -1,289 +1,246 @@
 <template>
-  <div class="product-page">
-    <!-- KONTEN DETAIL PRODUK -->
-    <main class="product-content">
-      <!-- ERROR STATE -->
-      <div v-if="errorMessage" class="error-state">
-        {{ errorMessage }}
-      </div>
+  <div class="detail-page">
+    <main class="detail-container" v-if="produk">
+      <!-- KIRI: gambar produk -->
+      <section class="image-section">
+        <div class="main-image">
+          <!-- kalau nanti ada imageUrl, tinggal ganti div ini jadi <img> -->
+        </div>
+        <div class="thumb-row">
+          <div class="thumb-box"></div>
+          <div class="thumb-box"></div>
+          <div class="thumb-box"></div>
+        </div>
+      </section>
 
-      <!-- DETAIL PRODUK -->
-      <div v-else-if="produk" class="product-layout">
-        <!-- KOLOM KIRI: GAMBAR -->
-        <section class="product-left">
-          <div class="product-main-image">
-            <div v-if="!produk.imageUrl" class="image-placeholder"></div>
-            <img
-              v-else
-              :src="produk.imageUrl"
-              :alt="produk.namaProduk"
+      <!-- KANAN: info produk -->
+      <section class="info-section">
+        <h1 class="product-title">{{ produk.namaProduk }}</h1>
+
+        <div class="rating-row">
+          <span class="rating-stars">★ ★ ★ ★ ★</span>
+          <span class="rating-text">5.0 • 5RB Penilaian</span>
+        </div>
+
+        <div class="price-box">
+          Rp{{ formatRupiah(produk.harga) }}
+        </div>
+
+        <div class="info-row">
+          <span class="label">Jaminan</span>
+          <span class="value">Bebas pengembalian + Proteksi kerusakan</span>
+        </div>
+
+        <div class="info-row">
+          <span class="label">Ukuran</span>
+          <div class="chip-row">
+            <button class="chip">S</button>
+            <button class="chip">M</button>
+            <button class="chip chip-active">L</button>
+            <button class="chip">XL</button>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <span class="label">Warna</span>
+          <div class="chip-row">
+            <button class="chip">Merah</button>
+            <button class="chip chip-active">Hitam</button>
+            <button class="chip">Kuning</button>
+          </div>
+        </div>
+
+        <div class="info-row">
+          <span class="label">Kuantitas</span>
+          <div class="qty-control">
+            <button class="qty-btn" @click="decreaseQty">-</button>
+            <input
+              type="number"
+              class="qty-input"
+              :value="qty"
+              readonly
             />
+            <button class="qty-btn" @click="increaseQty">+</button>
           </div>
+        </div>
 
-          <div class="product-thumbs">
-            <div class="thumb" v-for="n in 3" :key="n"></div>
-          </div>
-        </section>
-
-        <!-- KOLOM KANAN: INFO PRODUK -->
-        <section class="product-right">
-          <!-- Judul -->
-          <h1 class="product-title">{{ produk.namaProduk }}</h1>
-
-          <!-- Rating -->
-          <div class="rating-row">
-            <span class="rating-score">5.0</span>
-            <span class="rating-stars">
-              ★★★★★
-            </span>
-            <span class="rating-count">5RB Penilaian</span>
-          </div>
-
-          <!-- Panel Harga -->
-          <div class="price-panel">
-            <span class="price-value">
-              Rp{{ formatHarga(produk.harga) }}
-            </span>
-          </div>
-
-          <!-- Jaminan -->
-          <div class="info-row">
-            <span class="info-label">Jaminan</span>
-            <span class="info-value">
-              Bebas pengembalian + Proteksi kerusakan
-            </span>
-          </div>
-
-          <!-- Ukuran -->
-          <div class="info-row">
-            <span class="info-label">Ukuran</span>
-            <div class="chip-row">
-              <button
-                v-for="size in sizeOptions"
-                :key="size"
-                class="chip-option"
-                :class="{ 'chip-option--active': selectedSize === size }"
-                @click="selectSize(size)"
-              >
-                {{ size }}
-              </button>
-            </div>
-          </div>
-
-          <!-- Warna -->
-          <div class="info-row">
-            <span class="info-label">Warna</span>
-            <div class="chip-row">
-              <button
-                v-for="color in colorOptions"
-                :key="color"
-                class="chip-option chip-option--pill"
-                :class="{ 'chip-option--active-pill': selectedColor === color }"
-                @click="selectColor(color)"
-              >
-                {{ color }}
-              </button>
-            </div>
-          </div>
-
-          <!-- Kuantitas -->
-          <div class="info-row">
-            <span class="info-label">Kuantitas</span>
-            <div class="qty-control">
-              <button class="qty-btn" @click="decreaseQty">-</button>
-              <input
-                type="text"
-                class="qty-input"
-                :value="qty"
-                readonly
-              />
-              <button class="qty-btn" @click="increaseQty">+</button>
-            </div>
-          </div>
-
-          <!-- Tombol Aksi -->
-          <div class="action-row">
-            <button class="btn-outline" @click="addToCart">
-              <span class="cart-icon">🛒</span>
-              Masukkan Keranjang
-            </button>
-            <button class="btn-primary" @click="buyNow">
-              Beli Sekarang
-            </button>
-          </div>
-        </section>
-      </div>
-
-      <!-- LOADING -->
-      <div v-else class="loading-state">
-        Memuat produk...
-      </div>
+        <!-- Tombol Aksi -->
+        <div class="action-row">
+          <button class="btn-outline" @click="addToCart">
+            <span class="cart-icon">🛒</span>
+            Masukkan Keranjang
+          </button>
+          <button class="btn-primary" @click="buyNow">
+            Beli Sekarang
+          </button>
+        </div>
+      </section>
     </main>
+
+    <div v-else class="loading-state">
+      Memuat detail produk...
+    </div>
+
+    <!-- MODAL SUKSES -->
+    <SuccessModal
+      :visible="showSuccess"
+      title="Berhasil ditambahkan ke keranjang"
+      @close="showSuccess = false"
+    />
   </div>
 </template>
 
 <script>
 import http from '@/api/httpClient'
+import keranjangApi from '@/api/keranjangApi'
+import SuccessModal from '@/components/common/SuccessModal.vue'
 
 export default {
   name: 'ProdukDetailView',
-  data() {
+  components: {
+    SuccessModal
+  },
+  data () {
     return {
       produk: null,
-      errorMessage: '',
       qty: 1,
-      sizeOptions: ['S', 'M', 'L', 'XL'],
-      colorOptions: ['Merah', 'Hitam', 'Kuning'],
-      selectedSize: '',
-      selectedColor: '',
+      loading: false,
+      showSuccess: false
     }
   },
-  created() {
-    this.loadProduk()
+  created () {
+    this.fetchProduct()
   },
   methods: {
-    async loadProduk() {
+    async fetchProduct () {
+      const id = this.$route.params.id
+      this.loading = true
       try {
-        const id = this.$route.params.id
         const res = await http.get(`/produk/${id}`)
         this.produk = res.data
-
-        // set default size & color kalau sesuai data produk
-        if (this.produk.ukuran && this.sizeOptions.includes(this.produk.ukuran)) {
-          this.selectedSize = this.produk.ukuran
-        }
-        if (this.produk.warna) {
-          // kapitalisasi sederhana biar mirip daftar colorOptions
-          const w = this.produk.warna.charAt(0).toUpperCase() + this.produk.warna.slice(1).toLowerCase()
-          if (this.colorOptions.includes(w)) {
-            this.selectedColor = w
-          }
-        }
       } catch (err) {
-        console.error('Gagal load produk', err)
-        if (err.response && err.response.status === 404) {
-          this.errorMessage = 'Produk tidak ditemukan.'
-        } else {
-          this.errorMessage = 'Terjadi kesalahan saat memuat produk.'
-        }
+        console.error('Gagal memuat produk', err)
+      } finally {
+        this.loading = false
       }
     },
-    formatHarga(v) {
-      if (v === null || v === undefined) return ''
-      return new Intl.NumberFormat('id-ID').format(v)
+
+    formatRupiah (value) {
+      if (!value && value !== 0) return '0'
+      return new Intl.NumberFormat('id-ID').format(Number(value))
     },
-    selectSize(size) {
-      this.selectedSize = size
+
+    increaseQty () {
+      this.qty += 1
     },
-    selectColor(color) {
-      this.selectedColor = color
-    },
-    decreaseQty() {
+
+    decreaseQty () {
       if (this.qty > 1) {
         this.qty -= 1
       }
     },
-    increaseQty() {
-      const max = this.produk && this.produk.stok ? this.produk.stok : 99
-      if (this.qty < max) {
-        this.qty += 1
+
+    async addToCart () {
+      if (!this.produk) return
+
+      const rawUser = localStorage.getItem('user')
+      if (!rawUser) {
+        alert('Silakan login terlebih dahulu sebelum menambahkan ke keranjang.')
+        this.$router.push('/login')
+        return
+      }
+
+      const user = JSON.parse(rawUser)
+
+      try {
+        await keranjangApi.addToCart({
+          idUser: user.idUser,
+          idProduk: this.produk.idProduk,
+          jumlah: this.qty
+        })
+
+        // tampilkan modal sukses
+        this.showSuccess = true
+      } catch (err) {
+        console.error('Gagal menambah ke keranjang', err)
+        alert('Gagal menambah ke keranjang, silakan coba lagi.')
       }
     },
-    addToCart() {
-      // nanti bisa diganti panggil API keranjang
-      alert('Masukkan keranjang (belum diimplementasi)')
-    },
-    buyNow() {
+
+    buyNow () {
       if (!this.produk) return
 
       this.$router.push({
         name: 'Checkout',
         query: {
           id: this.produk.idProduk,
-          qty: this.qty,
-        },
+          qty: this.qty
+        }
       })
-    },
-  },
+    }
+  }
 }
 </script>
 
 <style scoped>
-.product-page {
+.detail-page {
   min-height: 100vh;
   background: #f5f7fb;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    sans-serif;
   display: flex;
   justify-content: center;
   padding: 32px 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-.product-content {
+.detail-container {
   width: 100%;
   max-width: 1100px;
   background: #ffffff;
-  border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
   padding: 28px 32px 32px;
-}
-
-.product-layout {
   display: grid;
-  grid-template-columns: 1.3fr 1.7fr;
+  grid-template-columns: 1.1fr 1.5fr;
   gap: 32px;
 }
 
-/* Kiri: gambar */
-.product-left {
+/* KIRI: GAMBAR */
+.image-section {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.product-main-image {
+/* 🔥 KOTAK MERAH DIPERKECIL DI SINI */
+.main-image {
+  width: 100%;
+  max-height: 420px;                  /* batas maksimal tinggi */
+  aspect-ratio: 4 / 5;                /* proporsi foto pakaian */
   border-radius: 24px;
-  overflow: hidden;
-  background: linear-gradient(135deg, #fca5a5, #fdba74);
-  min-height: 280px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: linear-gradient(135deg, #fecaca, #fed7aa);
 }
 
-.product-main-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.image-placeholder {
-  width: 100%;
-  height: 100%;
-}
-
-.product-thumbs {
+.thumb-row {
   display: flex;
   gap: 12px;
 }
 
-.thumb {
+.thumb-box {
   flex: 1;
+  height: 60px;                       /* tidak terlalu tinggi */
   border-radius: 18px;
-  background: linear-gradient(135deg, #fca5a5, #fdba74);
-  height: 72px;
+  background: linear-gradient(135deg, #fecaca, #fed7aa);
 }
 
-/* Kanan: info */
-.product-right {
+/* KANAN: INFO */
+.info-section {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 18px;
 }
 
 .product-title {
-  font-size: 26px;
-  margin: 0;
+  font-size: 28px;
   font-weight: 700;
   color: #111827;
 }
@@ -293,170 +250,131 @@ export default {
   align-items: center;
   gap: 8px;
   font-size: 13px;
-  color: #4b5563;
-}
-
-.rating-score {
-  font-weight: 600;
-}
-
-.rating-stars {
-  color: #facc15;
-  letter-spacing: 2px;
-}
-
-.rating-count {
   color: #6b7280;
 }
 
-/* Panel harga */
-.price-panel {
-  margin-top: 4px;
-  background: #e5e7eb;
-  border-radius: 14px;
-  padding: 16px 18px;
-  display: flex;
-  align-items: center;
+.rating-stars {
+  color: #f59e0b;
 }
 
-.price-value {
+.price-box {
+  display: inline-block;
+  padding: 10px 16px;
+  border-radius: 16px;
+  background: #f3f4f6;
   font-size: 22px;
   font-weight: 700;
   color: #f97316;
 }
 
-/* Baris info */
 .info-row {
   display: flex;
   align-items: center;
-  gap: 24px;
-  font-size: 13px;
-  padding: 8px 0;
-  border-bottom: 1px solid #e5e7eb;
+  margin-top: 4px;
 }
 
-.info-label {
-  width: 80px;
+.label {
+  width: 90px;
+  font-size: 14px;
   color: #6b7280;
 }
 
-.info-value {
+.value {
+  font-size: 14px;
   color: #111827;
 }
 
-/* Chips */
 .chip-row {
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.chip-option {
-  min-width: 36px;
-  padding: 6px 12px;
+.chip {
+  min-width: 40px;
+  padding: 6px 10px;
   border-radius: 999px;
-  border: 1px solid #d1d5db;
-  background: #f9fafb;
-  font-size: 13px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
   cursor: pointer;
-  color: #4b5563;
+  font-size: 13px;
 }
 
-.chip-option--active {
-  background: #eff6ff;
-  border-color: #2563eb;
-  color: #2563eb;
-  font-weight: 600;
+.chip-active {
+  border-color: #f97316;
+  background: #fff7ed;
+  color: #f97316;
 }
 
-.chip-option--pill {
-  border-radius: 999px;
-}
-
-.chip-option--active-pill {
-  background: #e0f2fe;
-  border-color: #0ea5e9;
-  color: #0ea5e9;
-  font-weight: 600;
-}
-
-/* Kuantitas */
 .qty-control {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  overflow: hidden;
+  gap: 8px;
 }
 
 .qty-btn {
-  width: 30px;
-  height: 30px;
-  border: none;
-  background: #f3f4f6;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
   cursor: pointer;
-  font-size: 16px;
 }
 
 .qty-input {
-  width: 40px;
-  height: 30px;
-  border: none;
+  width: 48px;
   text-align: center;
-  font-size: 13px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  padding: 4px 0;
 }
 
-/* Tombol aksi */
+/* BUTTONS */
 .action-row {
+  margin-top: 12px;
   display: flex;
-  gap: 16px;
-  margin-top: 18px;
+  gap: 12px;
 }
 
-.btn-outline,
+.btn-outline {
+  flex: 1;
+  border-radius: 999px;
+  padding: 10px 18px;
+  border: 1px solid #f97316;
+  background: #fff7ed;
+  color: #f97316;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.cart-icon {
+  font-size: 18px;
+}
+
 .btn-primary {
   flex: 1;
   border-radius: 999px;
   padding: 10px 18px;
-  font-size: 14px;
+  border: none;
+  background: linear-gradient(135deg, #f97316, #ef4444);
+  color: #ffffff;
   font-weight: 600;
   cursor: pointer;
 }
 
-.btn-outline {
-  border: 2px solid #f97316;
-  background: #fff7ed;
-  color: #f97316;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.cart-icon {
-  font-size: 16px;
-}
-
-.btn-primary {
-  border: none;
-  background: linear-gradient(90deg, #ff5a3c, #ff9f1c);
-  color: #ffffff;
-}
-
-/* State */
-.error-state {
-  color: #dc2626;
-  font-size: 14px;
-}
-
 .loading-state {
-  color: #4b5563;
+  padding: 40px;
+  text-align: center;
 }
 
-/* Responsive */
+/* RESPONSIVE */
 @media (max-width: 900px) {
-  .product-layout {
+  .detail-container {
     grid-template-columns: 1fr;
+    padding: 20px;
   }
 }
 </style>

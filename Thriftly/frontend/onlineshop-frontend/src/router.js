@@ -5,6 +5,8 @@ import Router from 'vue-router'
 import LoginView from './views/LoginView.vue'
 import RegisterView from './views/RegisterView.vue'
 import HomeView from './views/HomeView.vue'
+import CartView from './views/CartView.vue'
+
 
 // (kalau kamu nanti punya halaman lain bisa ditambah di sini)
 
@@ -81,6 +83,14 @@ const router = new Router({
     { path: '*', redirect: '/login' },
 
     { path: '/produk/:id', name: 'ProdukDetail', component: ProdukDetailView },
+
+    {
+      path: '/keranjang',
+      name: 'Cart',
+      component: CartView,
+      meta: { requiresAuth: true },
+    },
+
   ],
 })
 

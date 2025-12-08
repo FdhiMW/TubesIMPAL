@@ -1,38 +1,6 @@
+<!-- frontend/onlineshop-frontend/src/views/HomeView.vue -->
 <template>
   <div class="user-home">
-    <!-- TOP NAV -->
-    <header class="topbar">
-      <div class="topbar-left">
-        <div class="logo-badge"></div>
-        <span class="logo-text">KlikMall Thrift</span>
-      </div>
-
-      <div class="search-wrapper">
-        <input
-          type="text"
-          class="search-input"
-          placeholder="Cari pakaian bekas berkualitas..."
-        />
-      </div>
-
-      <div class="topbar-right">
-        <a href="#" class="topbar-link">Lacak Paket</a>
-        <a href="#" class="topbar-link">Keranjang</a>
-
-        <!-- PROFILE DROPDOWN -->
-        <div class="profile-wrapper" @click.stop="toggleProfileMenu">
-          <span class="topbar-link">
-            Profil ▾
-          </span>
-          <div v-if="showProfileMenu" class="profile-dropdown">
-            <button class="dropdown-item" @click.stop="logout">
-              Logout
-            </button>
-          </div>
-        </div>
-      </div>
-    </header>
-
     <main class="page-content">
       <!-- HERO + BANNER -->
       <section class="hero-section">
@@ -130,8 +98,6 @@ export default {
   name: 'HomeView',
   data() {
     return {
-      showProfileMenu: false,
-
       chips: [
         'Kemeja',
         'Kaos',
@@ -192,8 +158,6 @@ export default {
           hint: 'Cocok buat reseller',
         },
       ],
-
-      // akan diisi dari backend
       bestSellers: [],
     }
   },
@@ -202,46 +166,22 @@ export default {
       if (!value && value !== 0) return ''
       return value.toLocaleString('id-ID')
     },
-    toggleProfileMenu() {
-      this.showProfileMenu = !this.showProfileMenu
-    },
-    logout() {
-      localStorage.removeItem('user')
-      this.showProfileMenu = false
-      this.$router.push('/login')
-    },
-    handleClickOutside() {
-      this.showProfileMenu = false
-    },
     goToProductDetail(id) {
       this.$router.push(`/produk/${id}`)
     },
-
     async loadBestSellers() {
       try {
-        console.log('Memanggil API barang terlaris...')
-        // ⚠️ SESUAIKAN DENGAN baseURL DI httpClient:
-        // - Kalau baseURL = 'http://localhost:8080/api'  → pakai '/produk/terlaris'
-        // - Kalau baseURL = 'http://localhost:8080'      → pakai '/api/produk/terlaris'
         const res = await http.get('/produk/terlaris?limit=6')
-
-        console.log('Respon barang terlaris:', res.data)
-
-        // Asumsi backend kirim DTO: { idProduk, namaProduk, harga, totalTerjual }
         this.bestSellers = res.data.map(p => ({
           id: p.idProduk,
           title: p.namaProduk,
           tagline: `${p.totalTerjual} terjual`,
           labels: ['Best Seller'],
           price: p.harga,
-          discount: 30, // sementara; nanti bisa ambil dari backend
+          discount: 30,
         }))
-
-        console.log('bestSellers terisi:', this.bestSellers)
       } catch (err) {
         console.error('Gagal memuat barang terlaris, pakai dummy dulu:', err)
-
-        // Fallback: pakai data dummy lama supaya UI tidak kosong
         this.bestSellers = [
           {
             id: 1,
@@ -296,16 +236,10 @@ export default {
     },
   },
   mounted() {
-    document.addEventListener('click', this.handleClickOutside)
     this.loadBestSellers()
-  },
-  beforeDestroy() {
-    document.removeEventListener('click', this.handleClickOutside)
   },
 }
 </script>
-
-
 
 <style scoped>
 .user-home {
@@ -315,97 +249,6 @@ export default {
     sans-serif;
   color: #222;
 }
-
-/* TOPBAR */
-
-.topbar {
-  display: flex;
-  align-items: center;
-  padding: 10px 32px;
-  background: linear-gradient(90deg, #ff5a3c, #ff9f1c);
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
-  gap: 24px;
-}
-
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo-badge {
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  background: #ffd46c;
-}
-
-.logo-text {
-  font-weight: 700;
-  font-size: 18px;
-  color: #fff;
-}
-
-.search-wrapper {
-  flex: 1;
-}
-
-.search-input {
-  width: 100%;
-  border-radius: 999px;
-  border: none;
-  padding: 10px 18px;
-  font-size: 14px;
-  outline: none;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
-}
-
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.profile-wrapper {
-  position: relative;
-  cursor: pointer;
-}
-
-.profile-dropdown {
-  position: absolute;
-  right: 0;
-  top: 32px;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
-  padding: 6px 0;
-  min-width: 120px;
-  z-index: 20;
-}
-
-.dropdown-item {
-  width: 100%;
-  padding: 6px 14px;
-  border: none;
-  background: transparent;
-  font-size: 13px;
-  text-align: left;
-  cursor: pointer;
-  color: #e11d48;
-}
-
-.dropdown-item:hover {
-  background: #fee2e2;
-}
-
-
-.topbar-link {
-  font-size: 13px;
-  color: #fff;
-  text-decoration: none;
-}
-
-/* CONTENT */
 
 .page-content {
   padding: 20px 40px 40px;
@@ -571,7 +414,7 @@ export default {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  cursor: pointer;        /* ⬅️ tambahin ini */
+  cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -579,7 +422,6 @@ export default {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
 }
-
 
 .best-thumb {
   position: relative;

@@ -1,41 +1,6 @@
 <template>
   <div class="admin-page">
-    <!-- TOP NAV (SAMA DENGAN DASHBOARD) -->
-    <header class="topbar">
-      <div class="topbar-left">
-        <div class="logo-badge"></div>
-        <span class="logo-text">KlikMall Admin</span>
-      </div>
-
-      <div class="search-wrapper">
-        <input
-          type="text"
-          class="search-input"
-          placeholder="Cari barang di katalog admin..."
-        />
-      </div>
-
-      <nav class="topbar-right">
-        <!-- tombol Dashboard & Pesanan pakai router -->
-        <a href="#" class="topbar-link" @click.prevent="goDashboard">
-          Dashboard
-        </a>
-        <a href="#" class="topbar-link" @click.prevent="goOrders">
-          Pesanan
-        </a>
-
-        <div class="profile-wrapper" @click.stop="toggleProfileMenu">
-          <span class="topbar-link">
-            Profil ▾
-          </span>
-          <div v-if="showProfileMenu" class="profile-dropdown">
-            <button class="dropdown-item" @click.stop="logout">
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
-    </header>
+    <!-- TIDAK ADA NAVBAR DI SINI, SUDAH DIHANDLE NavbarAdmin lewat App.vue -->
 
     <!-- KONTEN LIHAT PESANAN -->
     <main class="page-content">
@@ -108,7 +73,9 @@
                   <button
                     class="primary-btn small"
                     @click="changeStatus(order, 'DALAM_PERJALANAN')"
-                    :disabled="loading || order.statusPesanan === 'DALAM_PERJALANAN'"
+                    :disabled="
+                      loading || order.statusPesanan === 'DALAM_PERJALANAN'
+                    "
                   >
                     Dalam Perjalanan
                   </button>
@@ -133,7 +100,6 @@ export default {
   name: 'AdminOrderListView',
   data() {
     return {
-      showProfileMenu: false,
       orders: [],
       searchKode: '',
       loading: false,
@@ -141,25 +107,6 @@ export default {
     }
   },
   methods: {
-    // NAVBAR
-    goDashboard() {
-      this.$router.push('/admin')
-    },
-    goOrders() {
-      this.$router.push('/admin/pesanan')
-    },
-    toggleProfileMenu() {
-      this.showProfileMenu = !this.showProfileMenu
-    },
-    logout() {
-      localStorage.removeItem('user')
-      this.showProfileMenu = false
-      this.$router.push('/login')
-    },
-    handleClickOutside() {
-      this.showProfileMenu = false
-    },
-
     // DATA PESANAN
     async loadOrders() {
       this.loading = true
@@ -174,6 +121,7 @@ export default {
         this.loading = false
       }
     },
+
     async changeStatus(order, status) {
       if (order.statusPesanan === status) return
       this.loading = true
@@ -194,10 +142,12 @@ export default {
         this.loading = false
       }
     },
+
     resetSearch() {
       this.searchKode = ''
       this.loadOrders()
     },
+
     formatRupiah(value) {
       if (value == null) return '-'
       const number =
@@ -208,6 +158,7 @@ export default {
         currency: 'IDR',
       }).format(number)
     },
+
     mapStatusToLabel(status) {
       if (!status) return '-'
       const map = {
@@ -218,6 +169,7 @@ export default {
       }
       return map[status] || status
     },
+
     mapStatusToClass(status) {
       if (!status) return ''
       const s = status.toUpperCase()
@@ -229,110 +181,18 @@ export default {
     },
   },
   mounted() {
-    document.addEventListener('click', this.handleClickOutside)
     this.loadOrders()
-  },
-  beforeDestroy() {
-    document.removeEventListener('click', this.handleClickOutside)
   },
 }
 </script>
 
 <style scoped>
-/* layout sama dengan dashboard */
 .admin-page {
   min-height: 100vh;
   background: #f5f7fb;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     sans-serif;
   color: #222;
-}
-
-/* TOPBAR */
-
-.topbar {
-  display: flex;
-  align-items: center;
-  padding: 10px 32px;
-  background: linear-gradient(90deg, #ff5a3c, #ff9f1c);
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
-  gap: 24px;
-}
-
-.topbar-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo-badge {
-  width: 32px;
-  height: 32px;
-  border-radius: 999px;
-  background: #ffd46c;
-}
-
-.logo-text {
-  font-weight: 700;
-  font-size: 18px;
-  color: #fff;
-}
-
-.search-wrapper {
-  flex: 1;
-}
-
-.search-input {
-  width: 100%;
-  border-radius: 999px;
-  border: none;
-  padding: 10px 18px;
-  font-size: 14px;
-  outline: none;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
-}
-
-.topbar-right {
-  display: flex;
-  gap: 16px;
-}
-
-.profile-wrapper {
-  position: relative;
-  cursor: pointer;
-}
-
-.profile-dropdown {
-  position: absolute;
-  right: 0;
-  top: 32px;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
-  padding: 6px 0;
-  min-width: 120px;
-  z-index: 20;
-}
-
-.dropdown-item {
-  width: 100%;
-  padding: 6px 14px;
-  border: none;
-  background: transparent;
-  font-size: 13px;
-  text-align: left;
-  cursor: pointer;
-  color: #e11d48;
-}
-
-.dropdown-item:hover {
-  background: #fee2e2;
-}
-
-.topbar-link {
-  font-size: 13px;
-  color: #fff;
-  text-decoration: none;
 }
 
 /* CONTENT WRAPPER */
