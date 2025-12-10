@@ -28,5 +28,13 @@ public class ProdukController {
     public ProdukDetailDto getProdukDetail(@PathVariable("id") Long id) {
         return produkService.getProdukDetail(id);
     }
+
+    @GetMapping("/search")
+    public List<ProdukDetailDto> searchProduk(
+            @RequestParam(name = "q", required = false) String keyword,
+            @RequestParam(name = "kategori", required = false) String kategori
+    ) {
+        return produkService.searchProduk(keyword, kategori);
+    }
 }
 

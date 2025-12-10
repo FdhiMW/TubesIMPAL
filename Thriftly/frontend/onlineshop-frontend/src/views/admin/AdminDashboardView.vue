@@ -5,7 +5,7 @@
     <main class="page-content">
       <!-- QUICK ACTIONS -->
       <section class="quick-actions">
-        <div class="qa-card qa-search">
+        <div class="qa-card qa-search" @click="goToAdminProductList">
           <h3>Cari Barang</h3>
           <p>Telusuri dan filter stok produk.</p>
         </div>
@@ -179,11 +179,15 @@ export default {
       return value.toLocaleString('id-ID')
     },
 
-    // Pindah ke halaman /admin/pesanan, tapi hindari NavigationDuplicated
     goToOrders() {
       if (this.$route.path !== '/admin/pesanan') {
         this.$router.push('/admin/pesanan')
       }
+    },
+
+    goToAdminProductList() {
+      // nama route sama dengan yang kita pakai di router.js
+      this.$router.push({ name: 'admin-product-list' })
     },
 
     mapStatusToLabel(status) {

@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
-
+import java.util.stream.Collectors;
 import java.util.List;
 
 @Service
@@ -29,31 +29,33 @@ public class ProdukService {
         if (limit <= 0) {
             limit = 5;
         }
-
+    
         Pageable pageable = PageRequest.of(0, limit);
-
-        // statusPesanan disesuaikan dengan yang kamu pakai di DB,
-        // misal "SELESAI" atau "SELESAI_BAYAR"
-        String statusSelesai = "SELESAI";
-
-        List<BarangTerlarisDto> hasil =
-                pesananItemRepository.findBestSellersByStatus(statusSelesai, pageable);
-
-        // Kalau belum ada pesanan sama sekali, bisa fallback ke produk biasa
-        if (hasil.isEmpty()) {
-            return produkRepository
-                    .findAll(pageable)
+    
+        var pageProduk = produkRepository.findByOrderByBarangTerjualDesc(pageable);
+    
+        if (!pageProduk.isEmpty()) {
+            return pageProduk.getContent().stream()
                     .map(p -> new BarangTerlarisDto(
                             p.getIdProduk(),
                             p.getNamaProduk(),
                             p.getHarga(),
-                            0L
+                            p.getBarangTerjual() == null ? 0L : p.getBarangTerjual().longValue()
                     ))
-                    .getContent();
+                    .toList();
         }
-
-        return hasil;
+    
+        return produkRepository
+                .findAll(pageable)
+                .map(p -> new BarangTerlarisDto(
+                        p.getIdProduk(),
+                        p.getNamaProduk(),
+                        p.getHarga(),
+                        0L
+                ))
+                .getContent();
     }
+    
 
     public ProdukDetailDto getProdukDetail(Long idProduk) {
         Produk p = produkRepository.findById(idProduk)
@@ -74,4 +76,37 @@ public class ProdukService {
                 p.getImageUrl()
         );
     }
+
+    public List<ProdukDetailDto> searchProduk(String keyword, String kategoriName) {
+        String key = (keyword == null) ? "" : keyword.trim();
+        String cat = (kategoriName == null) ? "" : kategoriName.trim();
+    
+        List<Produk> hasil;
+    
+        if (!cat.isEmpty()) {
+            hasil = produkRepository.findByKategori_NamaKategoriIgnoreCase(cat);
+        } else if (!key.isEmpty()) {
+            hasil = produkRepository
+                    .findByNamaProdukContainingIgnoreCaseOrMerekContainingIgnoreCase(key, key);
+        } else {
+            hasil = produkRepository.findAll();
+        }
+    
+        return hasil.stream()
+                .map(p -> new ProdukDetailDto(
+                        p.getIdProduk(),
+                        p.getNamaProduk(),
+                        p.getDeskripsi(),
+                        p.getHarga(),
+                        p.getStok(),
+                        p.getKondisi(),
+                        p.getUkuran(),
+                        p.getWarna(),
+                        p.getMerek(),
+                        p.getJenisKelamin(),
+                        p.getImageUrl(),
+                        p.getBarangTerjual()
+                ))
+                .toList();
+    }    
 }

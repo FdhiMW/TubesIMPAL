@@ -17,6 +17,7 @@
           v-for="chip in chips"
           :key="chip"
           class="chip"
+          @click="goToCategoryByName(chip)"
         >
           <span class="chip-circle"></span>
           <span class="chip-label">{{ chip }}</span>
@@ -32,7 +33,8 @@
               Pilih kategori pakaian bekas yang kamu inginkan.
             </p>
           </div>
-          <button class="link-button">Lihat semua ›</button>
+          <!-- kalau mau nanti bisa diarahkan ke page khusus kategori -->
+          <button class="link-button" @click="goToAllCategories">Lihat semua ›</button>
         </div>
 
         <div class="category-grid">
@@ -40,6 +42,7 @@
             v-for="item in categoryItems"
             :key="item.id"
             class="category-card"
+            @click="goToCategory(item)"
           >
             <div class="category-thumb skeleton"></div>
             <div class="category-body">
@@ -94,81 +97,142 @@
 <script>
 import http from '@/api/httpClient'
 
+// Konfigurasi copywriting per kategori (opsional)
+// Nama harus sama dengan nama_kategori di DB (Kaos, Kemeja, Jaket, Celana, Dress)
+const CATEGORY_UI_CONFIG = {
+  Kaos: {
+    subtitle: 'Oversize & graphic tee',
+    hint: 'Cocok buat OOTD',
+  },
+  Kemeja: {
+    subtitle: 'Casual sampai formal',
+    hint: 'Look santai & rapi',
+  },
+  Jaket: {
+    subtitle: 'Denim, bomber, varsity',
+    hint: 'Outer andalan',
+  },
+  Celana: {
+    subtitle: 'Jeans, chino, cargo',
+    hint: 'Mix & match mudah',
+  },
+  Dress: {
+    subtitle: 'Casual sampai kondangan',
+    hint: 'Feminine style',
+  },
+}
+
 export default {
   name: 'HomeView',
   data() {
     return {
-      chips: [
-        'Kemeja',
-        'Kaos',
-        'Hoodie',
-        'Jaket',
-        'Jas',
-        'Celana',
-        'Rok',
-        'Dress',
-      ],
-      categoryItems: [
-        {
-          id: 1,
-          title: 'Kemeja Pria Vintage',
-          subtitle: 'Mulai dari Rp30.000',
-          hint: 'Look santai & rapi',
-        },
-        {
-          id: 2,
-          title: 'Kemeja Wanita Motif',
-          subtitle: 'Motif retro & floral',
-          hint: 'Statement outfit',
-        },
-        {
-          id: 3,
-          title: 'Kaos Band / Graphic Tee',
-          subtitle: 'Oversize & streetwear',
-          hint: 'Cocok buat ootd',
-        },
-        {
-          id: 4,
-          title: 'Hoodie & Sweatshirt',
-          subtitle: 'Hangat & comfy',
-          hint: 'Cocok untuk kuliah',
-        },
-        {
-          id: 5,
-          title: 'Jaket Denim & Bomber',
-          subtitle: 'Look klasik & edgy',
-          hint: 'Outer andalan',
-        },
-        {
-          id: 6,
-          title: 'Celana Jeans & Chino',
-          subtitle: 'High waist, momfit, slim',
-          hint: 'Mix & match mudah',
-        },
-        {
-          id: 7,
-          title: 'Rok & Dress',
-          subtitle: 'Casual sampai kondangan',
-          hint: 'Feminine style',
-        },
-        {
-          id: 8,
-          title: 'Paket Bundle Mystery',
-          subtitle: 'Isi random hemat',
-          hint: 'Cocok buat reseller',
-        },
-      ],
+      chips: [],
+      categoryItems: [],
       bestSellers: [],
     }
   },
   methods: {
     formatPrice(value) {
       if (!value && value !== 0) return ''
-      return value.toLocaleString('id-ID')
+      return Number(value).toLocaleString('id-ID')
     },
     goToProductDetail(id) {
       this.$router.push(`/produk/${id}`)
     },
+
+    // ==== KATEGORI ====
+    async loadCategories() {
+      try {
+        const res = await http.get('/kategori')
+        const list = Array.isArray(res.data) ? res.data : []
+
+        // bentuk data untuk kartu kategori
+        this.categoryItems = list.map((k, idx) => {
+          const ui = CATEGORY_UI_CONFIG[k.namaKategori] || {}
+          return {
+            id: k.idKategori || idx + 1,
+            key: k.namaKategori,
+            title: k.namaKategori,
+            subtitle: ui.subtitle || k.deskripsi || '',
+            hint: ui.hint || 'Lihat koleksi',
+          }
+        })
+
+        // chips diambil dari kategori yang sama
+        this.chips = this.categoryItems.map(c => c.title)
+      } catch (err) {
+        console.error('Gagal memuat kategori, pakai dummy:', err)
+
+        // fallback statis kalau API error
+        const fallback = [
+          {
+            id: 1,
+            key: 'Kemeja',
+            title: 'Kemeja',
+            subtitle: 'Casual sampai formal',
+            hint: 'Look santai & rapi',
+          },
+          {
+            id: 2,
+            key: 'Kaos',
+            title: 'Kaos',
+            subtitle: 'Oversize & graphic tee',
+            hint: 'Cocok buat OOTD',
+          },
+          {
+            id: 3,
+            key: 'Jaket',
+            title: 'Jaket',
+            subtitle: 'Denim, bomber, varsity',
+            hint: 'Outer andalan',
+          },
+          {
+            id: 4,
+            key: 'Celana',
+            title: 'Celana',
+            subtitle: 'Jeans, chino, cargo',
+            hint: 'Mix & match mudah',
+          },
+          {
+            id: 5,
+            key: 'Dress',
+            title: 'Dress',
+            subtitle: 'Casual sampai kondangan',
+            hint: 'Feminine style',
+          },
+        ]
+
+        this.categoryItems = fallback
+        this.chips = fallback.map(f => f.title)
+      }
+    },
+
+    goToCategory(item) {
+      // item.key berisi nama kategori (Kaos, Kemeja, dsb.)
+      this.$router.push({
+        name: 'product-search',
+        query: {
+          kategori: item.key,
+        },
+      })
+    },
+
+    goToCategoryByName(name) {
+      // dipanggil dari chip (string)
+      this.$router.push({
+        name: 'product-search',
+        query: {
+          kategori: name,
+        },
+      })
+    },
+
+    goToAllCategories() {
+      // sementara diarahkan ke search tanpa filter
+      this.$router.push({ name: 'product-search' })
+    },
+
+    // ==== BARANG TERLARIS ====
     async loadBestSellers() {
       try {
         const res = await http.get('/produk/terlaris?limit=6')
@@ -236,6 +300,7 @@ export default {
     },
   },
   mounted() {
+    this.loadCategories()
     this.loadBestSellers()
   },
 }
@@ -367,6 +432,13 @@ export default {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
 }
 
 .category-thumb {

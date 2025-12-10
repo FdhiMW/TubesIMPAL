@@ -7,20 +7,17 @@ import RegisterView from './views/RegisterView.vue'
 import HomeView from './views/HomeView.vue'
 import CartView from './views/CartView.vue'
 
+// PRODUK
+import ProdukDetailView from './views/ProdukDetailView.vue'
+import ProductListView from './views/ProductListView.vue'
 
-// (kalau kamu nanti punya halaman lain bisa ditambah di sini)
+// PEMBAYARAN
+import CheckoutView from './views/CheckoutView.vue'
 
 // ADMIN
 import AdminDashboardView from './views/admin/AdminDashboardView.vue'
-
-// PRODUK DETAIL
-import ProdukDetailView from './views/ProdukDetailView.vue'
-
-//PEMBAYARAN
-import CheckoutView from './views/CheckoutView.vue'
-
-//LIHAT PESANAN (ADMIN)
 import AdminOrderListView from './views/admin/AdminOrderListView.vue'
+import AdminProductListView from './views/admin/AdminProductListView.vue'
 
 Vue.use(Router)
 
@@ -35,6 +32,15 @@ const router = new Router({
       meta: { requiresAuth: true },
     },
 
+    // HASIL PENCARIAN USER
+    {
+      path: '/produk',
+      name: 'product-search',
+      component: ProductListView,
+      meta: { requiresAuth: true },
+    },
+
+    // DETAIL PRODUK
     {
       path: '/produk/:id',
       name: 'ProdukDetail',
@@ -42,13 +48,22 @@ const router = new Router({
       meta: { requiresAuth: true },
     },
 
+    // KERANJANG
+    {
+      path: '/keranjang',
+      name: 'Cart',
+      component: CartView,
+      meta: { requiresAuth: true },
+    },
+
+    // CHECKOUT
     {
       path: '/checkout',
       name: 'Checkout',
       component: CheckoutView,
       meta: { requiresAuth: true },
     },
-    
+
     // AUTH
     {
       path: '/login',
@@ -79,18 +94,16 @@ const router = new Router({
       meta: { requiresAuth: true, adminOnly: true },
     },
 
-    // fallback
-    { path: '*', redirect: '/login' },
-
-    { path: '/produk/:id', name: 'ProdukDetail', component: ProdukDetailView },
-
+    // ADMIN: LIST / SEARCH PRODUK
     {
-      path: '/keranjang',
-      name: 'Cart',
-      component: CartView,
-      meta: { requiresAuth: true },
+      path: '/admin/produk',
+      name: 'admin-product-list',
+      component: AdminProductListView,
+      meta: { requiresAuth: true, adminOnly: true },
     },
 
+    // fallback
+    { path: '*', redirect: '/login' },
   ],
 })
 
@@ -101,21 +114,21 @@ router.beforeEach((to, from, next) => {
   const isLoggedIn = !!user
   const role = user?.peranPengguna
 
-  // route butuh login tapi belum login
+  // butuh login tapi belum login
   if (to.matched.some(r => r.meta.requiresAuth) && !isLoggedIn) {
     return next('/login')
   }
 
-  // route hanya untuk guest (login & register)
+  // hanya guest (login & register)
   if (to.matched.some(r => r.meta.guestOnly) && isLoggedIn) {
     if (role === 'admin') return next('/admin')
     return next('/')
   }
 
-  // route khusus admin
+  // khusus admin
   if (to.matched.some(r => r.meta.adminOnly)) {
     if (!isLoggedIn) return next('/login')
-    if (role !== 'admin') return next('/') // user biasa dilarang ke /admin
+    if (role !== 'admin') return next('/')
   }
 
   // kalau admin buka "/", arahkan ke /admin

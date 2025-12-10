@@ -1,6 +1,7 @@
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/dto/UserDto.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/model/Ulasan.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/service/AuthService.java
+/Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/dto/KategoriDto.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/model/User.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/service/ProdukService.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/security/SecurityConfig.java
@@ -9,6 +10,7 @@
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/service/KeranjangService.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/repository/ProdukRepository.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/model/Kategori.java
+/Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/service/KategoriService.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/dto/PesananDtos.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/repository/PesananItemRepository.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/repository/UserRepository.java
@@ -16,6 +18,7 @@
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/controller/ProdukController.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/controller/PembayaranController.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/exception/GlobalExceptionHandler.java
+/Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/controller/KategoriController.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/controller/AuthController.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/model/Pesanan.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/controller/PesananController.java
@@ -25,6 +28,7 @@
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/dto/ProdukDetailDto.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/util/ResponseUtil.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/model/PesananItem.java
+/Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/repository/KategoriRepository.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/repository/KeranjangRepository.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/OnlineShopBackendApplication.java
 /Users/fadhilla/Documents/GitHub/TubesIMPAL/Thriftly/backend/onlineshop/src/main/java/com/onlineshop/dto/KeranjangDtos.java

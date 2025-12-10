@@ -15,14 +15,38 @@ public class ProdukDetailDto {
     private String merek;
     private String jenisKelamin;
     private String imageUrl;
+    private Integer barangTerjual;
 
-    public ProdukDetailDto() {
+    // === CONSTRUCTOR lama (tanpa barangTerjual) – supaya kode existing tetap jalan
+    public ProdukDetailDto(Long idProduk,
+                           String namaProduk,
+                           String deskripsi,
+                           BigDecimal harga,
+                           Integer stok,
+                           String kondisi,
+                           String ukuran,
+                           String warna,
+                           String merek,
+                           String jenisKelamin,
+                           String imageUrl) {
+        this(idProduk, namaProduk, deskripsi, harga, stok,
+             kondisi, ukuran, warna, merek, jenisKelamin,
+             imageUrl, 0); // default barangTerjual = 0
     }
 
-    public ProdukDetailDto(Long idProduk, String namaProduk, String deskripsi,
-                           BigDecimal harga, Integer stok, String kondisi,
-                           String ukuran, String warna, String merek,
-                           String jenisKelamin, String imageUrl) {
+    // === CONSTRUCTOR baru (dengan barangTerjual) – kalau nanti mau dipakai
+    public ProdukDetailDto(Long idProduk,
+                           String namaProduk,
+                           String deskripsi,
+                           BigDecimal harga,
+                           Integer stok,
+                           String kondisi,
+                           String ukuran,
+                           String warna,
+                           String merek,
+                           String jenisKelamin,
+                           String imageUrl,
+                           Integer barangTerjual) {
         this.idProduk = idProduk;
         this.namaProduk = namaProduk;
         this.deskripsi = deskripsi;
@@ -34,38 +58,103 @@ public class ProdukDetailDto {
         this.merek = merek;
         this.jenisKelamin = jenisKelamin;
         this.imageUrl = imageUrl;
+        this.barangTerjual = barangTerjual;
     }
 
-    public Long getIdProduk() { return idProduk; }
-    public void setIdProduk(Long idProduk) { this.idProduk = idProduk; }
+    // === getter & setter ===
+    public Long getIdProduk() {
+        return idProduk;
+    }
 
-    public String getNamaProduk() { return namaProduk; }
-    public void setNamaProduk(String namaProduk) { this.namaProduk = namaProduk; }
+    public void setIdProduk(Long idProduk) {
+        this.idProduk = idProduk;
+    }
 
-    public String getDeskripsi() { return deskripsi; }
-    public void setDeskripsi(String deskripsi) { this.deskripsi = deskripsi; }
+    public String getNamaProduk() {
+        return namaProduk;
+    }
 
-    public BigDecimal getHarga() { return harga; }
-    public void setHarga(BigDecimal harga) { this.harga = harga; }
+    public void setNamaProduk(String namaProduk) {
+        this.namaProduk = namaProduk;
+    }
 
-    public Integer getStok() { return stok; }
-    public void setStok(Integer stok) { this.stok = stok; }
+    public String getDeskripsi() {
+        return deskripsi;
+    }
 
-    public String getKondisi() { return kondisi; }
-    public void setKondisi(String kondisi) { this.kondisi = kondisi; }
+    public void setDeskripsi(String deskripsi) {
+        this.deskripsi = deskripsi;
+    }
 
-    public String getUkuran() { return ukuran; }
-    public void setUkuran(String ukuran) { this.ukuran = ukuran; }
+    public BigDecimal getHarga() {
+        return harga;
+    }
 
-    public String getWarna() { return warna; }
-    public void setWarna(String warna) { this.warna = warna; }
+    public void setHarga(BigDecimal harga) {
+        this.harga = harga;
+    }
 
-    public String getMerek() { return merek; }
-    public void setMerek(String merek) { this.merek = merek; }
+    public Integer getStok() {
+        return stok;
+    }
 
-    public String getJenisKelamin() { return jenisKelamin; }
-    public void setJenisKelamin(String jenisKelamin) { this.jenisKelamin = jenisKelamin; }
+    public void setStok(Integer stok) {
+        this.stok = stok;
+    }
 
-    public String getImageUrl() { return imageUrl; }
-    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public String getKondisi() {
+        return kondisi;
+    }
+
+    public void setKondisi(String kondisi) {
+        this.kondisi = kondisi;
+    }
+
+    public String getUkuran() {
+        return ukuran;
+    }
+
+    public void setUkuran(String ukuran) {
+        this.ukuran = ukuran;
+    }
+
+    public String getWarna() {
+        return warna;
+    }
+
+    public void setWarna(String warna) {
+        this.warna = warna;
+    }
+
+    public String getMerek() {
+        return merek;
+    }
+
+    public void setMerek(String merek) {
+        this.merek = merek;
+    }
+
+    public String getJenisKelamin() {
+        return jenisKelamin;
+    }
+
+    public void setJenisKelamin(String jenisKelamin) {
+        this.jenisKelamin = jenisKelamin;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public Integer getBarangTerjual() {
+        return barangTerjual;
+    }
+
+    public void setBarangTerjual(Integer barangTerjual) {
+        this.barangTerjual = barangTerjual;
+    }
 }

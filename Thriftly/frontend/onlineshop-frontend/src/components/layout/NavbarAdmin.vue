@@ -7,11 +7,14 @@
 
     <div class="search-wrapper">
       <input
+        v-model="searchQuery"
         type="text"
         class="search-input"
         placeholder="Cari barang di katalog admin..."
+        @keyup.enter="submitSearch"
       />
     </div>
+
 
     <nav class="topbar-right">
       <!-- Link ke dashboard admin -->
@@ -39,6 +42,16 @@ export default {
     logout() {
       localStorage.removeItem('user')
       this.$router.push('/login')
+    },
+    
+    submitSearch() {
+      const q = this.searchQuery && this.searchQuery.trim()
+      if (!q) return
+
+      this.$router.push({
+        name: 'admin-product-list',
+        query: { q },
+      })
     },
   },
 }

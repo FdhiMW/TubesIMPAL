@@ -1,7 +1,5 @@
 <template>
   <div class="page">
-
-
     <div class="content">
       <div class="left">
         <div class="brand">

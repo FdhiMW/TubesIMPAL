@@ -17,7 +17,6 @@ public class Produk {
     @JoinColumn(name = "id_kategori")
     private Kategori kategori;
 
-    // kalau mau multi-seller, ini penjualnya
     @ManyToOne
     @JoinColumn(name = "id_penjual")
     private User penjual;
@@ -33,6 +32,9 @@ public class Produk {
 
     @Column(name = "stok", nullable = false)
     private Integer stok;
+
+    @Column(name = "barang_terjual")
+    private Integer barangTerjual = 0;
 
     @Column(name = "kondisi", length = 20)
     private String kondisi; // misal: bekas, like new
@@ -118,6 +120,14 @@ public class Produk {
     public void setStok(Integer stok) {
         this.stok = stok;
     }
+
+    public Integer getBarangTerjual() {
+        return barangTerjual;
+    }
+    
+    public void setBarangTerjual(Integer barangTerjual) {
+        this.barangTerjual = barangTerjual;
+    }    
 
     public String getKondisi() {
         return kondisi;

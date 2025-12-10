@@ -108,8 +108,15 @@ public class PesananService {
             totalBarang = totalBarang.add(subtotal);
             itemList.add(item);
 
-            // kurangi stok produk
             produk.setStok(produk.getStok() - itemReq.getJumlah());
+
+            Integer terjual = produk.getBarangTerjual();
+            if (terjual == null) {
+                terjual = 0;
+            }
+            produk.setBarangTerjual(terjual + itemReq.getJumlah());
+
+            // produkRepository.save(produk);
         }
 
         pesanan.setTotalBarang(totalBarang);
@@ -130,6 +137,7 @@ public class PesananService {
 
         return resp;
     }
+
 
     @Transactional(readOnly = true)
     public List<PesananDtos.PesananResponse> getPesananForAdmin(String kodePesanan) {

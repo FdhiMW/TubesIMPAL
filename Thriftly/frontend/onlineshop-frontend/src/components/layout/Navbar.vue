@@ -7,9 +7,11 @@
 
     <div class="search-wrapper" v-if="showSearch">
       <input
+        v-model="searchQuery"
         type="text"
         class="search-input"
         placeholder="Cari pakaian bekas berkualitas..."
+        @keyup.enter="submitSearch"
       />
     </div>
 
@@ -48,12 +50,13 @@ export default {
   props: {
     showSearch: {
       type: Boolean,
-      default: true, // bisa di-off per halaman nanti jika perlu
+      default: true,
     },
   },
   data() {
     return {
       showProfileMenu: false,
+      searchQuery: '',
     }
   },
   methods: {
@@ -67,6 +70,15 @@ export default {
     },
     handleClickOutside() {
       this.showProfileMenu = false
+    },
+    submitSearch() {
+      const q = this.searchQuery && this.searchQuery.trim()
+      if (!q) return
+
+      this.$router.push({
+        name: 'product-search',
+        query: { q },
+      })
     },
   },
   mounted() {
