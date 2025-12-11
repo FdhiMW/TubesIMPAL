@@ -15,7 +15,6 @@
       />
     </div>
 
-
     <nav class="topbar-right">
       <!-- Link ke dashboard admin -->
       <router-link to="/admin" class="topbar-link">
@@ -38,12 +37,20 @@
 <script>
 export default {
   name: 'NavbarAdmin',
+
+  // [DITAMBAHKAN] supaya v-model="searchQuery" tidak error
+  data() {
+    return {
+      searchQuery: '',
+    }
+  },
+
   methods: {
     logout() {
       localStorage.removeItem('user')
       this.$router.push('/login')
     },
-    
+
     submitSearch() {
       const q = this.searchQuery && this.searchQuery.trim()
       if (!q) return
@@ -117,7 +124,6 @@ export default {
   text-decoration: underline;
 }
 
-/* Tombol logout */
 .logout-btn {
   border-radius: 999px;
   border: none;

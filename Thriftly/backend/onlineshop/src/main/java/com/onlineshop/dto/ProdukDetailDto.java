@@ -15,53 +15,11 @@ public class ProdukDetailDto {
     private String merek;
     private String jenisKelamin;
     private String imageUrl;
-    private Integer barangTerjual;
+    private Long barangTerjual;
 
-    // === CONSTRUCTOR lama (tanpa barangTerjual) – supaya kode existing tetap jalan
-    public ProdukDetailDto(Long idProduk,
-                           String namaProduk,
-                           String deskripsi,
-                           BigDecimal harga,
-                           Integer stok,
-                           String kondisi,
-                           String ukuran,
-                           String warna,
-                           String merek,
-                           String jenisKelamin,
-                           String imageUrl) {
-        this(idProduk, namaProduk, deskripsi, harga, stok,
-             kondisi, ukuran, warna, merek, jenisKelamin,
-             imageUrl, 0); // default barangTerjual = 0
+    public ProdukDetailDto() {
     }
 
-    // === CONSTRUCTOR baru (dengan barangTerjual) – kalau nanti mau dipakai
-    public ProdukDetailDto(Long idProduk,
-                           String namaProduk,
-                           String deskripsi,
-                           BigDecimal harga,
-                           Integer stok,
-                           String kondisi,
-                           String ukuran,
-                           String warna,
-                           String merek,
-                           String jenisKelamin,
-                           String imageUrl,
-                           Integer barangTerjual) {
-        this.idProduk = idProduk;
-        this.namaProduk = namaProduk;
-        this.deskripsi = deskripsi;
-        this.harga = harga;
-        this.stok = stok;
-        this.kondisi = kondisi;
-        this.ukuran = ukuran;
-        this.warna = warna;
-        this.merek = merek;
-        this.jenisKelamin = jenisKelamin;
-        this.imageUrl = imageUrl;
-        this.barangTerjual = barangTerjual;
-    }
-
-    // === getter & setter ===
     public Long getIdProduk() {
         return idProduk;
     }
@@ -150,11 +108,11 @@ public class ProdukDetailDto {
         this.imageUrl = imageUrl;
     }
 
-    public Integer getBarangTerjual() {
+    public Long getBarangTerjual() {
         return barangTerjual;
     }
 
-    public void setBarangTerjual(Integer barangTerjual) {
+    public void setBarangTerjual(Long barangTerjual) {
         this.barangTerjual = barangTerjual;
     }
 }

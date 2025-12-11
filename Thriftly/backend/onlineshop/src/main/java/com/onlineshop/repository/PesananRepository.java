@@ -12,4 +12,10 @@ public interface PesananRepository extends JpaRepository<Pesanan, Long> {
 
     // untuk admin cari berdasarkan kode_pesanan (nomor pesanan)
     List<Pesanan> findByKodePesananContainingIgnoreCaseOrderByTanggalPesananDesc(String kodePesanan);
+
+    // ambil semua pesanan diurutkan dari yang terbaru (dipakai dashboard admin)
+    List<Pesanan> findByOrderByTanggalPesananDesc();
+
+    // kalau butuh cuma top 5 pesanan terbaru
+    List<Pesanan> findTop5ByOrderByTanggalPesananDesc();
 }

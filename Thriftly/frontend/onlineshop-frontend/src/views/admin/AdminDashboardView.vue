@@ -1,7 +1,5 @@
 <template>
   <div class="admin-page">
-    <!-- NAVBAR ADMIN -->
-
     <main class="page-content">
       <!-- QUICK ACTIONS -->
       <section class="quick-actions">
@@ -9,10 +7,12 @@
           <h3>Cari Barang</h3>
           <p>Telusuri dan filter stok produk.</p>
         </div>
-        <div class="qa-card qa-manage">
+
+        <div class="qa-card qa-manage" @click="goToCreateProduct">
           <h3>Tambah / Hapus Barang</h3>
           <p>Kelola katalog dengan cepat.</p>
         </div>
+
         <div class="qa-card qa-orders" @click="goToOrders">
           <h3>Lihat Pesanan</h3>
           <p>Pantau status pesanan terbaru.</p>
@@ -46,17 +46,23 @@
             <h2>Kelola Barang</h2>
             <div class="inventory-actions">
               <button class="ghost-btn">Import</button>
-              <button class="primary-btn">Tambah Barang</button>
+              <button class="primary-btn" @click="goToCreateProduct">
+                Tambah Barang
+              </button>
             </div>
           </header>
 
           <div class="inventory-search">
             <input
+              v-model="searchKeyword"
+              @keyup.enter="loadInventory"
               type="text"
               class="search-input"
               placeholder="Nama barang, SKU, atau kategori..."
             />
-            <button class="round-btn">Cari</button>
+            <button class="round-btn" @click="loadInventory">
+              Cari
+            </button>
           </div>
 
           <div class="inventory-table-wrapper">
@@ -83,9 +89,28 @@
                     </span>
                   </td>
                   <td>
-                    <button class="link-small">Edit</button>
+                    <button
+                      class="link-small"
+                      @click="editProduct(item.id)"
+                    >
+                      Edit
+                    </button>
                     <span class="divider">|</span>
-                    <button class="link-small danger">Hapus</button>
+                    <button
+                      class="link-small danger"
+                      :disabled="deletingId === item.id"
+                      @click="confirmDelete(item.id)"
+                    >
+                      {{ deletingId === item.id ? 'Menghapus...' : 'Hapus' }}
+                    </button>
+                  </td>
+                </tr>
+                <tr v-if="!loading && inventory.length === 0">
+                  <td
+                    colspan="6"
+                    style="text-align:center; font-size:12px; color:#9ca3af;"
+                  >
+                    Tidak ada produk yang ditemukan.
                   </td>
                 </tr>
               </tbody>
@@ -135,6 +160,7 @@
 
 <script>
 import { fetchAdminOrders } from '@/api/pesananApi'
+import { searchProduk, deleteProduk } from '@/api/produkApi'
 import NavbarAdmin from '@/components/layout/NavbarAdmin.vue'
 
 export default {
@@ -142,6 +168,12 @@ export default {
   components: { NavbarAdmin },
   data() {
     return {
+      // kontrol pencarian & status
+      searchKeyword: '',
+      loading: false,
+      deletingId: null,
+
+      // inventory akan diisi dari backend
       inventory: [
         {
           id: 1,
@@ -176,7 +208,7 @@ export default {
   },
   methods: {
     formatPrice(value) {
-      return value.toLocaleString('id-ID')
+      return Number(value || 0).toLocaleString('id-ID')
     },
 
     goToOrders() {
@@ -186,9 +218,65 @@ export default {
     },
 
     goToAdminProductList() {
-      // nama route sama dengan yang kita pakai di router.js
       this.$router.push({ name: 'admin-product-list' })
     },
+
+    goToCreateProduct() {
+      this.$router.push({ name: 'admin-product-create' })
+    },
+
+    // ============= KELOLA BARANG (DINAMIS) =============
+    async loadInventory() {
+      this.loading = true
+      try {
+        const keyword = this.searchKeyword && this.searchKeyword.trim()
+        const res = await searchProduk(keyword || null, null)
+        const list = Array.isArray(res.data) ? res.data : []
+
+        this.inventory = list.map((p) => {
+          const stok = p.stok || 0
+          const statusAktif = stok > 0
+          return {
+            id: p.idProduk,
+            name: p.namaProduk,
+            category: p.kategoriName || 'Elektronik', // sesuaikan jika DTO punya nama kategori
+            stock: stok,
+            price: p.harga || 0,
+            statusLabel: statusAktif ? 'Aktif' : 'Stok Habis',
+            statusClass: statusAktif ? 'status-active' : 'status-out',
+          }
+        })
+      } catch (err) {
+        console.error('Gagal memuat inventory admin', err)
+        this.inventory = []
+      } finally {
+        this.loading = false
+      }
+    },
+
+    editProduct(id) {
+      // buka form tambah produk dalam mode edit
+      this.$router.push({
+        name: 'admin-product-create',
+        query: { id },
+      })
+    },
+
+    async confirmDelete(id) {
+      if (!window.confirm('Yakin ingin menghapus produk ini?')) return
+
+      this.deletingId = id
+      try {
+        await deleteProduk(id)
+        this.inventory = this.inventory.filter((p) => p.id !== id)
+      } catch (err) {
+        console.error('Gagal menghapus produk', err)
+        alert('Gagal menghapus produk, cek console.')
+      } finally {
+        this.deletingId = null
+      }
+    },
+    // ===================================================
 
     mapStatusToLabel(status) {
       const map = {
@@ -232,11 +320,13 @@ export default {
   },
   mounted() {
     this.loadRecentOrders()
+    this.loadInventory() // load produk dari backend saat dashboard dibuka
   },
 }
 </script>
 
 <style scoped>
+/* semua style persis seperti yang kamu kirim, tidak diubah */
 .admin-page {
   min-height: 100vh;
   background: #f5f7fb;

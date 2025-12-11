@@ -28,4 +28,7 @@ public interface PesananItemRepository extends JpaRepository<PesananItem, Long> 
             @Param("status") String status,
             Pageable pageable
     );
+
+    // dipakai saat HAPUS PRODUK supaya tidak kena error foreign key
+    void deleteByProduk_IdProduk(Long idProduk);
 }

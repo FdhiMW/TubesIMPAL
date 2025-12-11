@@ -18,6 +18,7 @@ import CheckoutView from './views/CheckoutView.vue'
 import AdminDashboardView from './views/admin/AdminDashboardView.vue'
 import AdminOrderListView from './views/admin/AdminOrderListView.vue'
 import AdminProductListView from './views/admin/AdminProductListView.vue'
+import AdminProductFormView from './views/admin/AdminProductFormView.vue'
 
 Vue.use(Router)
 
@@ -99,6 +100,13 @@ const router = new Router({
       path: '/admin/produk',
       name: 'admin-product-list',
       component: AdminProductListView,
+      meta: { requiresAuth: true, adminOnly: true },
+    },
+    
+    {
+      path: '/admin/produk/tambah',
+      name: 'admin-product-create',
+      component: AdminProductFormView,
       meta: { requiresAuth: true, adminOnly: true },
     },
 
