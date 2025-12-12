@@ -37,4 +37,19 @@ public class PesananController {
     ) {
         return pesananService.updateStatusPesanan(idPesanan, request.getStatusPesanan());
     }
+
+    @GetMapping("/user/{idUser}/track")
+    public List<PesananDtos.TrackItemResponse> getTrackingUser(
+            @PathVariable("idUser") Long idUser
+    ) {
+        return pesananService.getTrackingForUser(idUser);
+    }
+
+    @PatchMapping("/user/{idUser}/{idPesanan}/confirm")
+    public void confirmPesananSelesai(
+            @PathVariable("idUser") Long idUser,
+            @PathVariable("idPesanan") Long idPesanan
+    ) {
+        pesananService.confirmPesananSelesai(idUser, idPesanan);
+    }
 }

@@ -202,6 +202,77 @@ public class PesananService {
         return resp;
     }
 
+    @Transactional(readOnly = true)
+    public List<PesananDtos.TrackItemResponse> getTrackingForUser(Long idUser) {
+        if (idUser == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "idUser wajib diisi");
+        }
+
+        // validasi user ada
+        userRepository.findById(idUser)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User tidak ditemukan"));
+
+        List<Pesanan> pesananList = pesananRepository.findByUser_IdUserOrderByTanggalPesananDesc(idUser);
+
+        List<PesananDtos.TrackItemResponse> result = new ArrayList<>();
+        for (Pesanan p : pesananList) {
+            if (p.getItems() == null) continue;
+            for (PesananItem it : p.getItems()) {
+                PesananDtos.TrackItemResponse row = new PesananDtos.TrackItemResponse();
+                row.setIdPesanan(p.getIdPesanan());
+                row.setKodePesanan(p.getKodePesanan());
+                row.setStatusPesanan(p.getStatusPesanan());
+
+                if (it.getProduk() != null) {
+                    Produk pr = it.getProduk();
+                    row.setIdProduk(pr.getIdProduk());
+                    row.setNamaProduk(pr.getNamaProduk());
+                    row.setUkuran(pr.getUkuran());
+                    row.setHarga(pr.getHarga());
+                    row.setImageUrl(pr.getImageUrl());
+                    if (pr.getKategori() != null) {
+                        row.setJenis(pr.getKategori().getNamaKategori());
+                    }
+                } else {
+                    // fallback kalau relasi produk null
+                    row.setNamaProduk(it.getNamaProduk());
+                    row.setHarga(it.getHargaSatuan());
+                }
+
+                result.add(row);
+            }
+        }
+        return result;
+    }
+
+    @Transactional
+    public void confirmPesananSelesai(Long idUser, Long idPesanan) {
+        if (idUser == null || idPesanan == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "idUser dan idPesanan wajib diisi");
+        }
+
+        Pesanan pesanan = pesananRepository.findById(idPesanan)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pesanan tidak ditemukan"));
+
+        if (pesanan.getUser() == null || pesanan.getUser().getIdUser() == null
+                || !pesanan.getUser().getIdUser().equals(idUser)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Pesanan bukan milik user ini");
+        }
+
+        String status = pesanan.getStatusPesanan() != null ? pesanan.getStatusPesanan().trim().toUpperCase() : "";
+        if (!status.equals("DALAM_PERJALANAN")) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Konfirmasi hanya bisa dilakukan ketika status pesanan DALAM_PERJALANAN"
+            );
+        }
+
+        pesanan.setStatusPesanan("SELESAI");
+        pesanan.setTanggalDiterima(LocalDateTime.now());
+        pesanan.setSudahDikonfirmasi(true);
+        pesananRepository.save(pesanan);
+    }
+
     private String generateKodePesanan() {
         // contoh sederhana: ORD-<4 karakter random>
         String random = UUID.randomUUID().toString().substring(0, 8).toUpperCase();

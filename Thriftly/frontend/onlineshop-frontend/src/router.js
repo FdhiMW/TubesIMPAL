@@ -14,6 +14,9 @@ import ProductListView from './views/ProductListView.vue'
 // PEMBAYARAN
 import CheckoutView from './views/CheckoutView.vue'
 
+//LACAK PAKET
+import TrackPackageView from './views/TrackPackageView.vue'
+
 // ADMIN
 import AdminDashboardView from './views/admin/AdminDashboardView.vue'
 import AdminOrderListView from './views/admin/AdminOrderListView.vue'
@@ -78,6 +81,14 @@ const router = new Router({
       component: RegisterView,
       meta: { guestOnly: true },
     },
+
+    //LACAK PAKET
+    {
+      path: '/lacak-paket',
+      name: 'TrackPackage',
+      component: TrackPackageView,
+      meta: { requiresAuth: true },
+    },    
 
     // ADMIN DASHBOARD
     {

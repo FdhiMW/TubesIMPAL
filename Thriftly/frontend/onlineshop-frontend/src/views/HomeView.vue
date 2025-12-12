@@ -11,19 +11,6 @@
         </div>
       </section>
 
-      <!-- CATEGORY CHIPS -->
-      <section class="category-chips">
-        <button
-          v-for="chip in chips"
-          :key="chip"
-          class="chip"
-          @click="goToCategoryByName(chip)"
-        >
-          <span class="chip-circle"></span>
-          <span class="chip-label">{{ chip }}</span>
-        </button>
-      </section>
-
       <!-- KATEGORI PAKAIAN -->
       <section class="section-block">
         <div class="section-header">

@@ -103,5 +103,45 @@ public class PesananDtos {
         public void setStatusPesanan(String statusPesanan) {
             this.statusPesanan = statusPesanan;
         }
-    }    
+    }
+
+    public static class TrackItemResponse {
+        private Long idPesanan;
+        private String kodePesanan;
+        private String statusPesanan;
+
+        private Long idProduk;
+        private String namaProduk;
+        private String ukuran;
+        private String jenis; // nama kategori
+        private java.math.BigDecimal harga;
+        private String imageUrl;
+
+        public Long getIdPesanan() { return idPesanan; }
+        public void setIdPesanan(Long idPesanan) { this.idPesanan = idPesanan; }
+
+        public String getKodePesanan() { return kodePesanan; }
+        public void setKodePesanan(String kodePesanan) { this.kodePesanan = kodePesanan; }
+
+        public String getStatusPesanan() { return statusPesanan; }
+        public void setStatusPesanan(String statusPesanan) { this.statusPesanan = statusPesanan; }
+
+        public Long getIdProduk() { return idProduk; }
+        public void setIdProduk(Long idProduk) { this.idProduk = idProduk; }
+
+        public String getNamaProduk() { return namaProduk; }
+        public void setNamaProduk(String namaProduk) { this.namaProduk = namaProduk; }
+
+        public String getUkuran() { return ukuran; }
+        public void setUkuran(String ukuran) { this.ukuran = ukuran; }
+
+        public String getJenis() { return jenis; }
+        public void setJenis(String jenis) { this.jenis = jenis; }
+
+        public java.math.BigDecimal getHarga() { return harga; }
+        public void setHarga(java.math.BigDecimal harga) { this.harga = harga; }
+
+        public String getImageUrl() { return imageUrl; }
+        public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    }
 }
