@@ -8,10 +8,12 @@
           <p>Telusuri dan filter stok produk.</p>
         </div>
 
-        <div class="qa-card qa-manage" @click="goToCreateProduct">
+        <!-- ====== [SISIPKAN: HIDE CARD TAMBAH/HAPUS DI DASHBOARD (STRUKTUR TETAP ADA)] ====== -->
+        <div class="qa-card qa-manage" @click="goToCreateProduct" v-if="false">
           <h3>Tambah / Hapus Barang</h3>
           <p>Kelola katalog dengan cepat.</p>
         </div>
+        <!-- ====== [AKHIR SISIPAN] ====== -->
 
         <div class="qa-card qa-orders" @click="goToOrders">
           <h3>Lihat Pesanan</h3>
@@ -23,28 +25,20 @@
       <section class="summary-row">
         <div class="summary-card">
           <p class="summary-label">Total Barang Aktif</p>
-
-          <!-- ====== [SISIPKAN: GANTI ANGKA STATIK] ====== -->
           <p class="summary-value">{{ formatPrice(totalBarangAktif) }}</p>
-          <!-- ====== [AKHIR SISIPAN] ====== -->
-
           <p class="summary-note">Produk yang tampil di beranda pengguna</p>
         </div>
 
         <div class="summary-card">
-          <!-- ====== [SISIPKAN: UBAH JADI PESANAN AKTIF + DINAMIS] ====== -->
           <p class="summary-label">Pesanan Aktif</p>
           <p class="summary-value">{{ formatPrice(totalPesananAktif) }}</p>
           <p class="summary-note">Pesanan berstatus Dikemas / Dalam Perjalanan</p>
-          <!-- ====== [AKHIR SISIPAN] ====== -->
         </div>
 
         <div class="summary-card">
-          <!-- ====== [SISIPKAN: GANTI STOK HAMPIR HABIS -> PESANAN SELESAI] ====== -->
           <p class="summary-label">Pesanan Selesai</p>
           <p class="summary-value">{{ formatPrice(totalPesananSelesai) }}</p>
           <p class="summary-note">Pesanan berstatus Selesai</p>
-          <!-- ====== [AKHIR SISIPAN] ====== -->
         </div>
       </section>
 
@@ -56,9 +50,12 @@
             <h2>Kelola Barang</h2>
             <div class="inventory-actions">
               <button class="ghost-btn">Import</button>
-              <button class="primary-btn" @click="goToCreateProduct">
+
+              <!-- ====== [SISIPKAN: HIDE BUTTON TAMBAH BARANG DI DASHBOARD] ====== -->
+              <button class="primary-btn" @click="goToCreateProduct" v-if="false">
                 Tambah Barang
               </button>
+              <!-- ====== [AKHIR SISIPAN] ====== -->
             </div>
           </header>
 
@@ -113,10 +110,7 @@
                   </td>
                 </tr>
                 <tr v-if="!loading && inventory.length === 0">
-                  <td
-                    colspan="6"
-                    style="text-align:center; font-size:12px; color:#9ca3af;"
-                  >
+                  <td colspan="6" style="text-align:center; font-size:12px; color:#9ca3af;">
                     Tidak ada produk yang ditemukan.
                   </td>
                 </tr>
@@ -161,20 +155,12 @@
 
 <script>
 import { fetchAdminOrders } from '@/api/pesananApi'
-
-// ====== [SISIPKAN: TAMBAH countProdukAktif TANPA HAPUS YANG LAIN] ======
 import { searchProduk, deleteProduk, countProdukAktif } from '@/api/produkApi'
-// ====== [AKHIR SISIPAN] ======
-
-// ====== [SISIPKAN: IMPORT BARU PESANAN AKTIF] ======
 import {
   countPesananAktif,
   countPesananAktifNative,
-  // ====== [SISIPKAN: IMPORT PESANAN SELESAI] ======
   countPesananSelesai,
-  // ====== [AKHIR SISIPAN] ======
 } from '@/api/adminDashboardApi'
-// ====== [AKHIR SISIPAN] ======
 
 import NavbarAdmin from '@/components/layout/NavbarAdmin.vue'
 
@@ -183,24 +169,14 @@ export default {
   components: { NavbarAdmin },
   data() {
     return {
-      // ====== [SISIPKAN: STATE TOTAL BARANG AKTIF] ======
       totalBarangAktif: 0,
-      // ====== [AKHIR SISIPAN] ======
-
-      // ====== [SISIPKAN: STATE PESANAN AKTIF] ======
       totalPesananAktif: 0,
-      // ====== [AKHIR SISIPAN] ======
-
-      // ====== [SISIPKAN: STATE PESANAN SELESAI] ======
       totalPesananSelesai: 0,
-      // ====== [AKHIR SISIPAN] ======
 
-      // kontrol pencarian & status
       searchKeyword: '',
       loading: false,
       deletingId: null,
 
-      // inventory akan diisi dari backend
       inventory: [
         {
           id: 1,
@@ -208,24 +184,6 @@ export default {
           category: 'Elektronik',
           stock: 32,
           price: 450000,
-          statusLabel: 'Aktif',
-          statusClass: 'status-active',
-        },
-        {
-          id: 2,
-          name: 'Smartphone X Lite',
-          category: 'Elektronik',
-          stock: 0,
-          price: 2999000,
-          statusLabel: 'Stok Habis',
-          statusClass: 'status-out',
-        },
-        {
-          id: 3,
-          name: 'Keyboard Mekanik RGB',
-          category: 'Elektronik',
-          stock: 11,
-          price: 725000,
           statusLabel: 'Aktif',
           statusClass: 'status-active',
         },
@@ -238,7 +196,6 @@ export default {
       return Number(value || 0).toLocaleString('id-ID')
     },
 
-    // ====== [SISIPKAN: LOAD TOTAL BARANG AKTIF DARI DB] ======
     async loadTotalBarangAktif() {
       try {
         const res = await countProdukAktif()
@@ -248,9 +205,7 @@ export default {
         this.totalBarangAktif = 0
       }
     },
-    // ====== [AKHIR SISIPAN] ======
 
-    // ====== [SISIPKAN: LOAD TOTAL PESANAN AKTIF DARI DB] ======
     async loadTotalPesananAktif() {
       try {
         let val = 0
@@ -275,11 +230,10 @@ export default {
           try {
             const res3 = await fetchAdminOrders()
             const list = Array.isArray(res3.data) ? res3.data : []
-            const aktif = list.filter((p) => {
+            val = list.filter((p) => {
               const s = (p.statusPesanan || '').toString().trim().toUpperCase()
               return s === 'DIKEMAS' || s === 'DALAM_PERJALANAN'
             }).length
-            val = aktif
           } catch (e3) {
             console.error('[DASHBOARD] hitung manual pesanan aktif gagal:', e3)
           }
@@ -291,14 +245,11 @@ export default {
         this.totalPesananAktif = 0
       }
     },
-    // ====== [AKHIR SISIPAN] ======
 
-    // ====== [SISIPKAN: LOAD TOTAL PESANAN SELESAI] ======
     async loadTotalPesananSelesai() {
       try {
         let val = 0
 
-        // 1) coba endpoint khusus selesai
         try {
           const res = await countPesananSelesai()
           val = Number(res.data || 0)
@@ -306,16 +257,14 @@ export default {
           console.error('[DASHBOARD] countPesananSelesai gagal:', e1)
         }
 
-        // 2) fallback manual dari list pesanan admin
         if (val === 0) {
           try {
             const res2 = await fetchAdminOrders()
             const list = Array.isArray(res2.data) ? res2.data : []
-            const selesai = list.filter((p) => {
+            val = list.filter((p) => {
               const s = (p.statusPesanan || '').toString().trim().toUpperCase()
               return s === 'SELESAI'
             }).length
-            val = selesai
           } catch (e2) {
             console.error('[DASHBOARD] hitung manual pesanan selesai gagal:', e2)
           }
@@ -327,7 +276,6 @@ export default {
         this.totalPesananSelesai = 0
       }
     },
-    // ====== [AKHIR SISIPAN] ======
 
     goToOrders() {
       if (this.$route.path !== '/admin/pesanan') {
@@ -343,7 +291,6 @@ export default {
       this.$router.push({ name: 'admin-product-create' })
     },
 
-    // ============= KELOLA BARANG (DINAMIS) =============
     async loadInventory() {
       this.loading = true
       try {
@@ -393,7 +340,6 @@ export default {
         this.deletingId = null
       }
     },
-    // ===================================================
 
     mapStatusToLabel(status) {
       const map = {
@@ -438,337 +384,66 @@ export default {
   mounted() {
     this.loadRecentOrders()
     this.loadInventory()
-
-    // ====== [SISIPKAN: PANGGIL SAAT DASHBOARD DIBUKA] ======
     this.loadTotalBarangAktif()
-    // ====== [AKHIR SISIPAN] ======
-
-    // ====== [SISIPKAN: PANGGIL PESANAN AKTIF SAAT DASHBOARD DIBUKA] ======
     this.loadTotalPesananAktif()
-    // ====== [AKHIR SISIPAN] ======
-
-    // ====== [SISIPKAN: PANGGIL PESANAN SELESAI SAAT DASHBOARD DIBUKA] ======
     this.loadTotalPesananSelesai()
-    // ====== [AKHIR SISIPAN] ======
   },
 }
 </script>
 
 <style scoped>
-/* semua style persis seperti yang kamu kirim, tidak diubah */
-.admin-page {
-  min-height: 100vh;
-  background: #f5f7fb;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    sans-serif;
-  color: #222;
-}
-
-/* CONTENT */
-.page-content {
-  padding: 20px 32px 32px;
-}
-
-/* Quick actions */
-.quick-actions {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  margin-bottom: 18px;
-}
-
-.qa-card {
-  border-radius: 20px;
-  padding: 16px 18px;
-  color: #fff;
-  font-size: 14px;
-  cursor: pointer;
-}
-
-.qa-card h3 {
-  margin: 0 0 4px;
-  font-size: 15px;
-}
-
-.qa-card p {
-  margin: 0;
-  font-size: 12px;
-}
-
-.qa-search {
-  background: linear-gradient(135deg, #ff7750, #ffb48b);
-}
-
-.qa-manage {
-  background: linear-gradient(135deg, #ff5a3c, #ff9f1c);
-}
-
-.qa-orders {
-  background: linear-gradient(135deg, #ff8553, #ffc16d);
-}
-
-/* Summary */
-.summary-row {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  margin-bottom: 18px;
-}
-
-.summary-card {
-  background: #fff;
-  border-radius: 18px;
-  padding: 14px 16px;
-}
-
-.summary-label {
-  margin: 0 0 6px;
-  font-size: 12px;
-  color: #777;
-}
-
-.summary-value {
-  margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-}
-
-.summary-note {
-  margin: 4px 0 0;
-  font-size: 11px;
-  color: #8a8a8a;
-}
-
-/* Main grid */
-.main-grid {
-  display: grid;
-  grid-template-columns: 2.2fr 1.2fr;
-  gap: 16px;
-}
-
-/* Inventory */
-.inventory-card {
-  background: #fff;
-  border-radius: 20px;
-  padding: 16px 18px 18px;
-}
-
-.inventory-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.inventory-header h2 {
-  margin: 0;
-  font-size: 16px;
-}
-
-.inventory-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.inventory-search {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.search-input {
-  flex: 1;
-  border-radius: 999px;
-  border: 1px solid #d3d7e6;
-  padding: 8px 14px;
-  font-size: 13px;
-  outline: none;
-}
-
-.round-btn {
-  border-radius: 999px;
-  border: none;
-  background: #ff6b3d;
-  color: #fff;
-  padding: 0 16px;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-/* Buttons */
-.ghost-btn {
-  border-radius: 999px;
-  border: 1px solid #d3d7e6;
-  background: #fff;
-  padding: 6px 16px;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.ghost-btn.small {
-  padding: 4px 12px;
-}
-
-.primary-btn {
-  border-radius: 999px;
-  border: none;
-  background: linear-gradient(135deg, #ff5a3c, #ff9f1c);
-  padding: 7px 18px;
-  color: #fff;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-/* Table */
-.inventory-table-wrapper {
-  overflow-x: auto;
-}
-
-.inventory-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-}
-
-.inventory-table th,
-.inventory-table td {
-  padding: 8px 6px;
-  text-align: left;
-  border-bottom: 1px solid #eef0f7;
-}
-
-.inventory-table th {
-  font-weight: 600;
-  color: #777;
-}
-
-.status-pill {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 11px;
-}
-
-.status-active {
-  background: #e6f8ec;
-  color: #18a357;
-}
-
-.status-out {
-  background: #ffe5e5;
-  color: #e63939;
-}
-
-.link-small {
-  border: none;
-  background: none;
-  font-size: 11px;
-  color: #ff6b3d;
-  cursor: pointer;
-}
-
-.link-small.danger {
-  color: #e63939;
-}
-
-.divider {
-  margin: 0 4px;
-  color: #ccc;
-}
-
-/* Orders */
-.orders-card {
-  background: #fff;
-  border-radius: 20px;
-  padding: 16px 18px 18px;
-}
-
-.orders-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.orders-header h2 {
-  margin: 0;
-  font-size: 16px;
-}
-
-.section-subtitle {
-  margin: 2px 0 0;
-  font-size: 11px;
-  color: #777;
-}
-
-.orders-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.order-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #f7f8fc;
-  border-radius: 14px;
-  padding: 8px 10px;
-}
-
-.order-main {
-  font-size: 12px;
-}
-
-.order-code {
-  margin: 0 0 2px;
-  font-weight: 600;
-}
-
-.order-info {
-  margin: 0;
-  color: #555;
-}
-
-.order-meta {
-  margin: 0;
-  font-size: 11px;
-  color: #888;
-}
-
-.order-status {
-  font-size: 11px;
-  border-radius: 999px;
-  padding: 4px 10px;
-}
-
-.status-pending {
-  background: #fff3d6;
-  color: #e6a800;
-}
-
-.status-processing {
-  background: #e9f7ff;
-  color: #1e88e5;
-}
-
-.status-done {
-  background: #e6f8ec;
-  color: #18a357;
-}
-
-/* Responsive */
+/* STYLE TETAP: tidak diubah */
+.admin-page { min-height: 100vh; background: #f5f7fb; font-family: system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; color:#222; }
+.page-content { padding: 20px 32px 32px; }
+.quick-actions { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:16px; margin-bottom:18px; }
+.qa-card { border-radius:20px; padding:16px 18px; color:#fff; font-size:14px; cursor:pointer; }
+.qa-card h3 { margin:0 0 4px; font-size:15px; }
+.qa-card p { margin:0; font-size:12px; }
+.qa-search { background: linear-gradient(135deg,#ff7750,#ffb48b); }
+.qa-manage { background: linear-gradient(135deg,#ff5a3c,#ff9f1c); }
+.qa-orders { background: linear-gradient(135deg,#ff8553,#ffc16d); }
+.summary-row { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:16px; margin-bottom:18px; }
+.summary-card { background:#fff; border-radius:18px; padding:14px 16px; }
+.summary-label { margin:0 0 6px; font-size:12px; color:#777; }
+.summary-value { margin:0; font-size:24px; font-weight:700; }
+.summary-note { margin:4px 0 0; font-size:11px; color:#8a8a8a; }
+.main-grid { display:grid; grid-template-columns: 2.2fr 1.2fr; gap:16px; }
+.inventory-card { background:#fff; border-radius:20px; padding:16px 18px 18px; }
+.inventory-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.inventory-header h2 { margin:0; font-size:16px; }
+.inventory-actions { display:flex; gap:8px; }
+.inventory-search { display:flex; gap:8px; margin-bottom:12px; }
+.search-input { flex:1; border-radius:999px; border:1px solid #d3d7e6; padding:8px 14px; font-size:13px; outline:none; }
+.round-btn { border-radius:999px; border:none; background:#ff6b3d; color:#fff; padding:0 16px; font-size:13px; cursor:pointer; }
+.ghost-btn { border-radius:999px; border:1px solid #d3d7e6; background:#fff; padding:6px 16px; font-size:12px; cursor:pointer; }
+.ghost-btn.small { padding:4px 12px; }
+.primary-btn { border-radius:999px; border:none; background:linear-gradient(135deg,#ff5a3c,#ff9f1c); padding:7px 18px; color:#fff; font-size:12px; cursor:pointer; }
+.inventory-table-wrapper { overflow-x:auto; }
+.inventory-table { width:100%; border-collapse:collapse; font-size:12px; }
+.inventory-table th, .inventory-table td { padding:8px 6px; text-align:left; border-bottom:1px solid #eef0f7; }
+.inventory-table th { font-weight:600; color:#777; }
+.status-pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; }
+.status-active { background:#e6f8ec; color:#18a357; }
+.status-out { background:#ffe5e5; color:#e63939; }
+.link-small { border:none; background:none; font-size:11px; color:#ff6b3d; cursor:pointer; }
+.link-small.danger { color:#e63939; }
+.divider { margin:0 4px; color:#ccc; }
+.orders-card { background:#fff; border-radius:20px; padding:16px 18px 18px; }
+.orders-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.orders-header h2 { margin:0; font-size:16px; }
+.section-subtitle { margin:2px 0 0; font-size:11px; color:#777; }
+.orders-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+.order-item { display:flex; justify-content:space-between; align-items:center; background:#f7f8fc; border-radius:14px; padding:8px 10px; }
+.order-main { font-size:12px; }
+.order-code { margin:0 0 2px; font-weight:600; }
+.order-info { margin:0; color:#555; }
+.order-meta { margin:0; font-size:11px; color:#888; }
+.order-status { font-size:11px; border-radius:999px; padding:4px 10px; }
+.status-pending { background:#fff3d6; color:#e6a800; }
+.status-processing { background:#e9f7ff; color:#1e88e5; }
+.status-done { background:#e6f8ec; color:#18a357; }
 @media (max-width: 1024px) {
-  .quick-actions,
-  .summary-row {
-    grid-template-columns: 1fr;
-  }
-
-  .main-grid {
-    grid-template-columns: 1fr;
-  }
+  .quick-actions, .summary-row { grid-template-columns: 1fr; }
+  .main-grid { grid-template-columns: 1fr; }
 }
 </style>

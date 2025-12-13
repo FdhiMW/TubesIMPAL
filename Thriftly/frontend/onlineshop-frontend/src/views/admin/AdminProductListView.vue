@@ -1,98 +1,111 @@
 <template>
   <div class="admin-page">
-
-
     <main class="page-content">
-      <header class="page-header">
-        <h1>Katalog Produk (Admin)</h1>
-        <p class="subtitle">
-          Ketik kata kunci pada search bar di atas untuk mencari produk.
-        </p>
-      </header>
+      <div class="header-row">
+        <div class="header-left">
+          <h1 class="page-title">Katalog Produk (Admin)</h1>
+          <p class="page-subtitle">Ketik kata kunci pada search bar di atas untuk mencari produk.</p>
+        </div>
 
-      <section class="product-grid">
-        <article
-          v-for="p in products"
-          :key="p.idProduk"
-          class="product-card"
-        >
+        <!-- ====== [SISIPKAN: BUTTON TAMBAH BARANG DI POJOK KANAN ATAS] ====== -->
+        <button class="primary-btn" @click="goToCreateProduct">
+          + Tambah Barang
+        </button>
+        <!-- ====== [AKHIR SISIPAN] ====== -->
+      </div>
+
+      <section class="grid">
+        <div v-for="p in products" :key="p.idProduk" class="card">
+          <!-- ====== [SISIPKAN: BUTTON MINUS UNTUK HAPUS PRODUK DI TIAP KOTAK] ====== -->
+          <button
+            class="minus-btn"
+            :disabled="deletingId === p.idProduk"
+            @click.stop="confirmDeleteCard(p.idProduk, p.namaProduk)"
+            title="Hapus produk"
+          >
+            {{ deletingId === p.idProduk ? '…' : '−' }}
+          </button>
+          <!-- ====== [AKHIR SISIPAN] ====== -->
+
           <div class="thumb">
-            <!-- TANPA TEKS 'Tidak ada gambar' -->
             <img
               v-if="p.imageUrl"
               :src="p.imageUrl"
-              :alt="p.namaProduk"
+              alt="Foto produk"
+              class="thumb-img"
             />
-            <div v-else class="thumb-empty"></div>
           </div>
 
-          <div class="body">
+          <div class="card-body">
             <p class="name">{{ p.namaProduk }}</p>
-            <p class="meta">
-              {{ p.merek || '-' }} · Stok: {{ p.stok || 0 }}
-            </p>
+            <p class="meta">{{ (p.merek || '-') }} · Stok: {{ p.stok || 0 }}</p>
             <p class="price">Rp{{ formatPrice(p.harga) }}</p>
           </div>
-        </article>
+        </div>
 
-        <p v-if="!loading && products.length === 0" class="empty-text">
-          Tidak ada produk yang ditemukan.
-        </p>
+        <div v-if="!loading && products.length === 0" class="empty">
+          Tidak ada produk.
+        </div>
       </section>
     </main>
   </div>
 </template>
 
 <script>
-import NavbarAdmin from '@/components/layout/NavbarAdmin.vue'
-import { searchProduk } from '@/api/produkApi'
+import { searchProduk, deleteProduk } from '@/api/produkApi'
 
 export default {
   name: 'AdminProductListView',
-  components: { NavbarAdmin },
-
   data() {
     return {
       products: [],
       loading: false,
-      keyword: '',
+      deletingId: null,
     }
   },
-
-  created() {
-    this.syncFromRoute()
-  },
-
-  watch: {
-    '$route.query.q'() {
-      this.syncFromRoute()
-    },
-  },
-
   methods: {
-    syncFromRoute() {
-      this.keyword = this.$route.query.q || ''
-      this.loadProducts()
+    formatPrice(value) {
+      return Number(value || 0).toLocaleString('id-ID')
     },
+
+    // ====== [SISIPKAN: NAVIGASI KE FORM TAMBAH BARANG] ======
+    goToCreateProduct() {
+      this.$router.push({ name: 'admin-product-create' })
+    },
+    // ====== [AKHIR SISIPAN] ======
 
     async loadProducts() {
-      const q = this.keyword ? this.keyword.trim() : ''
       this.loading = true
       try {
-        const res = await searchProduk(q || null, null)
+        // katalog admin: ambil semua (tanpa keyword)
+        const res = await searchProduk(null, null)
         this.products = Array.isArray(res.data) ? res.data : []
-      } catch (err) {
-        console.error('Gagal memuat katalog produk admin', err)
+      } catch (e) {
+        console.error('Gagal memuat katalog admin', e)
         this.products = []
       } finally {
         this.loading = false
       }
     },
 
-    formatPrice(value) {
-      if (value == null) return '0'
-      return Number(value).toLocaleString('id-ID')
+    // ====== [SISIPKAN: HAPUS DARI CARD (BUTTON MINUS)] ======
+    async confirmDeleteCard(idProduk, namaProduk) {
+      if (!window.confirm(`Yakin ingin menghapus produk: ${namaProduk || idProduk}?`)) return
+      this.deletingId = idProduk
+      try {
+        await deleteProduk(idProduk)
+        this.products = this.products.filter((x) => x.idProduk !== idProduk)
+      } catch (e) {
+        console.error('Gagal menghapus produk (card)', e)
+        alert('Gagal menghapus produk, cek console.')
+      } finally {
+        this.deletingId = null
+      }
     },
+    // ====== [AKHIR SISIPAN] ======
+  },
+  mounted() {
+    this.loadProducts()
   },
 }
 </script>
@@ -101,85 +114,139 @@ export default {
 .admin-page {
   min-height: 100vh;
   background: #f5f7fb;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: #222;
 }
 
 .page-content {
-  padding: 24px 32px;
+  padding: 20px 32px 32px;
 }
 
-.page-header h1 {
+.header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.page-title {
   margin: 0;
-  font-size: 20px;
+  font-size: 18px;
+  font-weight: 700;
 }
 
-.subtitle {
-  margin: 4px 0 20px;
-  font-size: 13px;
+.page-subtitle {
+  margin: 4px 0 0;
+  font-size: 12px;
   color: #6b7280;
 }
 
-/* grid kartu produk */
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 16px;
+/* button style samakan dengan dashboard */
+.primary-btn {
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #ff5a3c, #ff9f1c);
+  padding: 8px 16px;
+  color: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
-.product-card {
-  background: #ffffff;
-  border-radius: 16px;
+.grid {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 14px;
+  align-items: start;
+}
+
+.card {
+  position: relative;
+  background: #fff;
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
-  display: flex;
-  flex-direction: column;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
 }
 
 .thumb {
-  height: 110px;
-  background: linear-gradient(135deg, #e5f0ff, #f3f4ff);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+  height: 86px;
+  background: linear-gradient(135deg, #eef3ff, #f6f8ff);
 }
 
-.thumb img {
+.thumb-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.thumb-empty {
-  width: 100%;
-  height: 100%;
-}
-
-.body {
-  padding: 10px 12px 12px;
+.card-body {
+  padding: 10px 10px 12px;
 }
 
 .name {
   margin: 0 0 4px;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .meta {
   margin: 0 0 6px;
-  font-size: 11px;
+  font-size: 10px;
   color: #6b7280;
 }
 
 .price {
   margin: 0;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 700;
   color: #2563eb;
 }
 
-.empty-text {
+/* ====== [PINDAH POSISI BUTTON MINUS KE LINGKARAN MERAH] ====== */
+.minus-btn {
+  position: absolute;
+
+  /* sebelumnya: top/right. sekarang: kanan bawah (area putih) */
+  top: auto;
+  right: 10px;
+  bottom: 12px;
+
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(230, 57, 57, 0.95);
+  color: #fff;
+  font-size: 16px;
+  line-height: 22px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  z-index: 3;
+}
+
+.minus-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+/* ====== [AKHIR PINDAH] ====== */
+
+.empty {
   grid-column: 1 / -1;
-  font-size: 13px;
   color: #9ca3af;
+  font-size: 12px;
+  text-align: center;
+  padding: 18px 0;
+}
+
+/* responsif biar tidak kepotong */
+@media (max-width: 1400px) {
+  .grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+@media (max-width: 1024px) {
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .header-row { flex-direction: column; align-items: stretch; }
 }
 </style>

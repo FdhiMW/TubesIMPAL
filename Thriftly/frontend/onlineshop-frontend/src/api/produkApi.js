@@ -27,11 +27,10 @@ export function deleteProduk(id) {
 // (opsional) ambil detail
 export function getProdukDetail(id) {
   return api.get(`/api/produk/${id}`);
-
 }
-  // ====== [SISIPKAN DI produkApi.js] ======
+
+// ====== [SISIPKAN DI produkApi.js] ======
 export function countProdukAktif() {
-  return api.get('/api/produk/count/aktif')
+  return api.get('/api/produk/count/aktif');
 }
 // ====== [AKHIR SISIPAN] ======
-

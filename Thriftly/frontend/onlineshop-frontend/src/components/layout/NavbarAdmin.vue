@@ -1,9 +1,11 @@
 <template>
   <header class="topbar">
-    <div class="topbar-left">
+    <!-- ====== [DISESUAIKAN: KLIK LOGO KEMBALI KE DASHBOARD] ====== -->
+    <div class="topbar-left brand-click" @click="goDashboard">
       <div class="logo-badge"></div>
       <span class="logo-text">KlikMall Admin</span>
     </div>
+    <!-- ====== [AKHIR PENYESUAIAN] ====== -->
 
     <div class="search-wrapper">
       <input
@@ -38,7 +40,6 @@
 export default {
   name: 'NavbarAdmin',
 
-  // [DITAMBAHKAN] supaya v-model="searchQuery" tidak error
   data() {
     return {
       searchQuery: '',
@@ -46,6 +47,14 @@ export default {
   },
 
   methods: {
+    // ====== [DITAMBAHKAN: KEMBALI KE DASHBOARD ADMIN] ======
+    goDashboard() {
+      if (this.$route.path !== '/admin') {
+        this.$router.push('/admin')
+      }
+    },
+    // ====== [AKHIR PENYESUAIAN] ======
+
     logout() {
       localStorage.removeItem('user')
       this.$router.push('/login')
@@ -80,6 +89,15 @@ export default {
   align-items: center;
   gap: 10px;
 }
+
+/* ====== [DITAMBAHKAN: INDIKASI BISA DIKLIK] ====== */
+.brand-click {
+  cursor: pointer;
+}
+.brand-click:hover {
+  opacity: 0.9;
+}
+/* ====== [AKHIR PENYESUAIAN] ====== */
 
 .logo-badge {
   width: 32px;
