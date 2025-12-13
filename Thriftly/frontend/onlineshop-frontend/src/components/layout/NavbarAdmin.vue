@@ -3,7 +3,7 @@
     <!-- ====== [DISESUAIKAN: KLIK LOGO KEMBALI KE DASHBOARD] ====== -->
     <div class="topbar-left brand-click" @click="goDashboard">
       <div class="logo-badge"></div>
-      <span class="logo-text">KlikMall Admin</span>
+      <span class="logo-text">Thriftly Admin</span>
     </div>
     <!-- ====== [AKHIR PENYESUAIAN] ====== -->
 

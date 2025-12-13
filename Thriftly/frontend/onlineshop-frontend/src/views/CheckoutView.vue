@@ -1,29 +1,5 @@
 <template>
   <div class="checkout-page">
-    <!-- HEADER -->
-    <header class="checkout-header">
-      <div class="header-left">
-        <div class="logo-box">
-          <div class="logo-icon">🛍️</div>
-          <div class="logo-text">KlikMall</div>
-        </div>
-      </div>
-
-      <div class="header-center">
-        <input
-          type="text"
-          class="search-input"
-          placeholder="Search ..."
-        />
-      </div>
-
-      <div class="header-right">
-        <div class="icon-box">📦</div>
-        <div class="icon-box">🛒</div>
-        <div class="icon-box">👤</div>
-      </div>
-    </header>
-
     <!-- KONTEN -->
     <main class="checkout-main">
       <section class="checkout-card">

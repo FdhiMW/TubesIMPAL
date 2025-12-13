@@ -53,7 +53,7 @@ public class PesananService {
         Pesanan pesanan = new Pesanan();
         pesanan.setUser(user);
         pesanan.setTanggalPesanan(LocalDateTime.now());
-        pesanan.setStatusPesanan("DIKEMAS");
+        pesanan.setStatusPesanan("MENUNGGU_PEMBAYARAN");
         pesanan.setMetodePembayaran(req.getMetodePembayaran());
 
         pesanan.setNamaPenerima(req.getNamaPenerima());

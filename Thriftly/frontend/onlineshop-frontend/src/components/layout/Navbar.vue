@@ -1,9 +1,11 @@
 <template>
   <header class="topbar">
-    <div class="topbar-left">
+    <!-- ====== [DISESUAIKAN: TOPBAR-LEFT JADI BUTTON KE DASHBOARD USER] ====== -->
+    <div class="topbar-left" @click="goHome" role="button" tabindex="0" @keyup.enter="goHome">
       <div class="logo-badge"></div>
-      <span class="logo-text">KlikMall Thrift</span>
+      <span class="logo-text">Thriftly</span>
     </div>
+    <!-- ====== [AKHIR PENYESUAIAN] ====== -->
 
     <div class="search-wrapper" v-if="showSearch">
       <input
@@ -28,18 +30,11 @@
         <span>Keranjang</span>
       </router-link>
 
-      <!-- PROFILE DROPDOWN + icon 👤 -->
-      <div class="profile-wrapper" @click.stop="toggleProfileMenu">
-        <span class="topbar-link">
-          <span class="link-icon">👤</span>
-          <span>Profil ▾</span>
-        </span>
-        <div v-if="showProfileMenu" class="profile-dropdown">
-          <button class="dropdown-item" @click.stop="logout">
-            Logout
-          </button>
-        </div>
-      </div>
+      <!-- ====== [DISESUAIKAN: PROFIL DIGANTI BUTTON LOGOUT] ====== -->
+      <button class="logout-btn" @click="logout">
+        Logout
+      </button>
+      <!-- ====== [AKHIR PENYESUAIAN] ====== -->
     </div>
   </header>
 </template>
@@ -55,22 +50,37 @@ export default {
   },
   data() {
     return {
+      // [DIBIARKAN] supaya tidak merusak struktur data yang sudah ada
       showProfileMenu: false,
       searchQuery: '',
     }
   },
   methods: {
+    // ====== [DITAMBAHKAN: KLIK LOGO/TEXT KEMBALI KE DASHBOARD USER] ======
+    goHome() {
+      // asumsi dashboard user ada di "/"
+      if (this.$route.path !== '/') {
+        this.$router.push('/')
+      }
+    },
+    // ====== [AKHIR PENYESUAIAN] ======
+
+    // [DIBIARKAN] supaya tidak merusak struktur methods yang sudah ada
     toggleProfileMenu() {
       this.showProfileMenu = !this.showProfileMenu
     },
+
     logout() {
       localStorage.removeItem('user')
       this.showProfileMenu = false
       this.$router.push('/login')
     },
+
+    // [DIBIARKAN] supaya tidak merusak struktur methods yang sudah ada
     handleClickOutside() {
       this.showProfileMenu = false
     },
+
     submitSearch() {
       const q = this.searchQuery && this.searchQuery.trim()
       if (!q) return
@@ -105,6 +115,13 @@ export default {
   align-items: center;
   gap: 10px;
 }
+
+/* ====== [DITAMBAHKAN: BIAR TERASA BISA DIKLIK] ====== */
+.topbar-left {
+  cursor: pointer;
+  user-select: none;
+}
+/* ====== [AKHIR PENYESUAIAN] ====== */
 
 .logo-badge {
   width: 32px;
@@ -153,6 +170,20 @@ export default {
   font-size: 18px;
 }
 
+/* ====== [DITAMBAHKAN: STYLE BUTTON LOGOUT] ====== */
+.logout-btn {
+  border-radius: 999px;
+  border: none;
+  padding: 6px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  background: #ffffff;
+  color: #ff5a3c;
+  font-weight: 600;
+}
+/* ====== [AKHIR PENYESUAIAN] ====== */
+
+/* [DIBIARKAN] agar tidak menghapus struktur style yang sudah ada */
 .profile-wrapper {
   position: relative;
   cursor: pointer;
