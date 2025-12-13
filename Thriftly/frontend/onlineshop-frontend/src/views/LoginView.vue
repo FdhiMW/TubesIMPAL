@@ -16,7 +16,7 @@
               <input
                 v-model="email"
                 type="text"
-                placeholder="Username/Email"
+                placeholder="Email"
               />
             </div>
             <div class="field">
@@ -66,9 +66,41 @@ export default {
   methods: {
     async onSubmit() {
       this.error = ''
+
+      // ====== [DITAMBAHKAN: VALIDASI EMAIL & PASSWORD] ======
+      const emailTrim = (this.email || '').trim()
+      const passTrim = (this.password || '').trim()
+
+      // wajib isi
+      if (!emailTrim && !passTrim) {
+        this.error = 'Email dan password wajib diisi'
+        return
+      }
+      if (!emailTrim) {
+        this.error = 'Email wajib diisi'
+        return
+      }
+      if (!passTrim) {
+        this.error = 'Password wajib diisi'
+        return
+      }
+
+      // email harus mengandung "@"
+      if (!emailTrim.includes('@')) {
+        this.error = 'Email harus menggunakan @'
+        return
+      }
+
+      // password minimal 8 karakter
+      if (passTrim.length < 4) {
+        this.error = 'Password minimal 8 karakter'
+        return
+      }
+      // ====== [AKHIR PENYESUAIAN] ======
+
       this.loading = true
       try {
-        const res = await login(this.email, this.password)
+        const res = await login(emailTrim, passTrim)
         const user = res.data
         // Simpan data user di localStorage (sementara, tanpa JWT)
         localStorage.setItem('user', JSON.stringify(user))
@@ -87,7 +119,6 @@ export default {
     },
   },
 }
-
 </script>
 
 <style scoped>

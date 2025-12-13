@@ -1,7 +1,5 @@
 <template>
   <div class="page">
-    <Navbar />
-
     <div class="content">
       <div class="left">
         <div class="brand">
@@ -78,26 +76,55 @@ export default {
     }
   },
   methods: {
+    // ====== [DITAMBAHKAN: VALIDASI EMAIL] ======
+    isValidEmail(email) {
+      const v = (email || '').trim()
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+    },
+    // ====== [AKHIR PENYESUAIAN] ======
+
     async onSubmit() {
       this.error = ''
 
-      if (this.password !== this.confirmPassword) {
+      // ====== [DITAMBAHKAN: VALIDASI WAJIB ISI + FORMAT] ======
+      const nama = (this.namaLengkap || '').trim()
+      const emailTrim = (this.email || '').trim()
+      const pass = this.password || ''
+      const confirm = this.confirmPassword || ''
+
+      if (!nama) {
+        this.error = 'Nama lengkap wajib diisi'
+        return
+      }
+      if (!emailTrim) {
+        this.error = 'Email wajib diisi'
+        return
+      }
+      if (!this.isValidEmail(emailTrim)) {
+        this.error = 'Email tidak valid (harus mengandung "@" dan format email)'
+        return
+      }
+      if (!pass) {
+        this.error = 'Password wajib diisi'
+        return
+      }
+      if (pass.length < 8) {
+        this.error = 'Password minimal 8 karakter'
+        return
+      }
+      if (pass !== confirm) {
         this.error = 'Password dan konfirmasi tidak sama'
         return
       }
+      // ====== [AKHIR PENYESUAIAN] ======
 
       this.loading = true
       try {
-        const res = await register(
-          this.namaLengkap,
-          this.email,
-          this.password
-        )
+        const res = await register(nama, emailTrim, pass)
         localStorage.setItem('user', JSON.stringify(res.data))
         this.$router.push('/')
       } catch (e) {
-        this.error =
-          e.response?.data?.message || 'Gagal mendaftar, coba lagi'
+        this.error = e.response?.data?.message || 'Gagal mendaftar, coba lagi'
       } finally {
         this.loading = false
       }
@@ -107,7 +134,6 @@ export default {
 </script>
 
 <style scoped>
-/* sama seperti LoginView, boleh di-refactor ke CSS global */
 .page {
   display: flex;
   flex-direction: column;

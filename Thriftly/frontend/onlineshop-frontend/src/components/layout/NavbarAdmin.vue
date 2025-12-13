@@ -82,12 +82,20 @@ export default {
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
   gap: 24px;
   color: #fff;
+
+  /* ====== [DITAMBAHKAN: JAGA POSISI KIRI - TENGAH - KANAN] ====== */
+  flex-wrap: nowrap;
+  /* ====== [AKHIR PENYESUAIAN] ====== */
 }
 
 .topbar-left {
   display: flex;
   align-items: center;
   gap: 10px;
+
+  /* ====== [DITAMBAHKAN: KUNCI BAGIAN KIRI] ====== */
+  flex: 0 0 auto;
+  /* ====== [AKHIR PENYESUAIAN] ====== */
 }
 
 /* ====== [DITAMBAHKAN: INDIKASI BISA DIKLIK] ====== */
@@ -111,12 +119,17 @@ export default {
   font-size: 18px;
 }
 
+/* ====== [DISESUAIKAN: SEARCH DI-TENGAH & DIKECILKAN] ====== */
 .search-wrapper {
   flex: 1;
+  display: flex;
+  justify-content: center; /* bikin search ada di tengah area navbar */
+  min-width: 0;            /* penting biar tidak dorong kanan */
 }
 
 .search-input {
-  width: 100%;
+  width: 520px;        /* <= ukuran search admin (ubah angka ini kalau mau lebih kecil) */
+  max-width: 100%;
   border-radius: 999px;
   border: none;
   padding: 10px 18px;
@@ -124,11 +137,17 @@ export default {
   outline: none;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
+/* ====== [AKHIR PENYESUAIAN] ====== */
 
 .topbar-right {
   display: flex;
   align-items: center;
   gap: 16px;
+
+  /* ====== [DITAMBAHKAN: KUNCI BAGIAN KANAN AGAR TETAP] ====== */
+  flex: 0 0 auto;
+  white-space: nowrap;
+  /* ====== [AKHIR PENYESUAIAN] ====== */
 }
 
 .topbar-link {

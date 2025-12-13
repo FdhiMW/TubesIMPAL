@@ -1,13 +1,20 @@
 <template>
   <header class="topbar">
-    <!-- ====== [DISESUAIKAN: TOPBAR-LEFT JADI BUTTON KE DASHBOARD USER] ====== -->
-    <div class="topbar-left" @click="goHome" role="button" tabindex="0" @keyup.enter="goHome">
+    <!-- ====== [DISESUAIKAN: LOGO JADI BUTTON KEMBALI KE DASHBOARD USER] ====== -->
+    <div
+      class="topbar-left brand-click"
+      @click="goHome"
+      role="button"
+      tabindex="0"
+      @keyup.enter="goHome"
+    >
       <div class="logo-badge"></div>
       <span class="logo-text">Thriftly</span>
     </div>
     <!-- ====== [AKHIR PENYESUAIAN] ====== -->
 
-    <div class="search-wrapper" v-if="showSearch">
+    <!-- ====== [DISESUAIKAN: DI HALAMAN LOGIN/REGISTER HILANGKAN SEARCH] ====== -->
+    <div class="search-wrapper" v-if="showSearch && !isAuthPage">
       <input
         v-model="searchQuery"
         type="text"
@@ -16,8 +23,10 @@
         @keyup.enter="submitSearch"
       />
     </div>
+    <!-- ====== [AKHIR PENYESUAIAN] ====== -->
 
-    <div class="topbar-right">
+    <!-- ====== [DISESUAIKAN: DI HALAMAN LOGIN/REGISTER HILANGKAN LACAK PAKET, KERANJANG, LOGOUT] ====== -->
+    <div class="topbar-right" v-if="!isAuthPage">
       <!-- Lacak Paket + icon 📦 -->
       <router-link to="/lacak-paket" class="topbar-link">
         <span class="link-icon">📦</span>
@@ -36,6 +45,7 @@
       </button>
       <!-- ====== [AKHIR PENYESUAIAN] ====== -->
     </div>
+    <!-- ====== [AKHIR PENYESUAIAN] ====== -->
   </header>
 </template>
 
@@ -55,10 +65,17 @@ export default {
       searchQuery: '',
     }
   },
+  computed: {
+    // ====== [DISESUAIKAN: DETEKSI HALAMAN LOGIN & REGISTER] ======
+    isAuthPage() {
+      const p = this.$route && this.$route.path ? this.$route.path : ''
+      return p === '/login' || p === '/register'
+    },
+    // ====== [AKHIR PENYESUAIAN] ======
+  },
   methods: {
-    // ====== [DITAMBAHKAN: KLIK LOGO/TEXT KEMBALI KE DASHBOARD USER] ======
+    // ====== [DIBIARKAN: KLIK LOGO KEMBALI KE DASHBOARD USER] ======
     goHome() {
-      // asumsi dashboard user ada di "/"
       if (this.$route.path !== '/') {
         this.$router.push('/')
       }
@@ -108,18 +125,29 @@ export default {
   background: linear-gradient(90deg, #ff5a3c, #ff9f1c);
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
   gap: 24px;
+
+  /* ====== [DITAMBAHKAN: JAGA POSISI KIRI-TENGAH-KANAN] ====== */
+  flex-wrap: nowrap;
+  /* ====== [AKHIR PENYESUAIAN] ====== */
 }
 
 .topbar-left {
   display: flex;
   align-items: center;
   gap: 10px;
+
+  /* ====== [DITAMBAHKAN: KUNCI BAGIAN KIRI] ====== */
+  flex: 0 0 auto;
+  /* ====== [AKHIR PENYESUAIAN] ====== */
 }
 
-/* ====== [DITAMBAHKAN: BIAR TERASA BISA DIKLIK] ====== */
-.topbar-left {
+/* ====== [DIBIARKAN: INDIKASI BISA DIKLIK] ====== */
+.brand-click {
   cursor: pointer;
   user-select: none;
+}
+.brand-click:hover {
+  opacity: 0.92;
 }
 /* ====== [AKHIR PENYESUAIAN] ====== */
 
@@ -136,12 +164,17 @@ export default {
   color: #fff;
 }
 
+/* ====== [DIBIARKAN: SEARCH DI-TENGAH & DIKECILKAN] ====== */
 .search-wrapper {
   flex: 1;
+  display: flex;
+  justify-content: center;
+  min-width: 0;
 }
 
 .search-input {
-  width: 100%;
+  width: 520px;
+  max-width: 100%;
   border-radius: 999px;
   border: none;
   padding: 10px 18px;
@@ -149,11 +182,17 @@ export default {
   outline: none;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
+/* ====== [AKHIR PENYESUAIAN] ====== */
 
 .topbar-right {
   display: flex;
   align-items: center;
   gap: 16px;
+
+  /* ====== [DITAMBAHKAN: KUNCI BAGIAN KANAN SUPAYA TETAP] ====== */
+  flex: 0 0 auto;
+  white-space: nowrap;
+  /* ====== [AKHIR PENYESUAIAN] ====== */
 }
 
 .topbar-link {
@@ -170,7 +209,7 @@ export default {
   font-size: 18px;
 }
 
-/* ====== [DITAMBAHKAN: STYLE BUTTON LOGOUT] ====== */
+/* ====== [DIBIARKAN: STYLE BUTTON LOGOUT] ====== */
 .logout-btn {
   border-radius: 999px;
   border: none;

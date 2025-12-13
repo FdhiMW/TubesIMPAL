@@ -44,14 +44,18 @@
               </div>
 
               <div class="actions">
+                <!-- ====== [DISESUAIKAN: BUTTON HANYA MUNCUL SAAT DALAM_PERJALANAN / SELESAI] ====== -->
                 <button
+                  v-if="canShowConfirmBtn(it.statusPesanan)"
                   class="btn"
+                  :class="{ done: normalizeStatus(it.statusPesanan) === 'SELESAI' }"
                   :disabled="!canConfirm(it.statusPesanan) || confirmingId === it.idPesanan"
                   @click="confirmReceived(it)"
                   title="Hanya bisa jika status pesanan DALAM_PERJALANAN"
                 >
                   {{ confirmingId === it.idPesanan ? 'Memproses...' : 'Pesanan Selesai' }}
                 </button>
+                <!-- ====== [AKHIR PENYESUAIAN] ====== -->
               </div>
             </div>
 
@@ -113,6 +117,14 @@ export default {
     canConfirm(status) {
       return this.normalizeStatus(status) === 'DALAM_PERJALANAN'
     },
+
+    // ====== [DITAMBAHKAN: TOMBOL MUNCUL HANYA SAAT DALAM_PERJALANAN / SELESAI] ======
+    canShowConfirmBtn(status) {
+      const s = this.normalizeStatus(status)
+      return s === 'DALAM_PERJALANAN' || s === 'SELESAI'
+    },
+    // ====== [AKHIR PENYESUAIAN] ======
+
     bulletClass(currentStatus, step) {
       const cur = this.normalizeStatus(currentStatus)
       const order = ['DIKEMAS', 'DALAM_PERJALANAN', 'SELESAI']
@@ -179,5 +191,10 @@ export default {
 .actions { margin-left: auto; }
 .btn { border: none; background: linear-gradient(90deg, #ef4444, #f97316); color: #fff; padding: 10px 16px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; }
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn.done {
+  background: #22c55e;
+}
+
 .order-code { margin-top: 8px; font-size: 12px; color: #64748b; }
 </style>
