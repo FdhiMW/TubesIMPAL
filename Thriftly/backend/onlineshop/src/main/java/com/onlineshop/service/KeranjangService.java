@@ -101,18 +101,23 @@ public class KeranjangService {
     private KeranjangDtos.CartItemResponse toResponse(KeranjangItem item) {
         KeranjangDtos.CartItemResponse dto = new KeranjangDtos.CartItemResponse();
         dto.setIdKeranjang(item.getIdKeranjang());
-        dto.setIdProduk(item.getProduk().getIdProduk());
-        dto.setNamaProduk(item.getProduk().getNamaProduk());
-        dto.setImageUrl(item.getProduk().getImageUrl());
-        dto.setHargaSatuan(item.getProduk().getHarga());
+
+        if (item.getProduk() != null) {
+            dto.setIdProduk(item.getProduk().getIdProduk());
+            dto.setNamaProduk(item.getProduk().getNamaProduk());
+            dto.setImageUrl(item.getProduk().getImageUrl());
+            dto.setHargaSatuan(item.getProduk().getHarga());
+        }
+
         dto.setJumlah(item.getJumlah());
 
-        BigDecimal harga = item.getProduk().getHarga() != null
+        BigDecimal harga = (item.getProduk() != null && item.getProduk().getHarga() != null)
                 ? item.getProduk().getHarga()
                 : BigDecimal.ZERO;
-        BigDecimal subtotal = harga.multiply(BigDecimal.valueOf(item.getJumlah()));
 
+        BigDecimal subtotal = harga.multiply(BigDecimal.valueOf(item.getJumlah() == null ? 0 : item.getJumlah()));
         dto.setSubtotal(subtotal);
+
         return dto;
     }
 }

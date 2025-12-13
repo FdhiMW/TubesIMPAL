@@ -21,6 +21,15 @@ public class ProdukController {
         this.produkService = produkService;
     }
 
+    // ====== [SISIPKAN DI SINI] ======
+    // Dashboard Admin: Total Barang Aktif
+    // GET /api/produk/count/aktif
+    @GetMapping("/count/aktif")
+    public long countProdukAktif() {
+        return produkService.count_produk_aktif();
+    }
+    // ====== [AKHIR SISIPAN] ======
+
     // ================= BARANG TERLARIS =================
 
     @GetMapping("/terlaris")
@@ -47,8 +56,6 @@ public class ProdukController {
     }
 
     // =============== TAMBAH PRODUK (MULTIPART) ==========
-    // Dipakai oleh form Tambah Produk admin (multipart/form-data)
-
     @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ProdukDetailDto createProdukMultipart(
             @RequestParam("namaProduk") String namaProduk,
@@ -73,7 +80,6 @@ public class ProdukController {
         dto.setMerek(merek);
         dto.setJenisKelamin(jenisKelamin);
 
-        // sementara: simpan nama file sebagai imageUrl (kolom image di DB)
         if (gambar != null && !gambar.isEmpty()) {
             dto.setImageUrl(gambar.getOriginalFilename());
         }
@@ -81,7 +87,6 @@ public class ProdukController {
         return produkService.createProduk(dto);
     }
 
-    // OPTIONAL: endpoint JSON (kalau suatu saat masih dipakai)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ProdukDetailDto createProdukJson(@RequestBody ProdukDetailDto dto) {
         return produkService.createProduk(dto);

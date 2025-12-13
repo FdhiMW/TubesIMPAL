@@ -23,18 +23,28 @@
       <section class="summary-row">
         <div class="summary-card">
           <p class="summary-label">Total Barang Aktif</p>
-          <p class="summary-value">1.245</p>
+
+          <!-- ====== [SISIPKAN: GANTI ANGKA STATIK] ====== -->
+          <p class="summary-value">{{ formatPrice(totalBarangAktif) }}</p>
+          <!-- ====== [AKHIR SISIPAN] ====== -->
+
           <p class="summary-note">Produk yang tampil di beranda pengguna</p>
         </div>
+
         <div class="summary-card">
-          <p class="summary-label">Pesanan Baru</p>
-          <p class="summary-value">37</p>
-          <p class="summary-note">Belum diproses admin</p>
+          <!-- ====== [SISIPKAN: UBAH JADI PESANAN AKTIF + DINAMIS] ====== -->
+          <p class="summary-label">Pesanan Aktif</p>
+          <p class="summary-value">{{ formatPrice(totalPesananAktif) }}</p>
+          <p class="summary-note">Pesanan berstatus Dikemas / Dalam Perjalanan</p>
+          <!-- ====== [AKHIR SISIPAN] ====== -->
         </div>
+
         <div class="summary-card">
-          <p class="summary-label">Stok Hampir Habis</p>
-          <p class="summary-value">18</p>
-          <p class="summary-note">Perlu dicek ulang</p>
+          <!-- ====== [SISIPKAN: GANTI STOK HAMPIR HABIS -> PESANAN SELESAI] ====== -->
+          <p class="summary-label">Pesanan Selesai</p>
+          <p class="summary-value">{{ formatPrice(totalPesananSelesai) }}</p>
+          <p class="summary-note">Pesanan berstatus Selesai</p>
+          <!-- ====== [AKHIR SISIPAN] ====== -->
         </div>
       </section>
 
@@ -89,10 +99,7 @@
                     </span>
                   </td>
                   <td>
-                    <button
-                      class="link-small"
-                      @click="editProduct(item.id)"
-                    >
+                    <button class="link-small" @click="editProduct(item.id)">
                       Edit
                     </button>
                     <span class="divider">|</span>
@@ -123,9 +130,7 @@
           <header class="orders-header">
             <div>
               <h2>Pesanan Terbaru</h2>
-              <p class="section-subtitle">
-                Ringkasan 5 pesanan terakhir
-              </p>
+              <p class="section-subtitle">Ringkasan 5 pesanan terakhir</p>
             </div>
             <button class="ghost-btn small" @click="goToOrders">
               Lihat Semua
@@ -133,11 +138,7 @@
           </header>
 
           <ul class="orders-list">
-            <li
-              v-for="order in recentOrders"
-              :key="order.id"
-              class="order-item"
-            >
+            <li v-for="order in recentOrders" :key="order.id" class="order-item">
               <div class="order-main">
                 <p class="order-code">{{ order.code }}</p>
                 <p class="order-info">
@@ -160,7 +161,21 @@
 
 <script>
 import { fetchAdminOrders } from '@/api/pesananApi'
-import { searchProduk, deleteProduk } from '@/api/produkApi'
+
+// ====== [SISIPKAN: TAMBAH countProdukAktif TANPA HAPUS YANG LAIN] ======
+import { searchProduk, deleteProduk, countProdukAktif } from '@/api/produkApi'
+// ====== [AKHIR SISIPAN] ======
+
+// ====== [SISIPKAN: IMPORT BARU PESANAN AKTIF] ======
+import {
+  countPesananAktif,
+  countPesananAktifNative,
+  // ====== [SISIPKAN: IMPORT PESANAN SELESAI] ======
+  countPesananSelesai,
+  // ====== [AKHIR SISIPAN] ======
+} from '@/api/adminDashboardApi'
+// ====== [AKHIR SISIPAN] ======
+
 import NavbarAdmin from '@/components/layout/NavbarAdmin.vue'
 
 export default {
@@ -168,6 +183,18 @@ export default {
   components: { NavbarAdmin },
   data() {
     return {
+      // ====== [SISIPKAN: STATE TOTAL BARANG AKTIF] ======
+      totalBarangAktif: 0,
+      // ====== [AKHIR SISIPAN] ======
+
+      // ====== [SISIPKAN: STATE PESANAN AKTIF] ======
+      totalPesananAktif: 0,
+      // ====== [AKHIR SISIPAN] ======
+
+      // ====== [SISIPKAN: STATE PESANAN SELESAI] ======
+      totalPesananSelesai: 0,
+      // ====== [AKHIR SISIPAN] ======
+
       // kontrol pencarian & status
       searchKeyword: '',
       loading: false,
@@ -211,6 +238,97 @@ export default {
       return Number(value || 0).toLocaleString('id-ID')
     },
 
+    // ====== [SISIPKAN: LOAD TOTAL BARANG AKTIF DARI DB] ======
+    async loadTotalBarangAktif() {
+      try {
+        const res = await countProdukAktif()
+        this.totalBarangAktif = Number(res.data || 0)
+      } catch (err) {
+        console.error('Gagal memuat total barang aktif', err)
+        this.totalBarangAktif = 0
+      }
+    },
+    // ====== [AKHIR SISIPAN] ======
+
+    // ====== [SISIPKAN: LOAD TOTAL PESANAN AKTIF DARI DB] ======
+    async loadTotalPesananAktif() {
+      try {
+        let val = 0
+
+        try {
+          const res = await countPesananAktif()
+          val = Number(res.data || 0)
+        } catch (e1) {
+          console.error('[DASHBOARD] countPesananAktif gagal:', e1)
+        }
+
+        if (val === 0) {
+          try {
+            const res2 = await countPesananAktifNative()
+            val = Number(res2.data || 0)
+          } catch (e2) {
+            console.error('[DASHBOARD] countPesananAktifNative gagal:', e2)
+          }
+        }
+
+        if (val === 0) {
+          try {
+            const res3 = await fetchAdminOrders()
+            const list = Array.isArray(res3.data) ? res3.data : []
+            const aktif = list.filter((p) => {
+              const s = (p.statusPesanan || '').toString().trim().toUpperCase()
+              return s === 'DIKEMAS' || s === 'DALAM_PERJALANAN'
+            }).length
+            val = aktif
+          } catch (e3) {
+            console.error('[DASHBOARD] hitung manual pesanan aktif gagal:', e3)
+          }
+        }
+
+        this.totalPesananAktif = Number(val || 0)
+      } catch (err) {
+        console.error('Gagal memuat total pesanan aktif', err)
+        this.totalPesananAktif = 0
+      }
+    },
+    // ====== [AKHIR SISIPAN] ======
+
+    // ====== [SISIPKAN: LOAD TOTAL PESANAN SELESAI] ======
+    async loadTotalPesananSelesai() {
+      try {
+        let val = 0
+
+        // 1) coba endpoint khusus selesai
+        try {
+          const res = await countPesananSelesai()
+          val = Number(res.data || 0)
+        } catch (e1) {
+          console.error('[DASHBOARD] countPesananSelesai gagal:', e1)
+        }
+
+        // 2) fallback manual dari list pesanan admin
+        if (val === 0) {
+          try {
+            const res2 = await fetchAdminOrders()
+            const list = Array.isArray(res2.data) ? res2.data : []
+            const selesai = list.filter((p) => {
+              const s = (p.statusPesanan || '').toString().trim().toUpperCase()
+              return s === 'SELESAI'
+            }).length
+            val = selesai
+          } catch (e2) {
+            console.error('[DASHBOARD] hitung manual pesanan selesai gagal:', e2)
+          }
+        }
+
+        this.totalPesananSelesai = Number(val || 0)
+      } catch (err) {
+        console.error('Gagal memuat total pesanan selesai', err)
+        this.totalPesananSelesai = 0
+      }
+    },
+    // ====== [AKHIR SISIPAN] ======
+
     goToOrders() {
       if (this.$route.path !== '/admin/pesanan') {
         this.$router.push('/admin/pesanan')
@@ -239,7 +357,7 @@ export default {
           return {
             id: p.idProduk,
             name: p.namaProduk,
-            category: p.kategoriName || 'Elektronik', // sesuaikan jika DTO punya nama kategori
+            category: p.kategoriName || 'Elektronik',
             stock: stok,
             price: p.harga || 0,
             statusLabel: statusAktif ? 'Aktif' : 'Stok Habis',
@@ -255,7 +373,6 @@ export default {
     },
 
     editProduct(id) {
-      // buka form tambah produk dalam mode edit
       this.$router.push({
         name: 'admin-product-create',
         query: { id },
@@ -320,7 +437,19 @@ export default {
   },
   mounted() {
     this.loadRecentOrders()
-    this.loadInventory() // load produk dari backend saat dashboard dibuka
+    this.loadInventory()
+
+    // ====== [SISIPKAN: PANGGIL SAAT DASHBOARD DIBUKA] ======
+    this.loadTotalBarangAktif()
+    // ====== [AKHIR SISIPAN] ======
+
+    // ====== [SISIPKAN: PANGGIL PESANAN AKTIF SAAT DASHBOARD DIBUKA] ======
+    this.loadTotalPesananAktif()
+    // ====== [AKHIR SISIPAN] ======
+
+    // ====== [SISIPKAN: PANGGIL PESANAN SELESAI SAAT DASHBOARD DIBUKA] ======
+    this.loadTotalPesananSelesai()
+    // ====== [AKHIR SISIPAN] ======
   },
 }
 </script>

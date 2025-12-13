@@ -27,6 +27,13 @@ public class ProdukService {
         this.produkRepository = produkRepository;
     }
 
+    // ====== [SISIPKAN DI SINI] ======
+    // Dashboard admin: total produk aktif (status_produk = 'aktif')
+    public long count_produk_aktif() {
+        return produkRepository.countByStatusProdukIgnoreCase("aktif");
+    }
+    // ====== [AKHIR SISIPAN] ======
+
     // --------------------------------------------------------------------
     // BARANG TERLARIS
     // --------------------------------------------------------------------
@@ -152,20 +159,14 @@ public class ProdukService {
         p.setJenisKelamin(dto.getJenisKelamin());
         p.setImageUrl(dto.getImageUrl());
 
-        // ===== FIELD WAJIB DI TABEL pm_produk (TIDAK ADA DI DTO) =====
-        // status_produk: default "aktif"
         p.setStatusProduk("aktif");
-
-        // tanggal_ditambahkan: sekarang
         p.setTanggalDitambahkan(LocalDateTime.now());
 
-        // barang_terjual: default 0 kalau null
         if (dto.getBarangTerjual() != null) {
             p.setBarangTerjual(dto.getBarangTerjual().intValue());
         } else {
             p.setBarangTerjual(0);
         }
-        // =============================================================
 
         Produk saved = produkRepository.save(p);
 
@@ -198,10 +199,7 @@ public class ProdukService {
                     "Produk tidak ditemukan");
         }
 
-        // hapus semua item pesanan yang memakai produk ini
         pesananItemRepository.deleteByProduk_IdProduk(idProduk);
-
-        // lalu hapus produknya
         produkRepository.deleteById(idProduk);
     }
 }
