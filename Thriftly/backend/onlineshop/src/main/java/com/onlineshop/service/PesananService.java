@@ -6,14 +6,14 @@ import com.onlineshop.model.PesananItem;
 import com.onlineshop.model.Produk;
 import com.onlineshop.model.User;
 import com.onlineshop.repository.PesananRepository;
-import com.onlineshop.repository.PesananItemRepository;
 import com.onlineshop.repository.ProdukRepository;
 import com.onlineshop.repository.UserRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.data.domain.Sort;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -135,9 +135,12 @@ public class PesananService {
         resp.setOngkosKirim(saved.getOngkosKirim());
         resp.setTotalPembayaran(saved.getTotalPembayaran());
 
+        // ====== [DITAMBAHKAN: agar response juga membawa alamat] ======
+        resp.setAlamatLengkap(saved.getAlamatLengkap());
+        // ====== [AKHIR PENYESUAIAN] ======
+
         return resp;
     }
-
 
     @Transactional(readOnly = true)
     public List<PesananDtos.PesananResponse> getPesananForAdmin(String kodePesanan) {
@@ -161,6 +164,11 @@ public class PesananService {
             resp.setTotalBarang(p.getTotalBarang());
             resp.setOngkosKirim(p.getOngkosKirim());
             resp.setTotalPembayaran(p.getTotalPembayaran());
+
+            // ====== [DITAMBAHKAN: alamat dari DB pm_pesanan.alamat_lengkap] ======
+            resp.setAlamatLengkap(p.getAlamatLengkap());
+            // ====== [AKHIR PENYESUAIAN] ======
+
             result.add(resp);
         }
 
@@ -175,7 +183,6 @@ public class PesananService {
 
         String normalized = statusBaru.trim().toUpperCase();
 
-        // boleh kamu atur sendiri daftar status validnya
         if (!normalized.equals("DIKEMAS") &&
                 !normalized.equals("DALAM_PERJALANAN") &&
                 !normalized.equals("SELESAI") &&
@@ -199,6 +206,10 @@ public class PesananService {
         resp.setOngkosKirim(saved.getOngkosKirim());
         resp.setTotalPembayaran(saved.getTotalPembayaran());
 
+        // ====== [DITAMBAHKAN: agar setelah update status alamat tetap ada] ======
+        resp.setAlamatLengkap(saved.getAlamatLengkap());
+        // ====== [AKHIR PENYESUAIAN] ======
+
         return resp;
     }
 
@@ -208,7 +219,6 @@ public class PesananService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "idUser wajib diisi");
         }
 
-        // validasi user ada
         userRepository.findById(idUser)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User tidak ditemukan"));
 
@@ -234,7 +244,6 @@ public class PesananService {
                         row.setJenis(pr.getKategori().getNamaKategori());
                     }
                 } else {
-                    // fallback kalau relasi produk null
                     row.setNamaProduk(it.getNamaProduk());
                     row.setHarga(it.getHargaSatuan());
                 }
@@ -274,7 +283,6 @@ public class PesananService {
     }
 
     private String generateKodePesanan() {
-        // contoh sederhana: ORD-<4 karakter random>
         String random = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         return "ORD-" + random;
     }

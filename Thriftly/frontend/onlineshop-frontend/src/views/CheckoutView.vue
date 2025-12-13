@@ -165,6 +165,25 @@
         </div>
       </section>
     </main>
+
+    <!-- ====== [DITAMBAHKAN: POPUP SUKSES PESANAN] ====== -->
+    <div v-if="showSuccessPopup" class="popup-overlay">
+      <div class="popup-card" role="dialog" aria-modal="true">
+        <div class="popup-icon">
+          <span class="popup-check">✓</span>
+        </div>
+
+        <div class="popup-title">Pesanan berhasil dibuat</div>
+        <div class="popup-subtitle">
+          Kode pesanan: <span class="popup-code">{{ successKode }}</span>
+        </div>
+
+        <button class="popup-ok" @click="closeSuccessPopup">
+          OK
+        </button>
+      </div>
+    </div>
+    <!-- ====== [AKHIR PENYESUAIAN] ====== -->
   </div>
 </template>
 
@@ -201,6 +220,11 @@ export default {
         { value: 'COD', label: 'COD' },
       ],
       paymentMethod: 'TRANSFER_BANK',
+
+      // ====== [DITAMBAHKAN: STATE POPUP SUKSES] ======
+      showSuccessPopup: false,
+      successKode: '',
+      // ====== [AKHIR PENYESUAIAN] ======
     }
   },
   computed: {
@@ -267,6 +291,14 @@ export default {
     goBack() {
       this.$router.back()
     },
+
+    // ====== [DITAMBAHKAN: TUTUP POPUP + REDIRECT] ======
+    closeSuccessPopup() {
+      this.showSuccessPopup = false
+      this.$router.push('/') // kalau mau ke lacak pesanan, ganti ke "/lacak-paket" atau halaman detail pesanan
+    },
+    // ====== [AKHIR PENYESUAIAN] ======
+
     async submitOrder() {
       if (!this.produk) return
 
@@ -316,8 +348,12 @@ export default {
         const res = await http.post('/pesanan', payload)
         const kode = res.data?.kodePesanan || '(tanpa kode)'
 
-        alert('Pesanan berhasil dibuat. Kode pesanan: ' + kode)
-        this.$router.push('/') // nanti bisa diarahkan ke halaman lacak pesanan
+        // ====== [DISESUAIKAN: GANTI ALERT JADI POPUP] ======
+        this.successKode = kode
+        this.showSuccessPopup = true
+        // ====== [AKHIR PENYESUAIAN] ======
+
+        // this.$router.push('/')  // dipindahkan ke closeSuccessPopup()
       } catch (err) {
         console.error('Gagal membuat pesanan', err)
         alert(
@@ -592,4 +628,74 @@ export default {
     padding: 20px;
   }
 }
+
+/* ====== [DITAMBAHKAN: STYLE POPUP SUKSES] ====== */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.popup-card {
+  width: 520px;
+  max-width: calc(100vw - 40px);
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  padding: 34px 34px 26px;
+  text-align: center;
+}
+
+.popup-icon {
+  width: 92px;
+  height: 92px;
+  border-radius: 999px;
+  margin: 0 auto 18px;
+  background: linear-gradient(90deg, #ef4444, #f97316);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-check {
+  color: #ffffff;
+  font-size: 46px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.popup-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.popup-subtitle {
+  font-size: 16px;
+  color: #374151;
+  margin-bottom: 22px;
+}
+
+.popup-code {
+  font-weight: 800;
+  color: #111827;
+}
+
+.popup-ok {
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 0;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  background: linear-gradient(90deg, #ef4444, #f97316);
+  color: #ffffff;
+}
+/* ====== [AKHIR PENYESUAIAN] ====== */
 </style>

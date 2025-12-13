@@ -92,7 +92,7 @@ export default {
       }
 
       // password minimal 8 karakter
-      if (passTrim.length < 4) {
+      if (passTrim.length < 8) {
         this.error = 'Password minimal 8 karakter'
         return
       }

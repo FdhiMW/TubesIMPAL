@@ -74,6 +74,10 @@ public class PesananDtos {
         private BigDecimal ongkosKirim;
         private BigDecimal totalPembayaran;
 
+        // ====== [DITAMBAHKAN: supaya alamat bisa tampil di Kelola Pesanan Admin] ======
+        private String alamatLengkap;
+        // ====== [AKHIR PENYESUAIAN] ======
+
         public Long getIdPesanan() { return idPesanan; }
         public void setIdPesanan(Long idPesanan) { this.idPesanan = idPesanan; }
 
@@ -91,15 +95,20 @@ public class PesananDtos {
 
         public BigDecimal getTotalPembayaran() { return totalPembayaran; }
         public void setTotalPembayaran(BigDecimal totalPembayaran) { this.totalPembayaran = totalPembayaran; }
+
+        // ====== [DITAMBAHKAN] ======
+        public String getAlamatLengkap() { return alamatLengkap; }
+        public void setAlamatLengkap(String alamatLengkap) { this.alamatLengkap = alamatLengkap; }
+        // ====== [AKHIR PENYESUAIAN] ======
     }
 
     public static class UpdateStatusRequest {
         private String statusPesanan;
-    
+
         public String getStatusPesanan() {
             return statusPesanan;
         }
-    
+
         public void setStatusPesanan(String statusPesanan) {
             this.statusPesanan = statusPesanan;
         }

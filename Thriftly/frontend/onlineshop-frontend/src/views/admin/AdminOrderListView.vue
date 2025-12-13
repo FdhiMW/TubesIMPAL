@@ -37,7 +37,10 @@
             <thead>
               <tr>
                 <th>Nomor Pesanan</th>
-                <th>Total Barang</th>
+                <!-- ====== [DISESUAIKAN: Total Barang -> Jumlah Barang] ====== -->
+                <th>Jumlah Barang</th>
+                <!-- ====== [DITAMBAHKAN: Detail Alamat di sebelah Jumlah Barang] ====== -->
+                <th>Detail Alamat</th>
                 <th>Total Pembayaran</th>
                 <th>Status</th>
                 <th>Aksi</th>
@@ -45,14 +48,22 @@
             </thead>
             <tbody>
               <tr v-if="!loading && orders.length === 0">
-                <td colspan="5" class="empty-state">
+                <td colspan="6" class="empty-state">
                   Belum ada pesanan yang ditemukan.
                 </td>
               </tr>
 
               <tr v-for="order in orders" :key="order.idPesanan">
                 <td>{{ order.kodePesanan }}</td>
+
+                <!-- ====== [DISESUAIKAN: Jumlah Barang] ====== -->
                 <td>{{ order.totalBarang }}</td>
+
+                <!-- ====== [DITAMBAHKAN: Alamat terhubung dari field DB/API] ====== -->
+                <td class="alamat-cell" :title="getAlamat(order)">
+                  {{ getAlamat(order) }}
+                </td>
+
                 <td>{{ formatRupiah(order.totalPembayaran) }}</td>
                 <td>
                   <span
@@ -62,24 +73,42 @@
                     {{ mapStatusToLabel(order.statusPesanan) }}
                   </span>
                 </td>
+
+                <!-- ====== [DISESUAIKAN: AKSI jadi 1 tombol sesuai status] ====== -->
                 <td class="action-cell">
+                  <!-- MENUNGGU_PEMBAYARAN -> tombol Jadikan Dikemas -->
                   <button
-                    class="ghost-btn small"
+                    v-if="normalizeStatus(order.statusPesanan) === 'MENUNGGU_PEMBAYARAN'"
+                    class="primary-btn small"
                     @click="changeStatus(order, 'DIKEMAS')"
-                    :disabled="loading || order.statusPesanan === 'DIKEMAS'"
+                    :disabled="loading"
                   >
                     Jadikan Dikemas
                   </button>
+
+                  <!-- DIKEMAS -> tombol Dalam Perjalanan -->
                   <button
+                    v-else-if="normalizeStatus(order.statusPesanan) === 'DIKEMAS'"
                     class="primary-btn small"
                     @click="changeStatus(order, 'DALAM_PERJALANAN')"
-                    :disabled="
-                      loading || order.statusPesanan === 'DALAM_PERJALANAN'
-                    "
+                    :disabled="loading"
                   >
                     Dalam Perjalanan
                   </button>
+
+                  <!-- SELESAI -> tombol hijau Selesai -->
+                  <button
+                    v-else-if="normalizeStatus(order.statusPesanan) === 'SELESAI'"
+                    class="success-btn small"
+                    disabled
+                  >
+                    Selesai
+                  </button>
+
+                  <!-- DALAM_PERJALANAN -> tidak ada tombol (kosong) -->
+                  <span v-else class="no-action">-</span>
                 </td>
+                <!-- ====== [AKHIR PENYESUAIAN AKSI] ====== -->
               </tr>
             </tbody>
           </table>
@@ -179,6 +208,32 @@ export default {
       if (s === 'SELESAI') return 'status-done'
       return ''
     },
+
+    // ====== [DITAMBAHKAN: Ambil alamat yang cocok dengan field DB/API] ======
+    getAlamat(order) {
+      if (!order) return '-'
+
+      const candidates = [
+        order.alamatLengkap,
+        order.alamat_lengkap,
+        order.alamat,
+        order.detailAlamat,
+        order.detail_alamat,
+      ]
+
+      const val = candidates.find(
+        (v) => v !== null && v !== undefined && String(v).trim() !== ''
+      )
+      return val ? String(val) : '-'
+    },
+    // ====== [AKHIR PENYESUAIAN] ======
+
+    // ====== [DITAMBAHKAN: normalisasi status untuk kondisi tombol] ======
+    normalizeStatus(status) {
+      if (!status) return ''
+      return String(status).trim().toUpperCase()
+    },
+    // ====== [AKHIR PENYESUAIAN] ======
   },
   mounted() {
     this.loadOrders()
@@ -264,6 +319,24 @@ export default {
   font-size: 12px;
 }
 
+/* ====== [DITAMBAHKAN: tombol hijau untuk SELESAI] ====== */
+.success-btn {
+  border-radius: 999px;
+  border: none;
+  background: #22c55e;
+  padding: 7px 18px;
+  color: #fff;
+  font-size: 12px;
+  cursor: not-allowed;
+  opacity: 0.95;
+}
+
+.success-btn.small {
+  padding: 4px 12px;
+  font-size: 12px;
+}
+/* ====== [AKHIR PENYESUAIAN] ====== */
+
 /* TABLE */
 .order-table-wrapper {
   background: #ffffff;
@@ -299,6 +372,19 @@ export default {
 .action-cell {
   white-space: nowrap;
 }
+
+.no-action {
+  color: #9ca3af;
+}
+
+/* ====== [DITAMBAHKAN: alamat rapi, tidak melebarkan tabel] ====== */
+.alamat-cell {
+  max-width: 420px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* ====== [AKHIR PENYESUAIAN] ====== */
 
 /* status badge */
 .status-pill {

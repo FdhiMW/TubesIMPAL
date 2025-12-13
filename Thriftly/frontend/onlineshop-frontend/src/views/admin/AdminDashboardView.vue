@@ -49,7 +49,6 @@
           <header class="inventory-header">
             <h2>Kelola Barang</h2>
             <div class="inventory-actions">
-              <button class="ghost-btn">Import</button>
 
               <!-- ====== [SISIPKAN: HIDE BUTTON TAMBAH BARANG DI DASHBOARD] ====== -->
               <button class="primary-btn" @click="goToCreateProduct" v-if="false">

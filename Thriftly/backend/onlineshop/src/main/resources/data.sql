@@ -15,8 +15,8 @@ SET FOREIGN_KEY_CHECKS = 1;
 INSERT IGNORE INTO pm_user (nama_lengkap, email, password_hash, nomor_telepon, tanggal_daftar, peran_pengguna, aktif)
 VALUES
   ('Admin Thriftly', 'admin@thriftly.com', 'admin123', '081200000001', NOW(), 'admin', 1),
-  ('Budi Thrift', 'budi@thriftly.com', 'budi123', '081200000002', NOW(), 'customer', 1),
-  ('Siti Thrift', 'siti@thriftly.com', 'siti123', '081200000003', NOW(), 'customer', 1);
+  ('Budi Thrift', 'budi@thriftly.com', 'budi1234', '081200000002', NOW(), 'customer', 1),
+  ('Siti Thrift', 'siti@thriftly.com', 'siti1234', '081200000003', NOW(), 'customer', 1);
 
 INSERT IGNORE INTO pm_kategori (id_kategori, nama_kategori, deskripsi) VALUES
 (1, 'Kaos', 'Kaos pria dan wanita berbagai ukuran'),
