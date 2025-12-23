@@ -122,16 +122,17 @@ export default {
   display: flex;
   align-items: center;
 
-  /* ====== [DISESUAIKAN: NAVBAR LEBIH TEBAL SEDIKIT] ====== */
-  padding: 14px 32px;   /* sebelumnya 10px 32px */
-  min-height: 62px;     /* agar tidak terlalu tipis tapi juga tidak kebesaran */
+  /* ====== [DISESUAIKAN: SAMA DENGAN NAVBAR ADMIN] ====== */
+  padding: 16px 32px;
+  min-height: 68px;
   /* ====== [AKHIR PENYESUAIAN] ====== */
 
   background: linear-gradient(90deg, #ff5a3c, #ff9f1c);
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
-  gap: 24px;
 
-  /* ====== [DITAMBAHKAN: JAGA POSISI KIRI-TENGAH-KANAN] ====== */
+  /* ====== [DISESUAIKAN: SAMA DENGAN NAVBAR ADMIN] ====== */
+  gap: 26px;
+  color: #fff;
   flex-wrap: nowrap;
   /* ====== [AKHIR PENYESUAIAN] ====== */
 }
@@ -139,9 +140,9 @@ export default {
 .topbar-left {
   display: flex;
   align-items: center;
-  gap: 10px;
 
-  /* ====== [DITAMBAHKAN: KUNCI BAGIAN KIRI] ====== */
+  /* ====== [DISESUAIKAN: SAMA DENGAN NAVBAR ADMIN] ====== */
+  gap: 12px;
   flex: 0 0 auto;
   /* ====== [AKHIR PENYESUAIAN] ====== */
 }
@@ -156,20 +157,22 @@ export default {
 }
 /* ====== [AKHIR PENYESUAIAN] ====== */
 
+/* ====== [DISESUAIKAN: LOGO SAMA DENGAN NAVBAR ADMIN] ====== */
 .logo-badge {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 999px;
   background: #ffd46c;
 }
 
 .logo-text {
   font-weight: 700;
-  font-size: 18px;
+  font-size: 20px;
   color: #fff;
 }
+/* ====== [AKHIR PENYESUAIAN] ====== */
 
-/* ====== [DIBIARKAN: SEARCH DI-TENGAH & DIKECILKAN] ====== */
+/* ====== [DISESUAIKAN: SEARCH SAMA DENGAN NAVBAR ADMIN] ====== */
 .search-wrapper {
   flex: 1;
   display: flex;
@@ -178,12 +181,12 @@ export default {
 }
 
 .search-input {
-  width: 520px;
+  width: 540px;
   max-width: 100%;
   border-radius: 999px;
   border: none;
-  padding: 10px 18px;
-  font-size: 14px;
+  padding: 12px 20px;
+  font-size: 15px;
   outline: none;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
@@ -192,16 +195,17 @@ export default {
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 16px;
 
-  /* ====== [DITAMBAHKAN: KUNCI BAGIAN KANAN SUPAYA TETAP] ====== */
+  /* ====== [DISESUAIKAN: SAMA DENGAN NAVBAR ADMIN] ====== */
+  gap: 18px;
   flex: 0 0 auto;
   white-space: nowrap;
   /* ====== [AKHIR PENYESUAIAN] ====== */
 }
 
+/* ====== [DISESUAIKAN: MENU SAMA DENGAN NAVBAR ADMIN] ====== */
 .topbar-link {
-  font-size: 13px;
+  font-size: 15px;
   color: #fff;
   text-decoration: none;
   cursor: pointer;
@@ -209,17 +213,19 @@ export default {
   align-items: center;
   gap: 6px;
 }
+/* ====== [AKHIR PENYESUAIAN] ====== */
 
 .link-icon {
+  /* ikon tetap ada, tapi ukuran dibuat proporsional */
   font-size: 18px;
 }
 
-/* ====== [DIBIARKAN: STYLE BUTTON LOGOUT] ====== */
+/* ====== [DISESUAIKAN: LOGOUT BUTTON SAMA DENGAN NAVBAR ADMIN] ====== */
 .logout-btn {
   border-radius: 999px;
   border: none;
-  padding: 6px 16px;
-  font-size: 13px;
+  padding: 8px 20px;
+  font-size: 15px;
   cursor: pointer;
   background: #ffffff;
   color: #ff5a3c;

@@ -17,7 +17,8 @@
       <section class="info-section">
         <h1 class="product-title">{{ produk.namaProduk }}</h1>
 
-        <div class="rating-row">
+        <!-- [DISESUAIKAN] Rating DIHILANGKAN tanpa menghapus struktur -->
+        <div class="rating-row" v-if="false">
           <span class="rating-stars">★ ★ ★ ★ ★</span>
           <span class="rating-text">5.0 • 5RB Penilaian</span>
         </div>
@@ -26,12 +27,54 @@
           Rp{{ formatRupiah(produk.harga) }}
         </div>
 
-        <div class="info-row">
+        <!-- [DISESUAIKAN] Jaminan tidak dimunculkan tapi struktur tetap ada -->
+        <div class="info-row" v-if="false">
           <span class="label">Jaminan</span>
           <span class="value">Bebas pengembalian + Proteksi kerusakan</span>
         </div>
 
+        <!-- =========================
+             [DISESUAIKAN] Deskripsi dipindah ke paling atas (di atas Jenis Kelamin)
+             ========================= -->
+        <div class="info-row info-row-desc">
+          <span class="label">Deskripsi</span>
+          <span class="value value-wrap">{{ produk.deskripsi || '-' }}</span>
+        </div>
+
+        <!-- =========================
+             [FIELD DB]
+             ========================= -->
         <div class="info-row">
+          <span class="label">Jenis Kelamin</span>
+          <span class="value">{{ produk.jenisKelamin || '-' }}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="label">Kondisi</span>
+          <span class="value">{{ produk.kondisi || '-' }}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="label">Merek</span>
+          <span class="value">{{ produk.merek || '-' }}</span>
+        </div>
+
+        <!-- [DISESUAIKAN] Terjual tidak dimunculkan tapi struktur tetap ada -->
+        <div class="info-row" v-if="false">
+          <span class="label">Terjual</span>
+          <span class="value">{{ produk.barangTerjual ?? 0 }}</span>
+        </div>
+
+        <!-- =========================
+             [DISESUAIKAN] Ukuran & Warna jadi field biasa (seperti yang lain)
+             ========================= -->
+        <div class="info-row">
+          <span class="label">Ukuran</span>
+          <span class="value">{{ produk.ukuran || '-' }}</span>
+        </div>
+
+        <!-- Struktur chip lama tetap ada tapi disembunyikan (tidak dihapus) -->
+        <div class="info-row" v-if="false">
           <span class="label">Ukuran</span>
           <div class="chip-row">
             <button class="chip">S</button>
@@ -43,11 +86,23 @@
 
         <div class="info-row">
           <span class="label">Warna</span>
+          <span class="value">{{ produk.warna || '-' }}</span>
+        </div>
+
+        <!-- Struktur chip lama tetap ada tapi disembunyikan (tidak dihapus) -->
+        <div class="info-row" v-if="false">
+          <span class="label">Warna</span>
           <div class="chip-row">
             <button class="chip">Merah</button>
             <button class="chip chip-active">Hitam</button>
             <button class="chip">Kuning</button>
           </div>
+        </div>
+
+        <!-- ✅ [DISESUAIKAN] STOK DIPINDAHKAN KE ATAS FIELD KUANTITAS (STRUKTUR TETAP) -->
+        <div class="info-row">
+          <span class="label">Stok</span>
+          <span class="value">{{ produk.stok ?? 0 }}</span>
         </div>
 
         <div class="info-row">
@@ -66,14 +121,19 @@
 
         <!-- Tombol Aksi -->
         <div class="action-row">
-          <button class="btn-outline" @click="addToCart">
+          <button class="btn-outline" @click="addToCart" :disabled="(produk.stok ?? 0) <= 0">
             <span class="cart-icon">🛒</span>
             Masukkan Keranjang
           </button>
-          <button class="btn-primary" @click="buyNow">
+          <button class="btn-primary" @click="buyNow" :disabled="(produk.stok ?? 0) <= 0">
             Beli Sekarang
           </button>
         </div>
+
+        <!-- [DITAMBAHKAN] Info stok habis (tidak merusak struktur) -->
+        <p v-if="(produk.stok ?? 0) <= 0" class="stock-warning">
+          Stok habis. Produk tidak bisa dibeli saat ini.
+        </p>
       </section>
     </main>
 
@@ -118,6 +178,11 @@ export default {
       try {
         const res = await http.get(`/produk/${id}`)
         this.produk = res.data
+
+        // [DITAMBAHKAN] jika stok 0, qty tetap 1 (aman)
+        if ((this.produk?.stok ?? 0) <= 0) {
+          this.qty = 1
+        }
       } catch (err) {
         console.error('Gagal memuat produk', err)
       } finally {
@@ -131,7 +196,13 @@ export default {
     },
 
     increaseQty () {
-      this.qty += 1
+      const stok = this.produk?.stok ?? 0
+      if (stok <= 0) return
+
+      // [DITAMBAHKAN] batasi qty tidak melebihi stok
+      if (this.qty < stok) {
+        this.qty += 1
+      }
     },
 
     decreaseQty () {
@@ -142,6 +213,12 @@ export default {
 
     async addToCart () {
       if (!this.produk) return
+
+      // [DITAMBAHKAN] cegah jika stok habis
+      if ((this.produk.stok ?? 0) <= 0) {
+        alert('Stok habis. Produk tidak bisa ditambahkan ke keranjang.')
+        return
+      }
 
       const rawUser = localStorage.getItem('user')
       if (!rawUser) {
@@ -169,6 +246,12 @@ export default {
 
     buyNow () {
       if (!this.produk) return
+
+      // [DITAMBAHKAN] cegah jika stok habis
+      if ((this.produk.stok ?? 0) <= 0) {
+        alert('Stok habis. Produk tidak bisa dibeli saat ini.')
+        return
+      }
 
       this.$router.push({
         name: 'Checkout',
@@ -287,6 +370,7 @@ export default {
 .chip-row {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .chip {
@@ -303,6 +387,12 @@ export default {
   border-color: #f97316;
   background: #fff7ed;
   color: #f97316;
+}
+
+/* [DITAMBAHKAN] chip display-only */
+.chip-disabled {
+  cursor: default;
+  opacity: 0.95;
 }
 
 .qty-control {
@@ -365,9 +455,32 @@ export default {
   cursor: pointer;
 }
 
+.btn-outline:disabled,
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .loading-state {
   padding: 40px;
   text-align: center;
+}
+
+/* [DITAMBAHKAN] deskripsi supaya bisa multiline */
+.info-row-desc {
+  align-items: flex-start;
+}
+
+.value-wrap {
+  white-space: pre-wrap;
+  line-height: 1.45;
+}
+
+/* [DITAMBAHKAN] stok habis text */
+.stock-warning {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #ef4444;
 }
 
 /* RESPONSIVE */
