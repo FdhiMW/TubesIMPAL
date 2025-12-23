@@ -49,7 +49,6 @@
           <header class="inventory-header">
             <h2>Kelola Barang</h2>
             <div class="inventory-actions">
-
               <!-- ====== [SISIPKAN: HIDE BUTTON TAMBAH BARANG DI DASHBOARD] ====== -->
               <button class="primary-btn" @click="goToCreateProduct" v-if="false">
                 Tambah Barang
@@ -149,6 +148,29 @@
         </aside>
       </section>
     </main>
+
+    <!-- =========================
+         [DITAMBAHKAN] POPUP KONFIRMASI HAPUS
+         ========================= -->
+    <ConfirmModal
+      :show="showDeleteConfirm"
+      title="Hapus Produk?"
+      :message="`Yakin ingin menghapus produk: ${pendingDeleteName || 'produk ini'}?`"
+      okText="Ya"
+      cancelText="Tidak"
+      @confirm="onDeleteConfirm"
+      @cancel="onDeleteCancel"
+    />
+
+    <!-- =========================
+         [DITAMBAHKAN] POPUP SUKSES HAPUS (MIRIP CONTOH)
+         ========================= -->
+    <SuccessModal
+      :show="showDeleteSuccess"
+      :title="deleteSuccessTitle"
+      buttonText="OK"
+      @close="showDeleteSuccess = false"
+    />
   </div>
 </template>
 
@@ -163,9 +185,13 @@ import {
 
 import NavbarAdmin from '@/components/layout/NavbarAdmin.vue'
 
+/* ===== [DITAMBAHKAN] modal components ===== */
+import ConfirmModal from '@/components/confirmmodal/ConfirmModal.vue'
+import SuccessModal from '@/components/confirmmodal/SuccessModal.vue'
+
 export default {
   name: 'AdminDashboardView',
-  components: { NavbarAdmin },
+  components: { NavbarAdmin, ConfirmModal, SuccessModal },
   data() {
     return {
       totalBarangAktif: 0,
@@ -188,6 +214,15 @@ export default {
         },
       ],
       recentOrders: [],
+
+      /* ===== [DITAMBAHKAN] state untuk popup hapus ===== */
+      showDeleteConfirm: false,
+      pendingDeleteId: null,
+      pendingDeleteName: '',
+
+      /* ===== [DITAMBAHKAN] popup sukses hapus ===== */
+      showDeleteSuccess: false,
+      deleteSuccessTitle: 'Produk berhasil dihapus',
     }
   },
   methods: {
@@ -325,18 +360,52 @@ export default {
       })
     },
 
+    /* =========================================================
+       [DISESUAIKAN] HAPUS PRODUK: tidak pakai window.confirm lagi
+       ========================================================= */
     async confirmDelete(id) {
-      if (!window.confirm('Yakin ingin menghapus produk ini?')) return
+      // simpan ID + nama untuk ditampilkan di popup
+      const found = this.inventory.find((p) => p.id === id)
+      this.pendingDeleteId = id
+      this.pendingDeleteName = found ? found.name : ''
+
+      // buka popup konfirmasi
+      this.showDeleteConfirm = true
+    },
+
+    /* ===== [DITAMBAHKAN] klik TIDAK ===== */
+    onDeleteCancel() {
+      this.showDeleteConfirm = false
+      this.pendingDeleteId = null
+      this.pendingDeleteName = ''
+    },
+
+    /* ===== [DITAMBAHKAN] klik YA ===== */
+    async onDeleteConfirm() {
+      const id = this.pendingDeleteId
+      if (!id) {
+        this.onDeleteCancel()
+        return
+      }
+
+      // tutup modal confirm dulu
+      this.showDeleteConfirm = false
 
       this.deletingId = id
       try {
         await deleteProduk(id)
         this.inventory = this.inventory.filter((p) => p.id !== id)
+
+        // tampilkan modal sukses seperti contoh
+        this.deleteSuccessTitle = 'Produk berhasil dihapus'
+        this.showDeleteSuccess = true
       } catch (err) {
         console.error('Gagal menghapus produk', err)
         alert('Gagal menghapus produk, cek console.')
       } finally {
         this.deletingId = null
+        this.pendingDeleteId = null
+        this.pendingDeleteName = ''
       }
     },
 

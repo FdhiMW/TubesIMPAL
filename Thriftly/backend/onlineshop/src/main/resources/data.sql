@@ -59,11 +59,11 @@ INSERT IGNORE INTO pm_produk (
 -- CELANA
 (4, 1, 'Celana Jeans Sobek Biru',
  'Jeans ripped warna biru, kondisi 92%.',
- 80000, 3, 10, 'bekas', '32', 'Biru', 'Pull&Bear', 'Unisex', 'aktif', NOW()),
+ 80000, 3, 10, 'bekas', 'L', 'Biru', 'Pull&Bear', 'Unisex', 'aktif', NOW()),
 
 (4, 1, 'Celana Chino Cream Slim Fit',
  'Chino warna cream, bahan nyaman fit slim.',
- 65000, 8, 17, 'bekas', '30', 'Cream', 'Uniqlo', 'Pria', 'aktif', NOW()),
+ 65000, 8, 17, 'bekas', 'XL', 'Cream', 'Uniqlo', 'Pria', 'aktif', NOW()),
 
 -- DRESS
 (5, 1, 'Dress Floral Wanita',

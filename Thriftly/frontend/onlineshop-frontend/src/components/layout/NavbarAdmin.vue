@@ -18,17 +18,14 @@
     </div>
 
     <nav class="topbar-right">
-      <!-- Link ke dashboard admin -->
       <router-link to="/admin" class="topbar-link">
         Dashboard
       </router-link>
 
-      <!-- Link ke halaman pesanan admin -->
       <router-link to="/admin/pesanan" class="topbar-link">
         Pesanan
       </router-link>
 
-      <!-- Tombol logout -->
       <button class="logout-btn" @click="logout">
         Logout
       </button>
@@ -47,13 +44,11 @@ export default {
   },
 
   methods: {
-    // ====== [DITAMBAHKAN: KEMBALI KE DASHBOARD ADMIN] ======
     goDashboard() {
       if (this.$route.path !== '/admin') {
         this.$router.push('/admin')
       }
     },
-    // ====== [AKHIR PENYESUAIAN] ======
 
     logout() {
       localStorage.removeItem('user')
@@ -77,81 +72,80 @@ export default {
 .topbar {
   display: flex;
   align-items: center;
-  padding: 10px 32px;
+
+  /* ====== NAVBAR SEDIKIT LEBIH BESAR LAGI ====== */
+  padding: 16px 32px;
+  min-height: 68px;
+  /* =========================================== */
+
   background: linear-gradient(90deg, #ff5a3c, #ff9f1c);
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
-  gap: 24px;
+  gap: 26px;
   color: #fff;
-
-  /* ====== [DITAMBAHKAN: JAGA POSISI KIRI - TENGAH - KANAN] ====== */
   flex-wrap: nowrap;
-  /* ====== [AKHIR PENYESUAIAN] ====== */
 }
 
 .topbar-left {
   display: flex;
   align-items: center;
-  gap: 10px;
-
-  /* ====== [DITAMBAHKAN: KUNCI BAGIAN KIRI] ====== */
+  gap: 12px;
   flex: 0 0 auto;
-  /* ====== [AKHIR PENYESUAIAN] ====== */
 }
 
-/* ====== [DITAMBAHKAN: INDIKASI BISA DIKLIK] ====== */
 .brand-click {
   cursor: pointer;
 }
 .brand-click:hover {
   opacity: 0.9;
 }
-/* ====== [AKHIR PENYESUAIAN] ====== */
 
+/* ====== LOGO LEBIH BESAR ====== */
 .logo-badge {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border-radius: 999px;
   background: #ffd46c;
 }
 
 .logo-text {
   font-weight: 700;
-  font-size: 18px;
+  font-size: 20px;
 }
+/* ============================= */
 
-/* ====== [DISESUAIKAN: SEARCH DI-TENGAH & DIKECILKAN] ====== */
 .search-wrapper {
   flex: 1;
   display: flex;
-  justify-content: center; /* bikin search ada di tengah area navbar */
-  min-width: 0;            /* penting biar tidak dorong kanan */
+  justify-content: center;
+  min-width: 0;
 }
 
 .search-input {
-  width: 520px;        /* <= ukuran search admin (ubah angka ini kalau mau lebih kecil) */
+  width: 540px;
   max-width: 100%;
   border-radius: 999px;
   border: none;
-  padding: 10px 18px;
-  font-size: 14px;
+
+  /* ====== SEARCH IKUT PROPORSIONAL ====== */
+  padding: 12px 20px;
+  font-size: 15px;
+  /* ===================================== */
+
   outline: none;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
-/* ====== [AKHIR PENYESUAIAN] ====== */
 
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 16px;
-
-  /* ====== [DITAMBAHKAN: KUNCI BAGIAN KANAN AGAR TETAP] ====== */
+  gap: 18px;
   flex: 0 0 auto;
   white-space: nowrap;
-  /* ====== [AKHIR PENYESUAIAN] ====== */
 }
 
+/* ====== MENU LEBIH BESAR ====== */
 .topbar-link {
-  font-size: 13px;
+  font-size: 15px;
   color: #fff;
   text-decoration: none;
 }
@@ -160,15 +154,18 @@ export default {
   font-weight: 600;
   text-decoration: underline;
 }
+/* ============================== */
 
+/* ====== LOGOUT BUTTON LEBIH BESAR ====== */
 .logout-btn {
   border-radius: 999px;
   border: none;
-  padding: 6px 16px;
-  font-size: 13px;
+  padding: 8px 20px;
+  font-size: 15px;
   cursor: pointer;
   background: #ffffff;
   color: #ff5a3c;
   font-weight: 600;
 }
+/* ====================================== */
 </style>

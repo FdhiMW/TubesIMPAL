@@ -2,7 +2,9 @@ package com.onlineshop.service;
 
 import com.onlineshop.dto.BarangTerlarisDto;
 import com.onlineshop.dto.ProdukDetailDto;
+import com.onlineshop.model.Kategori;
 import com.onlineshop.model.Produk;
+import com.onlineshop.repository.KategoriRepository;
 import com.onlineshop.repository.PesananItemRepository;
 import com.onlineshop.repository.ProdukRepository;
 import org.springframework.data.domain.PageRequest;
@@ -21,10 +23,15 @@ public class ProdukService {
     private final PesananItemRepository pesananItemRepository;
     private final ProdukRepository produkRepository;
 
+    // ✅ TAMBAHAN untuk set kategori berdasarkan idKategori
+    private final KategoriRepository kategoriRepository;
+
     public ProdukService(PesananItemRepository pesananItemRepository,
-                         ProdukRepository produkRepository) {
+                         ProdukRepository produkRepository,
+                         KategoriRepository kategoriRepository) {
         this.pesananItemRepository = pesananItemRepository;
         this.produkRepository = produkRepository;
+        this.kategoriRepository = kategoriRepository;
     }
 
     // ====== [SISIPKAN DI SINI] ======
@@ -34,13 +41,34 @@ public class ProdukService {
     }
     // ====== [AKHIR SISIPAN] ======
 
+    // ====== [SISIPKAN] MASTER DROPDOWN (DINAMIS DARI DB) ======
+    public List<String> get_distinct_kondisi() {
+        return produkRepository.findDistinctKondisi();
+    }
+
+    public List<String> get_distinct_ukuran() {
+        return produkRepository.findDistinctUkuran();
+    }
+
+    public List<String> get_distinct_jenis_kelamin() {
+        return produkRepository.findDistinctJenisKelamin();
+    }
+
+    // ✅ TAMBAHAN
+    public List<String> get_distinct_warna() {
+        return produkRepository.findDistinctWarna();
+    }
+
+    public List<String> get_distinct_merek() {
+        return produkRepository.findDistinctMerek();
+    }
+    // ====== [AKHIR SISIPAN] ======
+
     // --------------------------------------------------------------------
     // BARANG TERLARIS
     // --------------------------------------------------------------------
     public List<BarangTerlarisDto> getBarangTerlaris(int limit) {
-        if (limit <= 0) {
-            limit = 5;
-        }
+        if (limit <= 0) limit = 5;
 
         Pageable pageable = PageRequest.of(0, limit);
         var pageProduk = produkRepository.findByOrderByBarangTerjualDesc(pageable);
@@ -88,9 +116,10 @@ public class ProdukService {
         dto.setJenisKelamin(p.getJenisKelamin());
         dto.setImageUrl(p.getImageUrl());
 
-        if (p.getBarangTerjual() != null) {
-            dto.setBarangTerjual(p.getBarangTerjual().longValue());
-        }
+        if (p.getBarangTerjual() != null) dto.setBarangTerjual(p.getBarangTerjual().longValue());
+
+        // ✅ TAMBAHAN
+        if (p.getKategori() != null) dto.setIdKategori(p.getKategori().getIdKategori());
 
         return dto;
     }
@@ -107,8 +136,7 @@ public class ProdukService {
         if (!cat.isEmpty()) {
             hasil = produkRepository.findByKategori_NamaKategoriIgnoreCase(cat);
         } else if (!key.isEmpty()) {
-            hasil = produkRepository
-                    .findByNamaProdukContainingIgnoreCaseOrMerekContainingIgnoreCase(key, key);
+            hasil = produkRepository.findByNamaProdukContainingIgnoreCaseOrMerekContainingIgnoreCase(key, key);
         } else {
             hasil = produkRepository.findAll();
         }
@@ -127,9 +155,11 @@ public class ProdukService {
                     dto.setMerek(p.getMerek());
                     dto.setJenisKelamin(p.getJenisKelamin());
                     dto.setImageUrl(p.getImageUrl());
-                    if (p.getBarangTerjual() != null) {
-                        dto.setBarangTerjual(p.getBarangTerjual().longValue());
-                    }
+                    if (p.getBarangTerjual() != null) dto.setBarangTerjual(p.getBarangTerjual().longValue());
+
+                    // ✅ TAMBAHAN
+                    if (p.getKategori() != null) dto.setIdKategori(p.getKategori().getIdKategori());
+
                     return dto;
                 })
                 .toList();
@@ -159,6 +189,13 @@ public class ProdukService {
         p.setJenisKelamin(dto.getJenisKelamin());
         p.setImageUrl(dto.getImageUrl());
 
+        // ✅ TAMBAHAN: set kategori berdasarkan idKategori (wajib kalau DB relasi NOT NULL)
+        if (dto.getIdKategori() != null) {
+            Kategori kategori = kategoriRepository.findById(dto.getIdKategori())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Kategori tidak ditemukan"));
+            p.setKategori(kategori);
+        }
+
         p.setStatusProduk("aktif");
         p.setTanggalDitambahkan(LocalDateTime.now());
 
@@ -182,9 +219,10 @@ public class ProdukService {
         result.setMerek(saved.getMerek());
         result.setJenisKelamin(saved.getJenisKelamin());
         result.setImageUrl(saved.getImageUrl());
-        result.setBarangTerjual(
-                saved.getBarangTerjual() == null ? 0L : saved.getBarangTerjual().longValue()
-        );
+        result.setBarangTerjual(saved.getBarangTerjual() == null ? 0L : saved.getBarangTerjual().longValue());
+
+        // ✅ TAMBAHAN
+        if (saved.getKategori() != null) result.setIdKategori(saved.getKategori().getIdKategori());
 
         return result;
     }
@@ -195,8 +233,7 @@ public class ProdukService {
     @Transactional
     public void deleteProduk(Long idProduk) {
         if (!produkRepository.existsById(idProduk)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    "Produk tidak ditemukan");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produk tidak ditemukan");
         }
 
         pesananItemRepository.deleteByProduk_IdProduk(idProduk);

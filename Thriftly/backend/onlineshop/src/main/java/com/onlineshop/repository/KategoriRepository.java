@@ -3,6 +3,8 @@ package com.onlineshop.repository;
 import com.onlineshop.model.Kategori;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface KategoriRepository extends JpaRepository<Kategori, Long> {
+import java.util.Optional;
 
+public interface KategoriRepository extends JpaRepository<Kategori, Long> {
+    Optional<Kategori> findByNamaKategoriIgnoreCase(String namaKategori);
 }

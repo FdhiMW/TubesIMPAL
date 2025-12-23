@@ -8,7 +8,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/produk")
@@ -30,8 +32,22 @@ public class ProdukController {
     }
     // ====== [AKHIR SISIPAN] ======
 
-    // ================= BARANG TERLARIS =================
+    // ====== [SISIPKAN] MASTER DROPDOWN (DINAMIS) ======
+    @GetMapping("/master-dropdown")
+    public Map<String, List<String>> getMasterDropdown() {
+        Map<String, List<String>> result = new HashMap<>();
+        result.put("kondisi", produkService.get_distinct_kondisi());
+        result.put("ukuran", produkService.get_distinct_ukuran());
+        result.put("jenisKelamin", produkService.get_distinct_jenis_kelamin());
 
+        // ✅ TAMBAHAN
+        result.put("warna", produkService.get_distinct_warna());
+        result.put("merek", produkService.get_distinct_merek());
+        return result;
+    }
+    // ====== [AKHIR SISIPAN] ======
+
+    // ================= BARANG TERLARIS =================
     @GetMapping("/terlaris")
     public List<BarangTerlarisDto> getBarangTerlaris(
             @RequestParam(name = "limit", defaultValue = "5") int limit) {
@@ -39,14 +55,12 @@ public class ProdukController {
     }
 
     // ================= DETAIL PRODUK ====================
-
     @GetMapping("/{id}")
     public ProdukDetailDto getProdukDetail(@PathVariable("id") Long id) {
         return produkService.getProdukDetail(id);
     }
 
     // ================= SEARCH PRODUK ====================
-
     @GetMapping("/search")
     public List<ProdukDetailDto> searchProduk(
             @RequestParam(name = "q", required = false) String keyword,
@@ -67,6 +81,10 @@ public class ProdukController {
             @RequestParam(value = "warna", required = false) String warna,
             @RequestParam(value = "merek", required = false) String merek,
             @RequestParam(value = "jenisKelamin", required = false) String jenisKelamin,
+
+            // ✅ TAMBAHAN: idKategori dikirim dari frontend
+            @RequestParam(value = "idKategori", required = false) Long idKategori,
+
             @RequestPart(value = "gambar", required = false) MultipartFile gambar
     ) {
         ProdukDetailDto dto = new ProdukDetailDto();
@@ -79,6 +97,9 @@ public class ProdukController {
         dto.setWarna(warna);
         dto.setMerek(merek);
         dto.setJenisKelamin(jenisKelamin);
+
+        // ✅ TAMBAHAN
+        dto.setIdKategori(idKategori);
 
         if (gambar != null && !gambar.isEmpty()) {
             dto.setImageUrl(gambar.getOriginalFilename());
@@ -93,7 +114,6 @@ public class ProdukController {
     }
 
     // ================== HAPUS PRODUK ====================
-
     @DeleteMapping("/{id}")
     public void deleteProduk(@PathVariable("id") Long id) {
         produkService.deleteProduk(id);

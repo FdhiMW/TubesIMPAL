@@ -121,7 +121,12 @@ export default {
 .topbar {
   display: flex;
   align-items: center;
-  padding: 10px 32px;
+
+  /* ====== [DISESUAIKAN: NAVBAR LEBIH TEBAL SEDIKIT] ====== */
+  padding: 14px 32px;   /* sebelumnya 10px 32px */
+  min-height: 62px;     /* agar tidak terlalu tipis tapi juga tidak kebesaran */
+  /* ====== [AKHIR PENYESUAIAN] ====== */
+
   background: linear-gradient(90deg, #ff5a3c, #ff9f1c);
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
   gap: 24px;

@@ -29,8 +29,12 @@ export function getProdukDetail(id) {
   return api.get(`/api/produk/${id}`);
 }
 
-// ====== [SISIPKAN DI produkApi.js] ======
+// Dashboard admin count aktif
 export function countProdukAktif() {
   return api.get('/api/produk/count/aktif');
 }
-// ====== [AKHIR SISIPAN] ======
+
+// MASTER DROPDOWN (DINAMIS)
+export function getMasterDropdown() {
+  return api.get('/api/produk/master-dropdown');
+}
