@@ -167,7 +167,7 @@ export default {
 
 .logo-text {
   font-weight: 700;
-  font-size: 20px;
+  font-size: 40px;
   color: #fff;
 }
 /* ====== [AKHIR PENYESUAIAN] ====== */

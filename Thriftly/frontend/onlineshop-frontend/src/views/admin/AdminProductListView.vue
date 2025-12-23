@@ -3,8 +3,7 @@
     <main class="page-content">
       <div class="header-row">
         <div class="header-left">
-          <h1 class="page-title">Katalog Produk (Admin)</h1>
-          <p class="page-subtitle">Ketik kata kunci pada search bar di atas untuk mencari produk.</p>
+          <h1 class="page-title">Katalog Produk</h1>
         </div>
 
         <!-- ====== [SISIPKAN: BUTTON TAMBAH BARANG DI POJOK KANAN ATAS] ====== -->
@@ -132,7 +131,7 @@ export default {
 
 .page-title {
   margin: 0;
-  font-size: 18px;
+  font-size: 40px;
   font-weight: 700;
 }
 
