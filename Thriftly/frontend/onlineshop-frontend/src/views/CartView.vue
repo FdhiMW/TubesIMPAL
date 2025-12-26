@@ -229,34 +229,36 @@ export default {
 <style scoped>
 .cart-page {
   min-height: 100vh;
-  background: #f5f7fb;
+  background: #ffffff;
   display: flex;
-  justify-content: center;
-  padding: 32px 0;
+  justify-content: stretch;
+  padding: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     sans-serif;
 }
 
 .cart-content {
   width: 100%;
-  max-width: 1100px;
+  max-width: 100%;
   background: #ffffff;
-  border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-  padding: 28px 32px 32px;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 34px 48px 48px;
 }
 
 .cart-title {
-  font-size: 24px;
-  font-weight: 700;
+  font-size: 34px;
+  font-weight: 900;
   color: #111827;
-  margin-bottom: 20px;
+  margin-bottom: 26px;
+  letter-spacing: -0.02em;
 }
 
 .cart-loading,
 .cart-error {
   padding: 20px;
   text-align: center;
+  font-size: 16px;
 }
 
 .cart-error {
@@ -268,36 +270,54 @@ export default {
   padding: 40px 0;
 }
 
-.cart-layout {
-  display: grid;
-  grid-template-columns: 2.2fr 1fr;
-  gap: 24px;
+.cart-empty p {
+  font-size: 16px;
 }
 
-/* Item */
+/* ✅ AREA MERAH (KIRI) DIBESARKAN: list dibuat lebih lebar + item dibuat “lebih tinggi” */
+.cart-layout {
+  display: grid;
+  grid-template-columns: 3.6fr 1.4fr; /* 🔥 kiri (area merah) makin lebar */
+  gap: 32px;                          /* 🔥 jarak lebih lega */
+  align-items: start;
+}
+
+/* ✅ list tidak menyempit */
+.cart-list {
+  min-width: 0;
+}
+
+/* ✅ Item dibuat besar (padding + min-height + ruang kanan) */
 .cart-item {
   display: flex;
   justify-content: space-between;
-  align-items: stretch;
-  padding: 16px 0;
-  border-bottom: 1px solid #e5e7eb;
+  align-items: center;                /* 🔥 biar konten sejajar */
+  padding: 28px 24px;                 /* 🔥 dulu 22px 0 -> sekarang “card” besar */
+  border: 1px solid #eef2f7;          /* 🔥 biar terlihat seperti area merah besar */
+  border-radius: 18px;                /* 🔥 */
+  background: #ffffff;
+  min-height: 170px;                  /* 🔥 bikin blok merah tinggi */
+  margin-bottom: 18px;                /* 🔥 jarak antar item */
 }
 
 .cart-item:last-child {
-  border-bottom: none;
+  margin-bottom: 0;
 }
 
 .cart-item-left {
   display: flex;
-  gap: 16px;
+  gap: 22px;                          /* 🔥 */
+  align-items: center;
 }
 
+/* ✅ gambar lebih besar */
 .cart-item-image {
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
+  width: 140px;                       /* 🔥 dari 120px */
+  height: 140px;                      /* 🔥 */
+  border-radius: 18px;
   overflow: hidden;
   background: #e5e7eb;
+  flex: 0 0 auto;
 }
 
 .cart-item-image img {
@@ -316,140 +336,188 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  gap: 6px;
 }
 
 .cart-item-name {
-  font-size: 16px;
-  font-weight: 600;
-  margin-bottom: 4px;
+  font-size: 22px;                    /* 🔥 */
+  font-weight: 900;
+  margin: 0;
   color: #111827;
+  line-height: 1.15;
 }
 
 .cart-item-price,
 .cart-item-subtotal {
-  font-size: 14px;
+  font-size: 16px;                    /* 🔥 */
   color: #4b5563;
+  margin: 0;
 }
 
-/* Kanan item */
+/* ✅ kanan item dibuat lebih tegas + sejajar */
 .cart-item-right {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  justify-content: space-between;
-  gap: 8px;
+  justify-content: center;
+  gap: 16px;
+  min-width: 360px;                   /* 🔥 lebih lebar supaya area merah terasa besar */
 }
 
 /* Qty control */
 .qty-control {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
 
 .qty-btn {
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   border-radius: 999px;
   border: 1px solid #d1d5db;
   background: #ffffff;
   cursor: pointer;
+  font-size: 18px;
 }
 
 .qty-input {
-  width: 48px;
+  width: 74px;                        /* 🔥 */
   text-align: center;
   border-radius: 999px;
   border: 1px solid #d1d5db;
-  padding: 4px 0;
+  padding: 10px 0;
+  font-size: 15px;
 }
 
 /* Buttons */
 .cart-item-actions {
   display: flex;
-  gap: 8px;
+  gap: 12px;
 }
 
 .btn-primary {
   border-radius: 999px;
-  padding: 8px 18px;
+  padding: 12px 26px;                 /* 🔥 */
   border: none;
   background: linear-gradient(135deg, #f97316, #ef4444);
   color: #ffffff;
-  font-weight: 600;
+  font-weight: 900;
   cursor: pointer;
+  font-size: 14px;
 }
 
 .btn-outline {
   border-radius: 999px;
-  padding: 8px 18px;
+  padding: 12px 26px;                 /* 🔥 */
   border: 1px solid #d1d5db;
   background: #ffffff;
   cursor: pointer;
-  font-weight: 500;
+  font-weight: 800;
+  font-size: 14px;
 }
 
 .btn-primary.small,
 .btn-outline.small {
-  padding: 6px 14px;
-  font-size: 13px;
+  padding: 10px 22px;
+  font-size: 14px;
 }
 
 .btn-primary.full {
   width: 100%;
   justify-content: center;
+  padding: 12px 22px;
+  font-size: 14px;
 }
 
-/* Summary */
+/* Summary (kanan) tetap, tapi sedikit lebih besar biar seimbang */
 .cart-summary {
-  border-radius: 16px;
+  border-radius: 18px;
   border: 1px solid #e5e7eb;
-  padding: 16px 18px;
+  padding: 20px 22px;
   background: #f9fafb;
   align-self: flex-start;
+  position: sticky;
+  top: 18px;
 }
 
 .summary-title {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 12px;
+  font-size: 20px;
+  font-weight: 900;
+  margin-bottom: 14px;
   color: #111827;
 }
 
 .summary-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 8px;
-  font-size: 14px;
+  margin-bottom: 10px;
+  font-size: 15px;
 }
 
 .summary-value {
-  font-weight: 600;
+  font-weight: 900;
 }
 
 .summary-note {
-  font-size: 12px;
+  font-size: 13px;
   color: #6b7280;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  line-height: 1.5;
 }
 
 /* Responsive */
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
   .cart-layout {
     grid-template-columns: 1fr;
   }
 
-  .cart-content {
-    padding: 20px;
+  .cart-item-right {
+    min-width: unset;
+    width: 100%;
+    align-items: flex-start;
   }
 
   .cart-item {
     flex-direction: column;
-    gap: 12px;
+    align-items: stretch;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 900px) {
+  .cart-content {
+    padding: 20px;
   }
 
-  .cart-item-right {
-    align-items: flex-start;
+  .cart-title {
+    font-size: 26px;
+    margin-bottom: 18px;
+  }
+
+  .cart-item {
+    padding: 18px;
+    min-height: unset;
+  }
+
+  .cart-item-image {
+    width: 110px;
+    height: 110px;
+    border-radius: 16px;
+  }
+
+  .cart-item-name {
+    font-size: 18px;
+  }
+
+  .cart-item-price,
+  .cart-item-subtotal {
+    font-size: 14px;
+  }
+
+  .cart-summary {
+    position: static;
+    top: unset;
   }
 }
 </style>

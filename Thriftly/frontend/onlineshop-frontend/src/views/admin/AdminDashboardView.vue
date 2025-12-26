@@ -360,27 +360,19 @@ export default {
       })
     },
 
-    /* =========================================================
-       [DISESUAIKAN] HAPUS PRODUK: tidak pakai window.confirm lagi
-       ========================================================= */
     async confirmDelete(id) {
-      // simpan ID + nama untuk ditampilkan di popup
       const found = this.inventory.find((p) => p.id === id)
       this.pendingDeleteId = id
       this.pendingDeleteName = found ? found.name : ''
-
-      // buka popup konfirmasi
       this.showDeleteConfirm = true
     },
 
-    /* ===== [DITAMBAHKAN] klik TIDAK ===== */
     onDeleteCancel() {
       this.showDeleteConfirm = false
       this.pendingDeleteId = null
       this.pendingDeleteName = ''
     },
 
-    /* ===== [DITAMBAHKAN] klik YA ===== */
     async onDeleteConfirm() {
       const id = this.pendingDeleteId
       if (!id) {
@@ -388,7 +380,6 @@ export default {
         return
       }
 
-      // tutup modal confirm dulu
       this.showDeleteConfirm = false
 
       this.deletingId = id
@@ -396,7 +387,6 @@ export default {
         await deleteProduk(id)
         this.inventory = this.inventory.filter((p) => p.id !== id)
 
-        // tampilkan modal sukses seperti contoh
         this.deleteSuccessTitle = 'Produk berhasil dihapus'
         this.showDeleteSuccess = true
       } catch (err) {
@@ -460,58 +450,318 @@ export default {
 </script>
 
 <style scoped>
-/* STYLE TETAP: tidak diubah */
-.admin-page { min-height: 100vh; background: #f5f7fb; font-family: system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; color:#222; }
-.page-content { padding: 20px 32px 32px; }
-.quick-actions { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:16px; margin-bottom:18px; }
-.qa-card { border-radius:20px; padding:16px 18px; color:#fff; font-size:14px; cursor:pointer; }
-.qa-card h3 { margin:0 0 4px; font-size:15px; }
-.qa-card p { margin:0; font-size:12px; }
+/* =========================
+   BASE
+   ========================= */
+.admin-page {
+  min-height: 100vh;
+  background: #ffffff;
+  font-family: system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  color:#222;
+}
+
+/* ✅ [DISESUAIKAN LAGI] biar area kotak merah makin “penuh kebawah”
+   - padding bawah dinaikkan
+   - base font naik
+*/
+.page-content {
+  padding: 24px 32px 180px; /* 🔥 bawah lebih besar agar tidak kosong */
+  min-height: calc(100vh - 84px);
+  font-size: 16px;          /* 🔥 base font naik lagi */
+}
+
+/* ✅ [DISESUAIKAN LAGI] grid ikut penuh tinggi layar lebih maksimal */
+.main-grid {
+  display: grid;
+  grid-template-columns: 2.2fr 1.2fr;
+  gap: 20px;
+
+  min-height: calc(100vh - 200px); /* 🔥 lebih besar supaya area bawah terpakai */
+  align-items: stretch;
+}
+
+/* ✅ card full height */
+.inventory-card,
+.orders-card {
+  height: 100%;
+}
+
+/* =========================
+   QUICK ACTIONS (dibesarkan lagi)
+   ========================= */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.qa-card {
+  border-radius: 24px;
+  padding: 24px 24px;     /* 🔥 lebih tinggi */
+  color: #fff;
+  font-size: 16px;        /* 🔥 font naik */
+  cursor: pointer;
+}
+
+.qa-card h3 {
+  margin: 0 0 8px;
+  font-size: 18px;        /* 🔥 judul naik */
+}
+
+.qa-card p {
+  margin: 0;
+  font-size: 14px;        /* 🔥 desc naik */
+  line-height: 1.35;
+}
+
 .qa-search { background: linear-gradient(135deg,#ff7750,#ffb48b); }
 .qa-manage { background: linear-gradient(135deg,#ff5a3c,#ff9f1c); }
 .qa-orders { background: linear-gradient(135deg,#ff8553,#ffc16d); }
-.summary-row { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:16px; margin-bottom:18px; }
-.summary-card { background:#fff; border-radius:18px; padding:14px 16px; }
-.summary-label { margin:0 0 6px; font-size:12px; color:#777; }
-.summary-value { margin:0; font-size:24px; font-weight:700; }
-.summary-note { margin:4px 0 0; font-size:11px; color:#8a8a8a; }
-.main-grid { display:grid; grid-template-columns: 2.2fr 1.2fr; gap:16px; }
-.inventory-card { background:#fff; border-radius:20px; padding:16px 18px 18px; }
-.inventory-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
-.inventory-header h2 { margin:0; font-size:16px; }
-.inventory-actions { display:flex; gap:8px; }
-.inventory-search { display:flex; gap:8px; margin-bottom:12px; }
-.search-input { flex:1; border-radius:999px; border:1px solid #d3d7e6; padding:8px 14px; font-size:13px; outline:none; }
-.round-btn { border-radius:999px; border:none; background:#ff6b3d; color:#fff; padding:0 16px; font-size:13px; cursor:pointer; }
-.ghost-btn { border-radius:999px; border:1px solid #d3d7e6; background:#fff; padding:6px 16px; font-size:12px; cursor:pointer; }
-.ghost-btn.small { padding:4px 12px; }
-.primary-btn { border-radius:999px; border:none; background:linear-gradient(135deg,#ff5a3c,#ff9f1c); padding:7px 18px; color:#fff; font-size:12px; cursor:pointer; }
-.inventory-table-wrapper { overflow-x:auto; }
-.inventory-table { width:100%; border-collapse:collapse; font-size:12px; }
-.inventory-table th, .inventory-table td { padding:8px 6px; text-align:left; border-bottom:1px solid #eef0f7; }
-.inventory-table th { font-weight:600; color:#777; }
-.status-pill { display:inline-block; padding:2px 8px; border-radius:999px; font-size:11px; }
+
+/* =========================
+   SUMMARY (dibesarkan lagi)
+   ========================= */
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.summary-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 18px 20px;      /* 🔥 lebih besar */
+  border: 1px solid #eef0f7;
+}
+
+.summary-label {
+  margin: 0 0 10px;
+  font-size: 14px;         /* 🔥 naik */
+  color: #777;
+  font-weight: 600;
+}
+
+.summary-value {
+  margin: 0;
+  font-size: 36px;         /* 🔥 angka lebih besar */
+  font-weight: 900;
+  line-height: 1;
+}
+
+.summary-note {
+  margin: 10px 0 0;
+  font-size: 13px;         /* 🔥 naik */
+  color: #8a8a8a;
+}
+
+/* =========================
+   INVENTORY (dibesarkan + tombol besar)
+   ========================= */
+.inventory-card {
+  background: #fff;
+  border-radius: 22px;
+  padding: 20px 22px 22px;
+  border: 1px solid #eef0f7;
+  display: flex;
+  flex-direction: column;
+}
+
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.inventory-header h2 {
+  margin: 0;
+  font-size: 20px;       /* 🔥 naik */
+  font-weight: 900;
+}
+
+.inventory-actions { display:flex; gap:10px; }
+
+/* Search bar lebih besar */
+.inventory-search {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.search-input {
+  flex: 1;
+  border-radius: 999px;
+  border: 1px solid #d3d7e6;
+  padding: 14px 18px;     /* 🔥 lebih tinggi */
+  font-size: 15px;        /* 🔥 naik */
+  outline: none;
+}
+
+/* ✅ tombol “Cari” lebih besar */
+.round-btn {
+  border-radius: 999px;
+  border: none;
+  background: #ff6b3d;
+  color: #fff;
+  padding: 0 28px;        /* 🔥 lebih besar */
+  height: 48px;           /* 🔥 tinggi fix */
+  font-size: 15px;        /* 🔥 naik */
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* kalau suatu saat dipakai */
+.primary-btn {
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg,#ff5a3c,#ff9f1c);
+  padding: 12px 26px;     /* 🔥 lebih besar */
+  color: #fff;
+  font-size: 15px;        /* 🔥 naik */
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.inventory-table-wrapper {
+  overflow-x: auto;
+  background: #ffffff;
+  flex: 1;
+}
+
+/* ✅ table font lebih besar + row lebih tinggi biar “mengisi” area kosong */
+.inventory-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;       /* 🔥 naik */
+}
+
+.inventory-table th,
+.inventory-table td {
+  padding: 14px 10px;    /* 🔥 row lebih tinggi (mengurangi kosong bawah) */
+  text-align: left;
+  border-bottom: 1px solid #f0f2f8;
+}
+
+.inventory-table th {
+  font-weight: 800;
+  color: #777;
+  font-size: 13px;
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 6px 14px;     /* 🔥 lebih besar */
+  border-radius: 999px;
+  font-size: 13px;       /* 🔥 naik */
+  font-weight: 800;
+}
+
 .status-active { background:#e6f8ec; color:#18a357; }
 .status-out { background:#ffe5e5; color:#e63939; }
-.link-small { border:none; background:none; font-size:11px; color:#ff6b3d; cursor:pointer; }
+
+.link-small {
+  border: none;
+  background: none;
+  font-size: 13px;       /* 🔥 naik */
+  color: #ff6b3d;
+  cursor: pointer;
+  font-weight: 800;
+}
+
 .link-small.danger { color:#e63939; }
-.divider { margin:0 4px; color:#ccc; }
-.orders-card { background:#fff; border-radius:20px; padding:16px 18px 18px; }
-.orders-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-.orders-header h2 { margin:0; font-size:16px; }
-.section-subtitle { margin:2px 0 0; font-size:11px; color:#777; }
-.orders-list { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
-.order-item { display:flex; justify-content:space-between; align-items:center; background:#f7f8fc; border-radius:14px; padding:8px 10px; }
-.order-main { font-size:12px; }
-.order-code { margin:0 0 2px; font-weight:600; }
-.order-info { margin:0; color:#555; }
-.order-meta { margin:0; font-size:11px; color:#888; }
-.order-status { font-size:11px; border-radius:999px; padding:4px 10px; }
+.divider { margin:0 8px; color:#ccc; }
+
+/* =========================
+   ORDERS (dibesarkan + isi tinggi)
+   ========================= */
+.orders-card {
+  background: #fff;
+  border-radius: 22px;
+  padding: 20px 22px 22px;
+  border: 1px solid #eef0f7;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.orders-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.orders-header h2 {
+  margin: 0;
+  font-size: 20px; /* 🔥 naik */
+  font-weight: 900;
+}
+
+.section-subtitle {
+  margin: 6px 0 0;
+  font-size: 13.5px; /* 🔥 naik */
+  color: #777;
+}
+
+/* ✅ tombol “Lihat Semua” lebih besar */
+.ghost-btn {
+  border-radius: 999px;
+  border: 1px solid #d3d7e6;
+  background: #fff;
+  padding: 10px 18px;      /* 🔥 lebih besar */
+  font-size: 14px;         /* 🔥 naik */
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.ghost-btn.small { padding: 10px 18px; }
+
+.orders-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  flex: 1; /* 🔥 isi tinggi card */
+  background: #ffffff;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: #ffffff;
+  border: 1px solid #eef0f7;
+  border-radius: 18px;
+  padding: 16px 16px;     /* 🔥 lebih tinggi */
+}
+
+.order-main { font-size: 14px; }
+.order-code { margin:0 0 6px; font-weight:900; }
+.order-info { margin:0; color:#555; font-weight:700; }
+.order-meta { margin:0; font-size:13px; color:#888; }
+
+.order-status {
+  font-size: 13px;
+  border-radius: 999px;
+  padding: 8px 14px;      /* 🔥 lebih besar */
+  font-weight: 900;
+}
+
 .status-pending { background:#fff3d6; color:#e6a800; }
 .status-processing { background:#e9f7ff; color:#1e88e5; }
 .status-done { background:#e6f8ec; color:#18a357; }
+
+/* =========================
+   RESPONSIVE
+   ========================= */
 @media (max-width: 1024px) {
   .quick-actions, .summary-row { grid-template-columns: 1fr; }
-  .main-grid { grid-template-columns: 1fr; }
+  .main-grid { grid-template-columns: 1fr; min-height: auto; }
 }
 </style>

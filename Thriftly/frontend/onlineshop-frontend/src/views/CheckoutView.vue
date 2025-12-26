@@ -1,3 +1,4 @@
+```vue
 <template>
   <div class="checkout-page">
     <!-- KONTEN -->
@@ -93,7 +94,10 @@
                 @click="paymentMethod = method.value"
               >
                 <span class="radio-circle">
-                  <span v-if="paymentMethod === method.value" class="radio-dot"></span>
+                  <span
+                    v-if="paymentMethod === method.value"
+                    class="radio-dot"
+                  ></span>
                 </span>
                 <span class="payment-label">{{ method.label }}</span>
               </div>
@@ -151,9 +155,7 @@
             Total Bayar : {{ formatRupiah(totalBayar) }}
           </div>
           <div class="footer-buttons">
-            <button class="btn-secondary" @click="goBack">
-              Kembali
-            </button>
+            <button class="btn-secondary" @click="goBack">Kembali</button>
             <button
               class="btn-primary"
               :disabled="loading || !produk"
@@ -178,9 +180,7 @@
           Kode pesanan: <span class="popup-code">{{ successKode }}</span>
         </div>
 
-        <button class="popup-ok" @click="closeSuccessPopup">
-          OK
-        </button>
+        <button class="popup-ok" @click="closeSuccessPopup">OK</button>
       </div>
     </div>
     <!-- ====== [AKHIR PENYESUAIAN] ====== -->
@@ -230,9 +230,8 @@ export default {
   computed: {
     selectedShipment() {
       return (
-        this.shipmentOptions.find(
-          s => s.code === this.selectedShipmentCode,
-        ) || this.shipmentOptions[0]
+        this.shipmentOptions.find(s => s.code === this.selectedShipmentCode) ||
+        this.shipmentOptions[0]
       )
     },
     subtotal() {
@@ -250,7 +249,6 @@ export default {
   created() {
     const { id, qty } = this.$route.query
     if (!id) {
-      // kalau tidak ada id produk, balik ke home
       this.$router.push('/')
       return
     }
@@ -277,9 +275,7 @@ export default {
       if (!rawUser) return
       try {
         const user = JSON.parse(rawUser)
-        if (user.namaLengkap) {
-          this.form.namaPenerima = user.namaLengkap
-        }
+        if (user.namaLengkap) this.form.namaPenerima = user.namaLengkap
       } catch (e) {
         // abaikan
       }
@@ -295,7 +291,7 @@ export default {
     // ====== [DITAMBAHKAN: TUTUP POPUP + REDIRECT] ======
     closeSuccessPopup() {
       this.showSuccessPopup = false
-      this.$router.push('/') // kalau mau ke lacak pesanan, ganti ke "/lacak-paket" atau halaman detail pesanan
+      this.$router.push('/')
     },
     // ====== [AKHIR PENYESUAIAN] ======
 
@@ -311,7 +307,6 @@ export default {
 
       const user = JSON.parse(rawUser)
 
-      // validasi sederhana
       if (
         !this.form.namaPenerima ||
         !this.form.telepon ||
@@ -348,12 +343,8 @@ export default {
         const res = await http.post('/pesanan', payload)
         const kode = res.data?.kodePesanan || '(tanpa kode)'
 
-        // ====== [DISESUAIKAN: GANTI ALERT JADI POPUP] ======
         this.successKode = kode
         this.showSuccessPopup = true
-        // ====== [AKHIR PENYESUAIAN] ======
-
-        // this.$router.push('/')  // dipindahkan ke closeSuccessPopup()
       } catch (err) {
         console.error('Gagal membuat pesanan', err)
         alert(
@@ -440,33 +431,56 @@ export default {
   font-size: 18px;
 }
 
-/* BODY */
+/* ✅ BODY */
 .checkout-main {
-  padding: 28px 40px 40px;
+  padding: 0;
+  background: #ffffff;
+  min-height: calc(100vh - 84px);
+  display: flex;
 }
 
 .checkout-card {
   background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-  padding: 28px 32px 24px;
+  width: 100%;
+  max-width: 100%;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 28px 56px 36px;
+
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
+/* ✅ GRID */
 .checkout-grid {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  gap: 40px;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 46px;
+  align-items: stretch;
+  flex: 1;
 }
 
 .checkout-column {
   font-size: 14px;
   color: #111827;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 
+/* =========================
+   ✅ FONT LEBIH BESAR (KOTAK MERAH)
+   - Alamat & Pengiriman
+   - Pembayaran
+   - Footer total + tombol
+   ========================= */
+
+/* ✅ Judul section lebih besar */
 .section-title {
-  font-size: 20px;
-  font-weight: 700;
-  margin-bottom: 6px;
+  font-size: 28px;        /* 🔥 lebih besar */
+  font-weight: 900;
+  margin-bottom: 8px;
 }
 
 .section-divider {
@@ -481,46 +495,82 @@ export default {
   margin-bottom: 14px;
 }
 
+/* ✅ Label lebih besar */
 .field-group label {
-  font-size: 13px;
-  margin-bottom: 4px;
+  font-size: 15px;        /* 🔥 dari 13px */
+  font-weight: 800;       /* 🔥 lebih tegas */
+  margin-bottom: 8px;     /* 🔥 lebih lega */
   color: #111827;
 }
 
+/* default */
 .field-row {
   display: flex;
   gap: 14px;
 }
 
+/* ✅ Input lebih besar */
 .input-pill {
   border-radius: 999px;
   border: 1px solid #d1d5db;
-  padding: 10px 14px;
-  font-size: 13px;
+  padding: 14px 18px;     /* 🔥 lebih tinggi */
+  font-size: 15px;        /* 🔥 dari 13px */
   outline: none;
+  width: 100%;
 }
 
 .input-pill::placeholder {
   color: #9ca3af;
+  font-size: 14px;
 }
 
 .shipping-pill {
   background: #ffffff;
 }
 
-/* PAYMENT */
+/* =========================
+   ✅ PERBAIKAN JARAK KOTAK MERAH (AGAR TIDAK BERDEKATAN)
+   ========================= */
+
+/* ✅ KIRI: jarak antar input di baris dibuat lebih renggang */
+.checkout-column:nth-child(1) .field-row {
+  gap: 28px;
+  align-items: flex-start;
+}
+
+.checkout-column:nth-child(1) .field-row .field-group {
+  flex: 1;
+  min-width: 220px;
+  margin-bottom: 18px;
+}
+
+/* =========================
+   ✅ PEMBAYARAN: FONT & UKURAN BUTTON/DIV DIBESARKAN
+   ========================= */
+
+/* ✅ Pembayaran: perbesar font dasar kolom */
+.checkout-column:nth-child(2) {
+  font-size: 15.5px;     /* 🔥 */
+}
+
+/* ✅ Judul pembayaran */
+.checkout-column:nth-child(2) .section-title {
+  font-size: 28px;       /* 🔥 */
+}
+
+/* ✅ Metode pembayaran: lebih besar */
 .payment-methods {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-bottom: 18px;
+  gap: 18px;             /* 🔥 */
+  margin-bottom: 26px;   /* 🔥 */
 }
 
 .payment-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
+  gap: 14px;             /* 🔥 */
+  padding: 18px 22px;    /* 🔥 lebih besar */
   border-radius: 999px;
   background: #e5e7eb;
   cursor: pointer;
@@ -532,14 +582,15 @@ export default {
 }
 
 .radio-circle {
-  width: 18px;
-  height: 18px;
+  width: 26px;           /* 🔥 */
+  height: 26px;          /* 🔥 */
   border-radius: 50%;
   border: 2px solid #9ca3af;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #ffffff;
+  flex: 0 0 auto;
 }
 
 .payment-item--active .radio-circle {
@@ -547,8 +598,8 @@ export default {
 }
 
 .radio-dot {
-  width: 10px;
-  height: 10px;
+  width: 14px;           /* 🔥 */
+  height: 14px;          /* 🔥 */
   border-radius: 50%;
   background: #ef4444;
 }
@@ -558,43 +609,80 @@ export default {
 }
 
 .payment-label {
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 900;
+  font-size: 18px;       /* 🔥 dari 16px */
+  line-height: 1.1;
 }
 
+/* ✅ FORM PEMBAYARAN */
 .card-section {
-  margin-top: 10px;
+  margin-top: 16px;
+  padding-bottom: 24px;
+  flex: 1;
+}
+
+.checkout-column:nth-child(2) .card-section .field-group {
+  margin-bottom: 28px;
+}
+
+.checkout-column:nth-child(2) .card-section .field-row {
+  gap: 34px;
+  margin-top: 14px;
+  align-items: flex-start;
+}
+
+.checkout-column:nth-child(2) .card-section .small-field {
+  flex: 1;
+  min-width: 280px;
+}
+
+/* ✅ label pembayaran lebih besar */
+.checkout-column:nth-child(2) .field-group label {
+  font-size: 16px;       /* 🔥 */
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+/* ✅ input pembayaran lebih besar */
+.checkout-column:nth-child(2) .input-pill {
+  font-size: 16px;       /* 🔥 */
+  padding: 15px 18px;    /* 🔥 */
 }
 
 .small-field .input-pill {
   width: 100%;
 }
 
-/* FOOTER */
+/* =========================
+   ✅ FOOTER: FONT & BUTTON LEBIH BESAR (KOTAK MERAH BAWAH)
+   ========================= */
+
 .checkout-footer {
   border-top: 1px solid #e5e7eb;
-  margin-top: 20px;
-  padding-top: 16px;
+  margin-top: 18px;
+  padding-top: 20px;      /* 🔥 */
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .total-text {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 20px;        /* 🔥 */
+  font-weight: 900;
 }
 
 .footer-buttons {
   display: flex;
-  gap: 12px;
+  gap: 16px;              /* 🔥 */
 }
 
+/* ✅ tombol lebih besar */
 .btn-secondary,
 .btn-primary {
   border-radius: 999px;
-  padding: 10px 26px;
-  font-size: 14px;
+  padding: 16px 38px;     /* 🔥 */
+  font-size: 17px;        /* 🔥 */
+  font-weight: 900;       /* 🔥 */
   border: none;
   cursor: pointer;
 }
@@ -614,18 +702,57 @@ export default {
   cursor: not-allowed;
 }
 
-/* RESPONSIVE SEDIKIT */
+/* RESPONSIVE */
 @media (max-width: 900px) {
+  .checkout-main {
+    min-height: auto;
+    display: block;
+  }
+
+  .checkout-card {
+    padding: 20px;
+  }
+
   .checkout-grid {
     grid-template-columns: 1fr;
+    gap: 22px;
   }
 
   .header-center {
     padding: 0 16px;
   }
 
-  .checkout-main {
-    padding: 20px;
+  /* KIRI: wrap */
+  .checkout-column:nth-child(1) .field-row {
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .checkout-column:nth-child(1) .field-row .field-group {
+    min-width: 0;
+    flex: 1 1 240px;
+  }
+
+  /* PEMBAYARAN: Exp & CVV wrap */
+  .checkout-column:nth-child(2) .card-section .field-row {
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .checkout-column:nth-child(2) .card-section .small-field {
+    min-width: 0;
+    flex: 1 1 220px;
+  }
+
+  /* tombol tetap besar tapi proporsional */
+  .btn-secondary,
+  .btn-primary {
+    padding: 14px 26px;
+    font-size: 16px;
+  }
+
+  .total-text {
+    font-size: 18px;
   }
 }
 
@@ -699,3 +826,4 @@ export default {
 }
 /* ====== [AKHIR PENYESUAIAN] ====== */
 </style>
+```

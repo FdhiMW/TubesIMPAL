@@ -357,7 +357,6 @@
       </form>
     </main>
 
-    <!-- ===================== POPUP SUCCESS (TAMBAHAN) ===================== -->
     <transition name="pop">
       <div v-if="popup.show" class="popup-overlay" @click.self="closePopup">
         <div class="popup-card" role="dialog" aria-modal="true">
@@ -374,7 +373,6 @@
         </div>
       </div>
     </transition>
-    <!-- =================================================================== -->
   </div>
 </template>
 
@@ -417,13 +415,11 @@ export default {
       open: { kategori: false, kondisi: false, ukuran: false, warna: false, merek: false, jk: false },
       activeIndex: { kategori: 0, kondisi: 0, ukuran: 0, warna: 0, merek: 0, jk: 0 },
 
-      // ===================== POPUP STATE (TAMBAHAN) =====================
       popup: {
         show: false,
         title: 'Produk berhasil disimpan',
         desc: 'Produk sudah ditambahkan ke katalog admin.',
       },
-      // ===================================================================
     }
   },
 
@@ -650,22 +646,17 @@ export default {
       return created.idKategori
     },
 
-    // ===================== POPUP METHODS (TAMBAHAN) =====================
     showPopup(title, desc) {
       this.popup.title = title || 'Berhasil'
       this.popup.desc = desc || ''
       this.popup.show = true
-      // optional auto close
-      // setTimeout(() => (this.popup.show = false), 1500)
     },
     closePopup() {
       this.popup.show = false
     },
-    // ===================================================================
 
     async onSubmit() {
       if (!this.form.namaProduk || this.form.harga == null) {
-        // ganti alert ke popup yang lebih cantik
         this.showPopup('Gagal menyimpan', 'Nama produk dan harga wajib diisi.')
         return
       }
@@ -695,10 +686,8 @@ export default {
 
         await createProduk(formData)
 
-        // ✅ ganti alert sukses menjadi popup cantik
         this.showPopup('Produk berhasil disimpan', 'Produk sudah ditambahkan ke katalog admin.')
 
-        // biar user lihat pop-up dulu, lalu redirect
         setTimeout(() => {
           this.$router.push({ name: 'admin-product-list' })
         }, 650)
@@ -718,120 +707,226 @@ export default {
 </script>
 
 <style scoped>
+/* =========================================================
+   PAKSA BACKGROUND GLOBAL PUTIH
+   ========================================================= */
+:global(html),
+:global(body),
+:global(#app) {
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  background: #ffffff !important;
+}
+
+:global(*),
+:global(*::before),
+:global(*::after) {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   FULL SATU LAYAR (Viewport)
+   ========================================================= */
 .admin-page {
   min-height: 100vh;
-  background: #f5f7fb;
+  width: 100%;
+  background: #ffffff;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   color: #222;
+
+  display: flex;
+  flex-direction: column;
 }
 
-.page-content { padding: 20px 32px 32px; }
-.page-title { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-.page-subtitle { margin: 0 0 16px; font-size: 13px; color: #6b7280; }
+/* ✅ page-content dipaksa setinggi layar dan fleksibel */
+.page-content {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 26px 34px 42px;
+  font-size: 16px;
 
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ✅ form/card dibuat mengisi sisa tinggi layar */
 .product-form {
+  width: 100%;
   background: #fff;
-  border-radius: 20px;
-  padding: 20px 22px 24px;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+  border-radius: 22px;
+  padding: 26px 26px 28px;
+  box-shadow: 0 10px 26px rgba(15, 23, 42, 0.06);
+  border: 1px solid #eef0f7;
+
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
+/* ✅ tombol dinaikkan + diperbesar */
+.form-actions {
+  margin-top: 18px;          /* ✅ sebelumnya auto (terlalu bawah). sekarang naik */
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  padding-top: 10px;         /* ✅ lebih rapat */
+}
+
+/* =========================================================
+   TYPO
+   ========================================================= */
+.page-title {
+  font-size: 28px;
+  font-weight: 900;
+  margin: 0 0 6px;
+}
+
+.page-subtitle {
+  margin: 0 0 18px;
+  font-size: 15px;
+  color: #6b7280;
+}
+
+/* =========================================================
+   GRID + INPUT
+   ========================================================= */
 .form-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 14px 18px;
-  margin-bottom: 16px;
+  gap: 18px 22px;
+  margin-bottom: 18px;
 }
 
-.form-group { display: flex; flex-direction: column; gap: 4px; font-size: 13px; position: relative; }
-.form-group.full-width { margin-top: 8px; }
-.form-group label { font-weight: 600; color: #374151; }
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 15px;
+  position: relative;
+}
+
+.form-group.full-width { margin-top: 10px; }
+
+.form-group label {
+  font-weight: 800;
+  color: #374151;
+  font-size: 14px;
+}
 
 .form-group input,
 .form-group textarea {
-  border-radius: 999px;
+  border-radius: 14px;
   border: 1px solid #d1d5db;
-  padding: 8px 14px;
-  font-size: 13px;
+  padding: 12px 14px;
+  font-size: 15px;
   outline: none;
+  background: #fff;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
-  border-color: rgba(255, 90, 60, 0.5);
-  box-shadow: 0 0 0 4px rgba(255, 90, 60, 0.12);
+  border-color: rgba(255, 90, 60, 0.55);
+  box-shadow: 0 0 0 5px rgba(255, 90, 60, 0.12);
 }
 
-.form-group textarea { border-radius: 14px; resize: vertical; }
-.form-group small { font-size: 11px; color: #9ca3af; }
+.form-group textarea {
+  border-radius: 16px;
+  resize: vertical;
+  min-height: 120px;
+}
 
-.image-preview-wrapper { margin-top: 12px; }
-.preview-label { font-size: 12px; color: #6b7280; margin-bottom: 6px; }
-.image-preview { max-width: 260px; border-radius: 12px; border: 1px solid #e5e7eb; }
+.form-group small {
+  font-size: 12px;
+  color: #9ca3af;
+}
 
-.form-actions { margin-top: 18px; display: flex; justify-content: flex-end; gap: 10px; }
+/* preview */
+.image-preview-wrapper { margin-top: 14px; }
+.preview-label { font-size: 13px; color: #6b7280; margin: 0 0 8px; font-weight: 700; }
+.image-preview {
+  max-width: 420px;
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+}
 
+/* buttons (✅ diperbesar) */
 .ghost-btn {
   border-radius: 999px;
   border: 1px solid #d3d7e6;
   background: #fff;
-  padding: 7px 18px;
-  font-size: 12px;
+  padding: 14px 26px;        /* ✅ lebih besar */
+  font-size: 15px;           /* ✅ lebih besar */
+  font-weight: 800;
   cursor: pointer;
+  min-height: 46px;          /* ✅ konsisten tinggi tombol */
 }
 
 .primary-btn {
   border-radius: 999px;
   border: none;
   background: linear-gradient(135deg, #ff5a3c, #ff9f1c);
-  padding: 7px 20px;
+  padding: 14px 28px;        /* ✅ lebih besar */
   color: #fff;
-  font-size: 12px;
+  font-size: 15px;           /* ✅ lebih besar */
+  font-weight: 900;
   cursor: pointer;
+  min-height: 46px;          /* ✅ konsisten tinggi tombol */
 }
 
-@media (max-width: 1024px) {
-  .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-}
-
-/* ===== combobox ===== */
+/* combobox */
 .combo { position: relative; }
+
 .combo-input {
   display: flex;
   align-items: center;
-  gap: 8px;
-  border-radius: 999px;
+  gap: 10px;
+  border-radius: 14px;
   border: 1px solid #d1d5db;
-  padding: 0 10px;
+  padding: 0 12px;
   background: #fff;
   transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  min-height: 46px;
 }
+
 .combo-input.open {
   border-color: rgba(255, 90, 60, 0.55);
-  box-shadow: 0 0 0 4px rgba(255, 90, 60, 0.12);
+  box-shadow: 0 0 0 5px rgba(255, 90, 60, 0.12);
 }
+
 .combo-input input {
   border: none !important;
   box-shadow: none !important;
-  padding: 8px 6px;
+  padding: 12px 6px;
   width: 100%;
   outline: none;
+  font-size: 15px;
 }
-.chev { user-select: none; font-size: 12px; color: #6b7280; transition: transform 0.15s ease; }
+
+.chev {
+  user-select: none;
+  font-size: 14px;
+  color: #6b7280;
+  transition: transform 0.15s ease;
+}
 .chev.open { transform: rotate(180deg); }
 
 .combo-menu {
   position: absolute;
   z-index: 50;
-  top: calc(100% + 8px);
+  top: calc(100% + 10px);
   left: 0;
   right: 0;
   background: #ffffff;
-  border: 1px solid rgba(15, 23, 42, 0.08);
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
-  border-radius: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.10);
+  box-shadow: 0 22px 48px rgba(15, 23, 42, 0.14);
+  border-radius: 16px;
   overflow: hidden;
-  max-height: 260px;
+  max-height: 320px;
   display: flex;
   flex-direction: column;
 }
@@ -840,36 +935,42 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 12px;
-  font-size: 11px;
+  padding: 12px 14px;
+  font-size: 12px;
   color: #6b7280;
   background: linear-gradient(135deg, rgba(255, 90, 60, 0.06), rgba(255, 159, 28, 0.06));
   border-bottom: 1px solid rgba(15, 23, 42, 0.06);
 }
 
 .pill {
-  font-size: 10px;
-  padding: 4px 8px;
+  font-size: 11px;
+  padding: 5px 10px;
   border-radius: 999px;
   color: #ff5a3c;
   background: rgba(255, 90, 60, 0.10);
   border: 1px solid rgba(255, 90, 60, 0.18);
+  font-weight: 800;
 }
 
-.combo-empty { padding: 12px; font-size: 12px; color: #374151; }
+.combo-empty {
+  padding: 14px;
+  font-size: 13px;
+  color: #374151;
+}
 
 .combo-item {
-  padding: 10px 12px;
+  padding: 12px 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: flex-start;
   transition: background 0.12s ease;
+  font-size: 14px;
 }
 .combo-item:hover { background: rgba(15, 23, 42, 0.04); }
 .combo-item.active { background: rgba(255, 90, 60, 0.10); }
 
-.item-title { font-weight: 600; color: #111827; }
+.item-title { font-weight: 800; color: #111827; }
 .item-sub { display: none !important; }
 
 .fade-pop-enter-active,
@@ -877,7 +978,7 @@ export default {
 .fade-pop-enter-from,
 .fade-pop-leave-to { opacity: 0; transform: translateY(-6px) scale(0.98); }
 
-/* ===================== POPUP SUCCESS STYLE (TAMBAHAN) ===================== */
+/* popup */
 .popup-overlay {
   position: fixed;
   inset: 0;
@@ -964,13 +1065,21 @@ export default {
 }
 
 .pop-enter-active,
-.pop-leave-active {
-  transition: opacity 0.14s ease, transform 0.14s ease;
-}
+.pop-leave-active { transition: opacity 0.14s ease, transform 0.14s ease; }
 .pop-enter-from,
-.pop-leave-to {
-  opacity: 0;
-  transform: translateY(8px) scale(0.98);
+.pop-leave-to { opacity: 0; transform: translateY(8px) scale(0.98); }
+
+/* responsive */
+@media (max-width: 1200px) {
+  .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-/* ======================================================================== */
+@media (max-width: 680px) {
+  .page-content { padding: 18px 16px 28px; }
+  .product-form { padding: 18px 16px 18px; border-radius: 18px; }
+  .form-grid { grid-template-columns: 1fr; }
+
+  /* tetap enak di mobile */
+  .form-actions { flex-direction: column; align-items: stretch; gap: 10px; }
+  .ghost-btn, .primary-btn { width: 100%; }
+}
 </style>

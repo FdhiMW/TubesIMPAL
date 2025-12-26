@@ -15,125 +15,115 @@
 
       <!-- KANAN: info produk -->
       <section class="info-section">
-        <h1 class="product-title">{{ produk.namaProduk }}</h1>
+        <div class="info-top">
+          <h1 class="product-title">{{ produk.namaProduk }}</h1>
 
-        <!-- [DISESUAIKAN] Rating DIHILANGKAN tanpa menghapus struktur -->
-        <div class="rating-row" v-if="false">
-          <span class="rating-stars">★ ★ ★ ★ ★</span>
-          <span class="rating-text">5.0 • 5RB Penilaian</span>
+          <!-- [DISESUAIKAN] Rating DIHILANGKAN tanpa menghapus struktur -->
+          <div class="rating-row" v-if="false">
+            <span class="rating-stars">★ ★ ★ ★ ★</span>
+            <span class="rating-text">5.0 • 5RB Penilaian</span>
+          </div>
+
+          <div class="price-box">
+            Rp{{ formatRupiah(produk.harga) }}
+          </div>
+
+          <!-- [DISESUAIKAN] Jaminan tidak dimunculkan tapi struktur tetap ada -->
+          <div class="info-row" v-if="false">
+            <span class="label">Jaminan</span>
+            <span class="value">Bebas pengembalian + Proteksi kerusakan</span>
+          </div>
+
+          <div class="info-row info-row-desc">
+            <span class="label">Deskripsi</span>
+            <span class="value value-wrap">{{ produk.deskripsi || '-' }}</span>
+          </div>
+
+          <div class="info-row">
+            <span class="label">Jenis Kelamin</span>
+            <span class="value">{{ produk.jenisKelamin || '-' }}</span>
+          </div>
+
+          <div class="info-row">
+            <span class="label">Kondisi</span>
+            <span class="value">{{ produk.kondisi || '-' }}</span>
+          </div>
+
+          <div class="info-row">
+            <span class="label">Merek</span>
+            <span class="value">{{ produk.merek || '-' }}</span>
+          </div>
+
+          <div class="info-row" v-if="false">
+            <span class="label">Terjual</span>
+            <span class="value">{{ produk.barangTerjual ?? 0 }}</span>
+          </div>
+
+          <div class="info-row">
+            <span class="label">Ukuran</span>
+            <span class="value">{{ produk.ukuran || '-' }}</span>
+          </div>
+
+          <div class="info-row" v-if="false">
+            <span class="label">Ukuran</span>
+            <div class="chip-row">
+              <button class="chip">S</button>
+              <button class="chip">M</button>
+              <button class="chip chip-active">L</button>
+              <button class="chip">XL</button>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <span class="label">Warna</span>
+            <span class="value">{{ produk.warna || '-' }}</span>
+          </div>
+
+          <div class="info-row" v-if="false">
+            <span class="label">Warna</span>
+            <div class="chip-row">
+              <button class="chip">Merah</button>
+              <button class="chip chip-active">Hitam</button>
+              <button class="chip">Kuning</button>
+            </div>
+          </div>
+
+          <div class="info-row">
+            <span class="label">Stok</span>
+            <span class="value">{{ produk.stok ?? 0 }}</span>
+          </div>
+
+          <div class="info-row">
+            <span class="label">Kuantitas</span>
+            <div class="qty-control">
+              <button class="qty-btn" @click="decreaseQty">-</button>
+              <input
+                type="number"
+                class="qty-input"
+                :value="qty"
+                readonly
+              />
+              <button class="qty-btn" @click="increaseQty">+</button>
+            </div>
+          </div>
+
+          <p v-if="(produk.stok ?? 0) <= 0" class="stock-warning">
+            Stok habis. Produk tidak bisa dibeli saat ini.
+          </p>
         </div>
 
-        <div class="price-box">
-          Rp{{ formatRupiah(produk.harga) }}
-        </div>
-
-        <!-- [DISESUAIKAN] Jaminan tidak dimunculkan tapi struktur tetap ada -->
-        <div class="info-row" v-if="false">
-          <span class="label">Jaminan</span>
-          <span class="value">Bebas pengembalian + Proteksi kerusakan</span>
-        </div>
-
-        <!-- =========================
-             [DISESUAIKAN] Deskripsi dipindah ke paling atas (di atas Jenis Kelamin)
-             ========================= -->
-        <div class="info-row info-row-desc">
-          <span class="label">Deskripsi</span>
-          <span class="value value-wrap">{{ produk.deskripsi || '-' }}</span>
-        </div>
-
-        <!-- =========================
-             [FIELD DB]
-             ========================= -->
-        <div class="info-row">
-          <span class="label">Jenis Kelamin</span>
-          <span class="value">{{ produk.jenisKelamin || '-' }}</span>
-        </div>
-
-        <div class="info-row">
-          <span class="label">Kondisi</span>
-          <span class="value">{{ produk.kondisi || '-' }}</span>
-        </div>
-
-        <div class="info-row">
-          <span class="label">Merek</span>
-          <span class="value">{{ produk.merek || '-' }}</span>
-        </div>
-
-        <!-- [DISESUAIKAN] Terjual tidak dimunculkan tapi struktur tetap ada -->
-        <div class="info-row" v-if="false">
-          <span class="label">Terjual</span>
-          <span class="value">{{ produk.barangTerjual ?? 0 }}</span>
-        </div>
-
-        <!-- =========================
-             [DISESUAIKAN] Ukuran & Warna jadi field biasa (seperti yang lain)
-             ========================= -->
-        <div class="info-row">
-          <span class="label">Ukuran</span>
-          <span class="value">{{ produk.ukuran || '-' }}</span>
-        </div>
-
-        <!-- Struktur chip lama tetap ada tapi disembunyikan (tidak dihapus) -->
-        <div class="info-row" v-if="false">
-          <span class="label">Ukuran</span>
-          <div class="chip-row">
-            <button class="chip">S</button>
-            <button class="chip">M</button>
-            <button class="chip chip-active">L</button>
-            <button class="chip">XL</button>
+        <!-- ✅ BUTTON SEJAJAR THUMBNAIL -->
+        <div class="action-bottom">
+          <div class="action-row">
+            <button class="btn-outline" @click="addToCart" :disabled="(produk.stok ?? 0) <= 0">
+              <span class="cart-icon">🛒</span>
+              Masukkan Keranjang
+            </button>
+            <button class="btn-primary" @click="buyNow" :disabled="(produk.stok ?? 0) <= 0">
+              Beli Sekarang
+            </button>
           </div>
         </div>
-
-        <div class="info-row">
-          <span class="label">Warna</span>
-          <span class="value">{{ produk.warna || '-' }}</span>
-        </div>
-
-        <!-- Struktur chip lama tetap ada tapi disembunyikan (tidak dihapus) -->
-        <div class="info-row" v-if="false">
-          <span class="label">Warna</span>
-          <div class="chip-row">
-            <button class="chip">Merah</button>
-            <button class="chip chip-active">Hitam</button>
-            <button class="chip">Kuning</button>
-          </div>
-        </div>
-
-        <!-- ✅ [DISESUAIKAN] STOK DIPINDAHKAN KE ATAS FIELD KUANTITAS (STRUKTUR TETAP) -->
-        <div class="info-row">
-          <span class="label">Stok</span>
-          <span class="value">{{ produk.stok ?? 0 }}</span>
-        </div>
-
-        <div class="info-row">
-          <span class="label">Kuantitas</span>
-          <div class="qty-control">
-            <button class="qty-btn" @click="decreaseQty">-</button>
-            <input
-              type="number"
-              class="qty-input"
-              :value="qty"
-              readonly
-            />
-            <button class="qty-btn" @click="increaseQty">+</button>
-          </div>
-        </div>
-
-        <!-- Tombol Aksi -->
-        <div class="action-row">
-          <button class="btn-outline" @click="addToCart" :disabled="(produk.stok ?? 0) <= 0">
-            <span class="cart-icon">🛒</span>
-            Masukkan Keranjang
-          </button>
-          <button class="btn-primary" @click="buyNow" :disabled="(produk.stok ?? 0) <= 0">
-            Beli Sekarang
-          </button>
-        </div>
-
-        <!-- [DITAMBAHKAN] Info stok habis (tidak merusak struktur) -->
-        <p v-if="(produk.stok ?? 0) <= 0" class="stock-warning">
-          Stok habis. Produk tidak bisa dibeli saat ini.
-        </p>
       </section>
     </main>
 
@@ -141,7 +131,6 @@
       Memuat detail produk...
     </div>
 
-    <!-- MODAL SUKSES -->
     <SuccessModal
       :visible="showSuccess"
       title="Berhasil ditambahkan ke keranjang"
@@ -157,9 +146,7 @@ import SuccessModal from '@/components/common/SuccessModal.vue'
 
 export default {
   name: 'ProdukDetailView',
-  components: {
-    SuccessModal
-  },
+  components: { SuccessModal },
   data () {
     return {
       produk: null,
@@ -179,7 +166,6 @@ export default {
         const res = await http.get(`/produk/${id}`)
         this.produk = res.data
 
-        // [DITAMBAHKAN] jika stok 0, qty tetap 1 (aman)
         if ((this.produk?.stok ?? 0) <= 0) {
           this.qty = 1
         }
@@ -198,23 +184,15 @@ export default {
     increaseQty () {
       const stok = this.produk?.stok ?? 0
       if (stok <= 0) return
-
-      // [DITAMBAHKAN] batasi qty tidak melebihi stok
-      if (this.qty < stok) {
-        this.qty += 1
-      }
+      if (this.qty < stok) this.qty += 1
     },
 
     decreaseQty () {
-      if (this.qty > 1) {
-        this.qty -= 1
-      }
+      if (this.qty > 1) this.qty -= 1
     },
 
     async addToCart () {
       if (!this.produk) return
-
-      // [DITAMBAHKAN] cegah jika stok habis
       if ((this.produk.stok ?? 0) <= 0) {
         alert('Stok habis. Produk tidak bisa ditambahkan ke keranjang.')
         return
@@ -235,8 +213,6 @@ export default {
           idProduk: this.produk.idProduk,
           jumlah: this.qty
         })
-
-        // tampilkan modal sukses
         this.showSuccess = true
       } catch (err) {
         console.error('Gagal menambah ke keranjang', err)
@@ -246,8 +222,6 @@ export default {
 
     buyNow () {
       if (!this.produk) return
-
-      // [DITAMBAHKAN] cegah jika stok habis
       if ((this.produk.stok ?? 0) <= 0) {
         alert('Stok habis. Produk tidak bisa dibeli saat ini.')
         return
@@ -267,192 +241,200 @@ export default {
 
 <style scoped>
 .detail-page {
+  width: 100%;
   min-height: 100vh;
   background: #f5f7fb;
   display: flex;
-  justify-content: center;
-  padding: 32px 0;
+  justify-content: stretch;
+  align-items: stretch;
+  padding: 0;
+  margin: 0;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
+/* ✅ FIX: hilangkan ruang kosong besar di tengah */
 .detail-container {
+  --bottomRowH: 170px; /* 🔥 tinggi area bawah (thumb + action) */
+
   width: 100%;
-  max-width: 1100px;
+  max-width: 100%;
+  min-height: 100vh;
   background: #ffffff;
-  border-radius: 24px;
-  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+  border-radius: 0;
+  box-shadow: none;
+
   padding: 28px 32px 32px;
+
   display: grid;
   grid-template-columns: 1.1fr 1.5fr;
-  gap: 32px;
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    "main  info"
+    "thumb action";
+  gap: 18px 32px;
+
+  align-content: start;
+  align-items: start;
 }
 
-/* KIRI: GAMBAR */
-.image-section {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+/* wrapper tetap ada tapi anak ikut grid parent */
+.image-section { display: contents; }
+.info-section { display: contents; }
 
-/* 🔥 KOTAK MERAH DIPERKECIL DI SINI */
+/* KIRI */
 .main-image {
+  grid-area: main;
   width: 100%;
-  max-height: 420px;                  /* batas maksimal tinggi */
-  aspect-ratio: 4 / 5;                /* proporsi foto pakaian */
+  min-height: 640px;
+  height: calc(100vh - 300px);
+  max-height: 860px;
   border-radius: 24px;
   background: linear-gradient(135deg, #fecaca, #fed7aa);
 }
 
 .thumb-row {
+  grid-area: thumb;
   display: flex;
-  gap: 12px;
+  gap: 16px;
+  height: var(--bottomRowH);
+  align-items: stretch;
 }
 
 .thumb-box {
   flex: 1;
-  height: 60px;                       /* tidak terlalu tinggi */
+  height: 100%;
   border-radius: 18px;
   background: linear-gradient(135deg, #fecaca, #fed7aa);
 }
 
-/* KANAN: INFO */
-.info-section {
+/* ===============================
+   ✅ FONT KANAN (AREA KOTAK MERAH) DIBESARKAN
+================================ */
+.info-top {
+  grid-area: info;
   display: flex;
   flex-direction: column;
   gap: 18px;
 }
 
+/* Judul lebih besar */
 .product-title {
-  font-size: 28px;
-  font-weight: 700;
+  font-size: 48px;         /* 🔥 dari 38px */
+  font-weight: 900;
   color: #111827;
+  line-height: 1.08;
+  margin: 0;
 }
 
-.rating-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: #6b7280;
-}
-
-.rating-stars {
-  color: #f59e0b;
-}
-
+/* Harga lebih besar */
 .price-box {
   display: inline-block;
-  padding: 10px 16px;
+  padding: 16px 22px;      /* sedikit lebih tebal */
   border-radius: 16px;
   background: #f3f4f6;
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 32px;         /* 🔥 dari 26px */
+  font-weight: 900;
   color: #f97316;
 }
 
+/* Detail label/value lebih besar */
 .info-row {
   display: flex;
   align-items: center;
-  margin-top: 4px;
+  margin-top: 8px;
 }
 
 .label {
-  width: 90px;
-  font-size: 14px;
+  width: 150px;            /* biar rapi saat font besar */
+  font-size: 18px;         /* 🔥 dari 16px */
   color: #6b7280;
 }
 
 .value {
-  font-size: 14px;
+  font-size: 18px;         /* 🔥 dari 16px */
   color: #111827;
 }
 
-.chip-row {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+.info-row-desc { align-items: flex-start; }
+
+.value-wrap {
+  white-space: pre-wrap;
+  line-height: 1.7;
+  font-size: 18px;         /* 🔥 dari 16px */
 }
 
-.chip {
-  min-width: 40px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.chip-active {
-  border-color: #f97316;
-  background: #fff7ed;
-  color: #f97316;
-}
-
-/* [DITAMBAHKAN] chip display-only */
-.chip-disabled {
-  cursor: default;
-  opacity: 0.95;
-}
-
+/* qty ikut besar */
 .qty-control {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 14px;
 }
 
 .qty-btn {
-  width: 32px;
-  height: 32px;
+  width: 42px;             /* 🔥 lebih besar */
+  height: 42px;
   border-radius: 999px;
   border: 1px solid #d1d5db;
   background: #ffffff;
   cursor: pointer;
+  font-size: 18px;         /* 🔥 */
 }
 
 .qty-input {
-  width: 48px;
+  width: 72px;             /* 🔥 */
   text-align: center;
   border-radius: 999px;
   border: 1px solid #d1d5db;
-  padding: 4px 0;
+  padding: 10px 0;
+  font-size: 16px;         /* 🔥 */
 }
 
-/* BUTTONS */
-.action-row {
-  margin-top: 12px;
+.stock-warning {
+  margin: 12px 0 0;
+  font-size: 14px;         /* 🔥 dari 12px */
+  color: #ef4444;
+}
+
+/* ACTION */
+.action-bottom {
+  grid-area: action;
   display: flex;
-  gap: 12px;
+  align-items: center;
+  height: var(--bottomRowH);
+}
+
+.action-row {
+  width: 100%;
+  display: flex;
+  gap: 16px;
+}
+
+.btn-outline,
+.btn-primary {
+  flex: 1;
+  width: 100%;
+  min-height: 64px;
+  border-radius: 999px;
+  padding: 18px 24px;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
 }
 
 .btn-outline {
-  flex: 1;
-  border-radius: 999px;
-  padding: 10px 18px;
   border: 1px solid #f97316;
   background: #fff7ed;
   color: #f97316;
-  font-weight: 600;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-}
-
-.cart-icon {
-  font-size: 18px;
+  gap: 10px;
 }
 
 .btn-primary {
-  flex: 1;
-  border-radius: 999px;
-  padding: 10px 18px;
   border: none;
   background: linear-gradient(135deg, #f97316, #ef4444);
   color: #ffffff;
-  font-weight: 600;
-  cursor: pointer;
 }
 
 .btn-outline:disabled,
@@ -461,33 +443,51 @@ export default {
   cursor: not-allowed;
 }
 
+.cart-icon { font-size: 18px; }
+
 .loading-state {
   padding: 40px;
   text-align: center;
 }
 
-/* [DITAMBAHKAN] deskripsi supaya bisa multiline */
-.info-row-desc {
-  align-items: flex-start;
-}
-
-.value-wrap {
-  white-space: pre-wrap;
-  line-height: 1.45;
-}
-
-/* [DITAMBAHKAN] stok habis text */
-.stock-warning {
-  margin: 6px 0 0;
-  font-size: 12px;
-  color: #ef4444;
-}
-
-/* RESPONSIVE */
 @media (max-width: 900px) {
   .detail-container {
     grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    grid-template-areas:
+      "main"
+      "info"
+      "action";
     padding: 20px;
+    min-height: 100vh;
+    gap: 18px;
+    align-content: start;
+  }
+
+  .main-image {
+    min-height: 420px;
+    height: 520px;
+    max-height: none;
+  }
+
+  .thumb-row {
+    display: none; /* kalau mau tetap tampil di HP, hapus baris ini */
+  }
+
+  .action-bottom {
+    height: auto;
+    align-items: stretch;
+  }
+
+  /* versi mobile tetap besar tapi aman */
+  .product-title { font-size: 32px; }
+  .price-box { font-size: 24px; }
+  .label, .value, .value-wrap { font-size: 15px; }
+
+  .btn-outline, .btn-primary {
+    min-height: 56px;
+    padding: 16px 18px;
+    font-size: 14px;
   }
 }
 </style>

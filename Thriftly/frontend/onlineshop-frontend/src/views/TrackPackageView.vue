@@ -168,33 +168,224 @@ export default {
 </script>
 
 <style scoped>
-.page { min-height: 100vh; background: #ffffff; }
-.container { max-width: 980px; margin: 0 auto; padding: 22px 24px 60px; }
-.title { font-size: 22px; font-weight: 800; margin: 6px 0 18px; }
-.state { padding: 18px; border-radius: 14px; background: #f8fafc; color: #334155; }
-.state.error { background: #fee2e2; color: #991b1b; }
-.list { display: flex; flex-direction: column; gap: 18px; }
-.card { display: flex; gap: 18px; padding: 18px 0; border-bottom: 1px solid #e5e7eb; }
-.thumb { width: 140px; height: 110px; border-radius: 18px; overflow: hidden; background: linear-gradient(90deg, #ff5a3c, #ff9f1c); }
-.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.info { flex: 1; min-width: 0; }
-.name { font-size: 18px; font-weight: 800; margin-bottom: 6px; }
-.meta { font-size: 13px; color: #475569; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.dot { color: #cbd5e1; }
-.timeline { margin-top: 10px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-.step { display: flex; align-items: center; gap: 6px; }
-.bullet { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
-.bullet.on { background: #22c55e; }
-.bullet.off { background: #ef4444; }
-.label { font-size: 12px; color: #334155; }
-.line { height: 2px; width: 120px; background: #e2e8f0; }
-.actions { margin-left: auto; }
-.btn { border: none; background: linear-gradient(90deg, #ef4444, #f97316); color: #fff; padding: 10px 16px; border-radius: 12px; font-weight: 700; font-size: 13px; cursor: pointer; }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-.btn.done {
-  background: #22c55e;
+.page {
+  min-height: 100vh;
+  background: #ffffff;
 }
 
-.order-code { margin-top: 8px; font-size: 12px; color: #64748b; }
+.container {
+  max-width: 1400px;
+  width: calc(100% - 64px);
+  margin: 0 auto;
+  padding: 34px 32px 80px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 900;
+  margin: 8px 0 24px;
+  letter-spacing: -0.02em;
+}
+
+.state {
+  padding: 20px;
+  border-radius: 16px;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 16px;
+}
+
+.state.error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.card {
+  display: flex;
+  gap: 22px;
+  padding: 22px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.thumb {
+  width: 190px;
+  height: 150px;
+  border-radius: 22px;
+  overflow: hidden;
+  background: linear-gradient(90deg, #ff5a3c, #ff9f1c);
+  flex: 0 0 auto;
+}
+
+.thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: 24px;
+  font-weight: 900;
+  margin-bottom: 10px;
+  line-height: 1.15;
+}
+
+.meta {
+  font-size: 15px;
+  color: #475569;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.meta b { font-weight: 800; }
+.dot { color: #cbd5e1; }
+
+/* ✅ FIX: agar "Selesai" selalu sejajar & panjang sama (tidak terdorong tombol) */
+.timeline {
+  --stepW: 220px;   /* lebar tiap status sama */
+  --lineW: 200px;   /* lebar garis sama */
+
+  margin-top: 14px;
+
+  /* 🔥 ubah jadi GRID agar 3 step + 2 line selalu fixed, tombol ada kolom sendiri */
+  display: grid;
+  grid-template-columns: var(--stepW) var(--lineW) var(--stepW) var(--lineW) var(--stepW) 1fr;
+  align-items: center;
+  column-gap: 16px;
+}
+
+.step {
+  width: var(--stepW);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.bullet {
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.bullet.on { background: #22c55e; }
+.bullet.off { background: #ef4444; }
+
+.label {
+  font-size: 14px;
+  color: #334155;
+  font-weight: 700;
+}
+
+.line {
+  height: 3px;
+  width: var(--lineW);
+  background: #e2e8f0;
+  border-radius: 999px;
+}
+
+/* tombol di kolom terakhir, jadi tidak menggeser posisi "Selesai" */
+.actions {
+  justify-self: end;
+}
+
+.btn {
+  border: none;
+  background: linear-gradient(90deg, #ef4444, #f97316);
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 14px;
+  font-weight: 900;
+  font-size: 15px;
+  cursor: pointer;
+  min-width: 170px;
+}
+
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn.done { background: #22c55e; }
+
+.order-code {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1100px) {
+  .timeline {
+    /* kalau layar mengecil, biar tetap rapi: timeline boleh turun baris */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+
+    --stepW: 190px;
+    --lineW: 140px;
+  }
+
+  .step { width: var(--stepW); }
+  .line { width: var(--lineW); }
+
+  .actions {
+    margin-left: auto;
+    justify-self: unset;
+  }
+}
+
+@media (max-width: 900px) {
+  .container {
+    max-width: 100%;
+    width: 100%;
+    padding: 22px 18px 60px;
+  }
+
+  .title { font-size: 26px; }
+
+  .card {
+    gap: 16px;
+    padding: 18px 0;
+  }
+
+  .thumb {
+    width: 140px;
+    height: 110px;
+    border-radius: 18px;
+  }
+
+  .name { font-size: 20px; }
+  .meta { font-size: 14px; }
+  .label { font-size: 13px; }
+
+  .timeline {
+    flex-wrap: wrap;
+    --stepW: 170px;
+    --lineW: 120px;
+  }
+
+  .btn {
+    width: 100%;
+    min-width: unset;
+    font-size: 14px;
+    padding: 12px 16px;
+  }
+
+  .actions {
+    margin-left: 0;
+    width: 100%;
+  }
+}
 </style>

@@ -46,22 +46,52 @@ export default {
   methods: {
     goDashboard() {
       if (this.$route.path !== '/admin') {
-        this.$router.push('/admin')
+        this.$router.push('/admin').catch((err) => {
+          // ✅ cegah error "NavigationDuplicated"
+          if (err && err.name === 'NavigationDuplicated') return
+          const msg = (err && err.message) ? err.message : ''
+          if (msg.includes('Avoided redundant navigation')) return
+          throw err
+        })
       }
     },
 
     logout() {
       localStorage.removeItem('user')
-      this.$router.push('/login')
+      this.$router.push('/login').catch((err) => {
+        // ✅ cegah error duplikat navigation
+        if (err && err.name === 'NavigationDuplicated') return
+        const msg = (err && err.message) ? err.message : ''
+        if (msg.includes('Avoided redundant navigation')) return
+        throw err
+      })
     },
 
     submitSearch() {
       const q = this.searchQuery && this.searchQuery.trim()
       if (!q) return
 
-      this.$router.push({
+      // ✅ target route yang kamu pakai sekarang
+      const target = {
         name: 'admin-product-list',
         query: { q },
+      }
+
+      // ✅ CEGAH push ke lokasi yang sama persis (penyebab error)
+      const currentName = this.$route.name
+      const currentQ = (this.$route.query && this.$route.query.q) ? String(this.$route.query.q) : ''
+      const nextQ = String(q)
+
+      if (currentName === target.name && currentQ === nextQ) {
+        return
+      }
+
+      // ✅ push aman: ignore NavigationDuplicated
+      this.$router.push(target).catch((err) => {
+        if (err && err.name === 'NavigationDuplicated') return
+        const msg = (err && err.message) ? err.message : ''
+        if (msg.includes('Avoided redundant navigation')) return
+        throw err
       })
     },
   },

@@ -242,22 +242,51 @@ export default {
 </script>
 
 <style scoped>
+/* =========================================================
+   [DITAMBAHKAN] PAKSA BACKGROUND GLOBAL PUTIH
+   - hilangkan area abu-abu kiri/kanan/bawah (body / html)
+   ========================================================= */
+:global(html),
+:global(body),
+:global(#app) {
+  height: 100%;
+  min-height: 100%;
+  margin: 0;
+  background: #ffffff !important;
+}
+
+/* =========================================================
+   [DITAMBAHKAN] BASE FONT LEBIH BESAR UNTUK SEMUA TEKS
+   - cukup atur 1x di container, child ikut membesar
+   ========================================================= */
 .admin-page {
   min-height: 100vh;
-  background: #f5f7fb;
+  width: 100%;
+  background: #ffffff;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     sans-serif;
   color: #222;
+
+  display: flex;
+  flex-direction: column;
+
+  font-size: 16px;      /* ✅ TAMBAHAN (naik dari default) */
+  line-height: 1.45;    /* ✅ TAMBAHAN biar lebih lega */
 }
 
-/* CONTENT WRAPPER */
+/* CONTENT WRAPPER (dibuat fleksibel & full width) */
 .page-content {
-  padding: 20px 32px 32px;
+  padding: 22px 34px 34px;  /* ✅ sedikit dibesarkan biar seimbang */
+  width: 100%;
+  flex: 1;
+  display: flex;
 }
 
+/* order-page dibuat full lebar agar tidak ada “margin abu” kiri-kanan */
 .order-page {
-  max-width: 1100px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
 }
 
 /* HEADER & TOOLBAR */
@@ -266,28 +295,29 @@ export default {
 }
 
 .page-title {
-  font-size: 24px;
-  font-weight: 600;
-  margin-bottom: 4px;
+  font-size: 30px;   /* ✅ DIBESARKAN (sebelumnya 24px) */
+  font-weight: 800;  /* ✅ lebih tegas */
+  margin-bottom: 8px;
 }
 
 .page-subtitle {
   color: #6b7280;
-  font-size: 14px;
+  font-size: 15px;   /* ✅ DIBESARKAN */
 }
 
 .order-toolbar {
   display: flex;
-  gap: 8px;
+  gap: 10px;         /* ✅ sedikit lega */
   margin: 16px 0;
+  width: 100%;
 }
 
 .search-input-toolbar {
   flex: 1;
-  padding: 8px 10px;
-  border-radius: 8px;
+  padding: 10px 14px;    /* ✅ lebih besar */
+  border-radius: 10px;   /* ✅ lebih halus */
   border: 1px solid #d1d5db;
-  font-size: 14px;
+  font-size: 15px;       /* ✅ DIBESARKAN (sebelumnya 14px) */
 }
 
 /* button style sama dengan dashboard */
@@ -295,78 +325,88 @@ export default {
   border-radius: 999px;
   border: 1px solid #d3d7e6;
   background: #fff;
-  padding: 6px 16px;
-  font-size: 12px;
+  padding: 10px 18px;    /* ✅ DIBESARKAN */
+  font-size: 14px;       /* ✅ DIBESARKAN */
   cursor: pointer;
+  font-weight: 700;      /* ✅ lebih jelas */
 }
 
 .ghost-btn.small {
-  padding: 4px 12px;
+  padding: 8px 14px;     /* ✅ ikut membesar */
+  font-size: 13px;
 }
 
 .primary-btn {
   border-radius: 999px;
   border: none;
   background: linear-gradient(135deg, #ff5a3c, #ff9f1c);
-  padding: 7px 18px;
+  padding: 10px 20px;    /* ✅ DIBESARKAN */
   color: #fff;
-  font-size: 12px;
+  font-size: 14px;       /* ✅ DIBESARKAN */
   cursor: pointer;
+  font-weight: 800;      /* ✅ lebih tegas */
 }
 
 .primary-btn.small {
-  padding: 4px 12px;
-  font-size: 12px;
+  padding: 8px 14px;     /* ✅ ikut membesar */
+  font-size: 13px;
 }
 
-/* ====== [DITAMBAHKAN: tombol hijau untuk SELESAI] ====== */
+/* tombol hijau untuk SELESAI */
 .success-btn {
   border-radius: 999px;
   border: none;
   background: #22c55e;
-  padding: 7px 18px;
+  padding: 10px 20px;    /* ✅ DIBESARKAN */
   color: #fff;
-  font-size: 12px;
+  font-size: 14px;       /* ✅ DIBESARKAN */
   cursor: not-allowed;
   opacity: 0.95;
+  font-weight: 800;      /* ✅ lebih tegas */
 }
 
 .success-btn.small {
-  padding: 4px 12px;
-  font-size: 12px;
+  padding: 8px 14px;
+  font-size: 13px;
 }
-/* ====== [AKHIR PENYESUAIAN] ====== */
 
 /* TABLE */
 .order-table-wrapper {
   background: #ffffff;
-  border-radius: 12px;
+  border-radius: 14px;   /* ✅ sedikit lebih smooth */
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
-  padding: 16px;
+  padding: 18px;         /* ✅ lebih lega */
+  width: 100%;
+
+  overflow-x: auto;
 }
 
 .order-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 980px;
 }
 
 .order-table th,
 .order-table td {
-  padding: 10px 8px;
+  padding: 12px 10px;  /* ✅ lebih besar */
   text-align: left;
-  font-size: 14px;
+  font-size: 15px;     /* ✅ DIBESARKAN (sebelumnya 14px) */
   border-bottom: 1px solid #e5e7eb;
 }
 
 .order-table th {
-  font-weight: 600;
+  font-weight: 800;
   color: #4b5563;
+  font-size: 14px;     /* ✅ header sedikit lebih kecil tapi tetap jelas */
+  letter-spacing: 0.2px;
 }
 
 .empty-state {
   text-align: center;
   color: #9ca3af;
   font-style: italic;
+  font-size: 15px;     /* ✅ DIBESARKAN */
 }
 
 .action-cell {
@@ -375,23 +415,25 @@ export default {
 
 .no-action {
   color: #9ca3af;
+  font-size: 15px;     /* ✅ DIBESARKAN */
 }
 
-/* ====== [DITAMBAHKAN: alamat rapi, tidak melebarkan tabel] ====== */
+/* alamat rapi, tidak melebarkan tabel */
 .alamat-cell {
-  max-width: 420px;
+  max-width: 560px;      /* ✅ sedikit dilebarkan */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 15px;       /* ✅ ikut membesar */
 }
-/* ====== [AKHIR PENYESUAIAN] ====== */
 
 /* status badge */
 .status-pill {
   display: inline-block;
-  padding: 2px 8px;
+  padding: 5px 12px;     /* ✅ DIBESARKAN */
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 13px;       /* ✅ DIBESARKAN (sebelumnya 11px) */
+  font-weight: 800;      /* ✅ lebih tegas */
 }
 
 .status-pending {
@@ -410,8 +452,24 @@ export default {
 }
 
 .error-message {
-  margin-top: 12px;
+  margin-top: 14px;
   color: #b91c1c;
-  font-size: 14px;
+  font-size: 15px;       /* ✅ DIBESARKAN */
+  font-weight: 600;
+}
+
+/* responsive */
+@media (max-width: 680px) {
+  .page-content {
+    padding: 16px 14px 22px;
+  }
+
+  .page-title {
+    font-size: 24px;      /* ✅ tetap proporsional di mobile */
+  }
+
+  .search-input-toolbar {
+    font-size: 14px;
+  }
 }
 </style>

@@ -4,7 +4,7 @@
       <div class="left">
         <div class="brand">
           <div class="logo-big">🛍️</div>
-          <div class="brand-name">KlikMall</div>
+          <div class="brand-name">Thriftly</div>
         </div>
       </div>
 

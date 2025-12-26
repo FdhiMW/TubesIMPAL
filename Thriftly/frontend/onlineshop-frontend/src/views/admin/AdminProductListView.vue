@@ -141,35 +141,38 @@ export default {
   color: #6b7280;
 }
 
-/* button style samakan dengan dashboard */
+/* ====== button tambah barang ====== */
 .primary-btn {
   border-radius: 999px;
   border: none;
   background: linear-gradient(135deg, #ff5a3c, #ff9f1c);
-  padding: 8px 16px;
+  padding: 12px 22px;
   color: #fff;
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 800;
   cursor: pointer;
   white-space: nowrap;
 }
 
+/* ====== grid ====== */
 .grid {
   display: grid;
-  grid-template-columns: repeat(9, minmax(0, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
   align-items: start;
 }
 
 .card {
   position: relative;
   background: #fff;
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
 }
 
+/* ====== gambar katalog ====== */
 .thumb {
-  height: 86px;
+  height: 140px;
   background: linear-gradient(135deg, #eef3ff, #f6f8ff);
 }
 
@@ -179,58 +182,63 @@ export default {
   object-fit: cover;
 }
 
+/* ====== body ====== */
 .card-body {
-  padding: 10px 10px 12px;
+  padding: 14px 14px 18px;
 }
 
+/* =========================================================
+   [DISESUAIKAN] FONT NAMA BARANG, STOK, HARGA DIBESARKAN
+   ========================================================= */
 .name {
-  margin: 0 0 4px;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1.2;
+  margin: 0 0 8px;
+  font-size: 18px;     /* 🔥 lebih besar */
+  font-weight: 900;    /* 🔥 lebih tegas */
+  line-height: 1.25;
 }
 
 .meta {
-  margin: 0 0 6px;
-  font-size: 10px;
+  margin: 0 0 12px;
+  font-size: 14px;     /* 🔥 stok/merek lebih besar */
+  font-weight: 700;    /* 🔥 lebih tegas */
   color: #6b7280;
+  line-height: 1.35;
 }
 
 .price {
   margin: 0;
-  font-size: 11px;
-  font-weight: 700;
+  font-size: 18px;     /* 🔥 harga lebih besar */
+  font-weight: 950;    /* 🔥 paling tegas */
   color: #2563eb;
 }
+/* ====== [AKHIR PENYESUAIAN FONT] ====== */
 
-/* ====== [PINDAH POSISI BUTTON MINUS KE LINGKARAN MERAH] ====== */
+/* ====== button minus ====== */
 .minus-btn {
   position: absolute;
-
-  /* sebelumnya: top/right. sekarang: kanan bawah (area putih) */
   top: auto;
-  right: 10px;
-  bottom: 12px;
+  right: 12px;
+  bottom: 14px;
 
-  width: 22px;
-  height: 22px;
+  width: 30px;
+  height: 30px;
   border-radius: 999px;
   border: none;
   background: rgba(230, 57, 57, 0.95);
   color: #fff;
-  font-size: 16px;
-  line-height: 22px;
+  font-size: 22px;
+  line-height: 30px;
   cursor: pointer;
   display: grid;
   place-items: center;
   z-index: 3;
+  box-shadow: 0 8px 16px rgba(230, 57, 57, 0.25);
 }
 
 .minus-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
-/* ====== [AKHIR PINDAH] ====== */
 
 .empty {
   grid-column: 1 / -1;
@@ -240,12 +248,18 @@ export default {
   padding: 18px 0;
 }
 
-/* responsif biar tidak kepotong */
+/* responsif */
+@media (max-width: 1600px) {
+  .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
 @media (max-width: 1400px) {
-  .grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 1024px) {
-  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .header-row { flex-direction: column; align-items: stretch; }
+}
+@media (max-width: 560px) {
+  .grid { grid-template-columns: 1fr; }
 }
 </style>
