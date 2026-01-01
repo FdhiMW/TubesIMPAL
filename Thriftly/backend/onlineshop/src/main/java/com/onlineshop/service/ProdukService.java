@@ -69,28 +69,30 @@ public class ProdukService {
     // --------------------------------------------------------------------
     public List<BarangTerlarisDto> getBarangTerlaris(int limit) {
         if (limit <= 0) limit = 5;
-
+    
         Pageable pageable = PageRequest.of(0, limit);
         var pageProduk = produkRepository.findByOrderByBarangTerjualDesc(pageable);
-
+    
         if (!pageProduk.isEmpty()) {
             return pageProduk.getContent().stream()
                     .map(p -> new BarangTerlarisDto(
                             p.getIdProduk(),
                             p.getNamaProduk(),
                             p.getHarga(),
-                            p.getBarangTerjual() == null ? 0L : p.getBarangTerjual().longValue()
+                            p.getBarangTerjual() == null ? 0L : p.getBarangTerjual().longValue(),
+                            p.getImageUrl() // ✅ tambahan imageUrl
                     ))
                     .toList();
         }
-
+    
         return produkRepository
                 .findAll(pageable)
                 .map(p -> new BarangTerlarisDto(
                         p.getIdProduk(),
                         p.getNamaProduk(),
                         p.getHarga(),
-                        0L
+                        0L,
+                        p.getImageUrl() // ✅ tambahan imageUrl
                 ))
                 .getContent();
     }

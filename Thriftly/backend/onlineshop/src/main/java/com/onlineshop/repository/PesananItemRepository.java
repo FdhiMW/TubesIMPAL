@@ -16,12 +16,17 @@ public interface PesananItemRepository extends JpaRepository<PesananItem, Long> 
             pi.produk.idProduk,
             pi.produk.namaProduk,
             pi.produk.harga,
-            SUM(pi.jumlah)
+            SUM(pi.jumlah),
+            pi.produk.imageUrl
         )
         FROM PesananItem pi
         JOIN pi.pesanan p
         WHERE p.statusPesanan = :status
-        GROUP BY pi.produk.idProduk, pi.produk.namaProduk, pi.produk.harga
+        GROUP BY
+            pi.produk.idProduk,
+            pi.produk.namaProduk,
+            pi.produk.harga,
+            pi.produk.imageUrl
         ORDER BY SUM(pi.jumlah) DESC
     """)
     List<BarangTerlarisDto> findBestSellersByStatus(

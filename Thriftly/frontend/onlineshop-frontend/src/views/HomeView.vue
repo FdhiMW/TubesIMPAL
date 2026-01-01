@@ -20,8 +20,6 @@
               Pilih kategori pakaian bekas yang kamu inginkan.
             </p>
           </div>
-          <!-- kalau mau nanti bisa diarahkan ke page khusus kategori -->
-          <button class="link-button" @click="goToAllCategories">Lihat semua ›</button>
         </div>
 
         <div class="category-grid">
