@@ -4,7 +4,7 @@
     <main class="page-content">
       <!-- HERO + BANNER -->
       <section class="hero-section">
-        <div class="hero-main skeleton"></div>
+        <div class="hero-main"></div>
         <div class="hero-side">
           <div class="hero-side-item skeleton"></div>
           <div class="hero-side-item skeleton"></div>
@@ -256,7 +256,15 @@ export default {
   gap: 16px;
   margin-bottom: 20px;
 }
-.hero-main { height: 180px; border-radius: 18px; }
+.hero-main{
+  height: 180px;
+  border-radius: 18px;
+  overflow: hidden;
+  background-image: url("~@/assets/foto/Banner1.jpg");
+  background-size: cover;
+  background-position: center 30%; /* atur posisi */
+  background-repeat: no-repeat;
+}
 .hero-side { display: grid; grid-template-rows: 1fr 1fr; gap: 12px; }
 .hero-side-item { border-radius: 18px; }
 
