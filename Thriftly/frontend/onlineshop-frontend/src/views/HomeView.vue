@@ -52,7 +52,13 @@
             class="best-card"
             @click="goToProductDetail(item.id)"
           >
-            <div class="best-thumb skeleton">
+            <div class="best-thumb">
+              <img
+                v-if="item && item.imageUrl"
+                :src="resolveImageUrl(item.imageUrl)"
+                class="thumb-img"
+                alt="Foto produk"
+              />
               <span class="discount-badge">-{{ item.discount }}%</span>
             </div>
 
@@ -119,6 +125,13 @@ export default {
     }
   },
   methods: {
+    resolveImageUrl(url) {
+      const API = "http://localhost:8080";
+      if (!url) return "";
+      if (url.startsWith("http")) return url;
+      if (url.startsWith("/uploads/")) return API + url;
+      return API + "/uploads/" + url;
+    },
     formatPrice(value) {
       if (!value && value !== 0) return ''
       return Number(value).toLocaleString('id-ID')
@@ -221,69 +234,21 @@ export default {
 
     // ==== BARANG TERLARIS ====
     async loadBestSellers() {
-      try {
-        const res = await http.get('/produk/terlaris?limit=6')
-        this.bestSellers = res.data.map(p => ({
-          id: p.idProduk,
-          title: p.namaProduk,
-          tagline: `${p.totalTerjual} terjual`,
-          labels: ['Best Seller'],
-          price: p.harga,
-          discount: 30,
-        }))
-      } catch (err) {
-        console.error('Gagal memuat barang terlaris, pakai dummy dulu:', err)
-        this.bestSellers = [
-          {
-            id: 1,
-            title: 'Kemeja Flanel Pria Vintage',
-            tagline: 'Stok Terbatas',
-            labels: ['Stok Terbatas'],
-            price: 35000,
-            discount: 40,
-          },
-          {
-            id: 2,
-            title: 'Kaos Band Oversize Hitam',
-            tagline: 'Favorit Anak Kost',
-            labels: ['Favorit Anak Kost'],
-            price: 28000,
-            discount: 30,
-          },
-          {
-            id: 3,
-            title: 'Hoodie Basic Cream Unisex',
-            tagline: 'Best Seller',
-            labels: ['Best Seller'],
-            price: 45000,
-            discount: 55,
-          },
-          {
-            id: 4,
-            title: 'Jaket Denim Wash Light',
-            tagline: 'Look Vintage',
-            labels: ['Look Vintage'],
-            price: 60000,
-            discount: 35,
-          },
-          {
-            id: 5,
-            title: 'Jeans Momfit High Waist',
-            tagline: 'Ukuran Terbatas',
-            labels: ['Ukuran Terbatas'],
-            price: 55000,
-            discount: 25,
-          },
-          {
-            id: 6,
-            title: 'Dress Floral Summer',
-            tagline: 'Cocok Liburan',
-            labels: ['Cocok Liburan'],
-            price: 42000,
-            discount: 50,
-          },
-        ]
-      }
+      const res = await http.get('/produk/terlaris?limit=6')
+
+      console.log('TERLARIS RAW:', res.data) // ✅ cek isi response
+
+      this.bestSellers = (res.data || []).map(p => ({
+        id: p.idProduk,
+        title: p.namaProduk,
+        tagline: `${p.totalTerjual} terjual`,
+        labels: ['Best Seller'],
+        price: p.harga,
+        discount: 30,
+        imageUrl: p.imageUrl || p.image_url || p.gambar || '',
+      }))
+
+      console.log('TERLARIS MAPPED:', this.bestSellers)
     },
   },
   mounted() {
@@ -334,6 +299,22 @@ export default {
 
 .skeleton {
   background: linear-gradient(135deg, #ffe0cf, #ffd4bf);
+}
+
+.best-thumb {
+  position: relative;
+  height: 140px;             
+  overflow: hidden;
+  border-radius: 18px 18px 0 0;
+  background: #f3f4f6;
+}
+
+.thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
 /* Chips */
@@ -480,11 +461,6 @@ export default {
 .best-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
-}
-
-.best-thumb {
-  position: relative;
-  height: 100px;
 }
 
 .discount-badge {
