@@ -29,7 +29,13 @@
             class="category-card"
             @click="goToCategory(item)"
           >
-            <div class="category-thumb skeleton"></div>
+            <!-- Banner stylish tanpa gambar -->
+            <div class="category-cover" :class="`cover-${item.keySlug}`">
+              <div class="category-badge">{{ item.badge }}</div>
+              <div class="category-icon">{{ item.icon }}</div>
+              <div class="category-cover-line"></div>
+            </div>
+
             <div class="category-body">
               <h3>{{ item.title }}</h3>
               <p>{{ item.subtitle }}</p>
@@ -65,11 +71,7 @@
               <p class="best-tagline">{{ item.tagline }}</p>
 
               <div class="label-row">
-                <span
-                  v-for="label in item.labels"
-                  :key="label"
-                  class="pill"
-                >
+                <span v-for="label in item.labels" :key="label" class="pill">
                   {{ label }}
                 </span>
               </div>
@@ -88,28 +90,37 @@
 <script>
 import http from '@/api/httpClient'
 
-// Konfigurasi copywriting per kategori (opsional)
 // Nama harus sama dengan nama_kategori di DB (Kaos, Kemeja, Jaket, Celana, Dress)
 const CATEGORY_UI_CONFIG = {
   Kaos: {
     subtitle: 'Oversize & graphic tee',
     hint: 'Cocok buat OOTD',
+    icon: '👕',
+    badge: 'Trending',
   },
   Kemeja: {
     subtitle: 'Casual sampai formal',
     hint: 'Look santai & rapi',
+    icon: '👔',
+    badge: 'Smart',
   },
   Jaket: {
     subtitle: 'Denim, bomber, varsity',
     hint: 'Outer andalan',
+    icon: '🧥',
+    badge: 'Hangat',
   },
   Celana: {
     subtitle: 'Jeans, chino, cargo',
     hint: 'Mix & match mudah',
+    icon: '👖',
+    badge: 'Basic',
   },
   Dress: {
     subtitle: 'Casual sampai kondangan',
     hint: 'Feminine style',
+    icon: '👗',
+    badge: 'Favorite',
   },
 }
 
@@ -123,130 +134,100 @@ export default {
     }
   },
   methods: {
+    // dipakai untuk gambar barang terlaris
     resolveImageUrl(url) {
-      const API = "http://localhost:8080";
-      if (!url) return "";
-      if (url.startsWith("http")) return url;
-      if (url.startsWith("/uploads/")) return API + url;
-      return API + "/uploads/" + url;
+      const API = 'http://localhost:8080'
+      if (!url) return ''
+      if (url.startsWith('http')) return url
+      if (url.startsWith('/uploads/')) return API + url
+      return API + '/uploads/' + url
     },
+
     formatPrice(value) {
       if (!value && value !== 0) return ''
       return Number(value).toLocaleString('id-ID')
     },
+
     goToProductDetail(id) {
       this.$router.push(`/produk/${id}`)
     },
 
-    // ==== KATEGORI ====
+    // ==== KATEGORI (TANPA GAMBAR) ====
     async loadCategories() {
       try {
         const res = await http.get('/kategori')
         const list = Array.isArray(res.data) ? res.data : []
 
-        // bentuk data untuk kartu kategori
         this.categoryItems = list.map((k, idx) => {
           const ui = CATEGORY_UI_CONFIG[k.namaKategori] || {}
+          const keySlug = String(k.namaKategori || '')
+            .trim()
+            .toLowerCase()
+            .replace(/\s+/g, '-') // misal "Kaos Oversize" -> "kaos-oversize"
+
           return {
             id: k.idKategori || idx + 1,
             key: k.namaKategori,
+            keySlug,
             title: k.namaKategori,
             subtitle: ui.subtitle || k.deskripsi || '',
             hint: ui.hint || 'Lihat koleksi',
+            icon: ui.icon || '🧵',
+            badge: ui.badge || 'Kategori',
           }
         })
 
-        // chips diambil dari kategori yang sama
-        this.chips = this.categoryItems.map(c => c.title)
+        this.chips = this.categoryItems.map((c) => c.title)
       } catch (err) {
         console.error('Gagal memuat kategori, pakai dummy:', err)
 
-        // fallback statis kalau API error
         const fallback = [
-          {
-            id: 1,
-            key: 'Kemeja',
-            title: 'Kemeja',
-            subtitle: 'Casual sampai formal',
-            hint: 'Look santai & rapi',
-          },
-          {
-            id: 2,
-            key: 'Kaos',
-            title: 'Kaos',
-            subtitle: 'Oversize & graphic tee',
-            hint: 'Cocok buat OOTD',
-          },
-          {
-            id: 3,
-            key: 'Jaket',
-            title: 'Jaket',
-            subtitle: 'Denim, bomber, varsity',
-            hint: 'Outer andalan',
-          },
-          {
-            id: 4,
-            key: 'Celana',
-            title: 'Celana',
-            subtitle: 'Jeans, chino, cargo',
-            hint: 'Mix & match mudah',
-          },
-          {
-            id: 5,
-            key: 'Dress',
-            title: 'Dress',
-            subtitle: 'Casual sampai kondangan',
-            hint: 'Feminine style',
-          },
+          { id: 1, key: 'Kemeja', title: 'Kemeja', subtitle: 'Casual sampai formal', hint: 'Look santai & rapi', icon: '👔', badge: 'Smart' },
+          { id: 2, key: 'Kaos', title: 'Kaos', subtitle: 'Oversize & graphic tee', hint: 'Cocok buat OOTD', icon: '👕', badge: 'Trending' },
+          { id: 3, key: 'Jaket', title: 'Jaket', subtitle: 'Denim, bomber, varsity', hint: 'Outer andalan', icon: '🧥', badge: 'Hangat' },
+          { id: 4, key: 'Celana', title: 'Celana', subtitle: 'Jeans, chino, cargo', hint: 'Mix & match mudah', icon: '👖', badge: 'Basic' },
+          { id: 5, key: 'Dress', title: 'Dress', subtitle: 'Casual sampai kondangan', hint: 'Feminine style', icon: '👗', badge: 'Favorite' },
         ]
 
-        this.categoryItems = fallback
-        this.chips = fallback.map(f => f.title)
+        this.categoryItems = fallback.map((f) => ({
+          ...f,
+          keySlug: String(f.key).trim().toLowerCase().replace(/\s+/g, '-'),
+        }))
+        this.chips = this.categoryItems.map((c) => c.title)
       }
     },
 
     goToCategory(item) {
-      // item.key berisi nama kategori (Kaos, Kemeja, dsb.)
       this.$router.push({
         name: 'product-search',
-        query: {
-          kategori: item.key,
-        },
+        query: { kategori: item.key },
       })
-    },
-
-    goToCategoryByName(name) {
-      // dipanggil dari chip (string)
-      this.$router.push({
-        name: 'product-search',
-        query: {
-          kategori: name,
-        },
-      })
-    },
-
-    goToAllCategories() {
-      // sementara diarahkan ke search tanpa filter
-      this.$router.push({ name: 'product-search' })
     },
 
     // ==== BARANG TERLARIS ====
     async loadBestSellers() {
-      const res = await http.get('/produk/terlaris?limit=6')
+      try {
+        const res = await http.get('/produk/terlaris?limit=6')
+        const raw = res.data
+        const list = Array.isArray(raw)
+          ? raw
+          : Array.isArray(raw?.content)
+            ? raw.content
+            : []
 
-      console.log('TERLARIS RAW:', res.data) // ✅ cek isi response
-
-      this.bestSellers = (res.data || []).map(p => ({
-        id: p.idProduk,
-        title: p.namaProduk,
-        tagline: `${p.totalTerjual} terjual`,
-        labels: ['Best Seller'],
-        price: p.harga,
-        discount: 30,
-        imageUrl: p.imageUrl || p.image_url || p.gambar || '',
-      }))
-
-      console.log('TERLARIS MAPPED:', this.bestSellers)
+        this.bestSellers = list.map((p) => ({
+          id: p.idProduk,
+          title: p.namaProduk,
+          tagline: `${p.totalTerjual ?? 0} terjual`,
+          labels: ['Best Seller'],
+          price: p.harga,
+          discount: 30,
+          imageUrl: p.imageUrl || '',
+        }))
+      } catch (e) {
+        console.error('Gagal load barang terlaris:', e)
+        this.bestSellers = []
+      }
     },
   },
   mounted() {
@@ -260,8 +241,7 @@ export default {
 .user-home {
   min-height: 100vh;
   background: #f5f7fb;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   color: #222;
 }
 
@@ -270,122 +250,31 @@ export default {
 }
 
 /* Hero */
-
 .hero-section {
   display: grid;
   grid-template-columns: 2fr 1fr;
   gap: 16px;
   margin-bottom: 20px;
 }
-
-.hero-main {
-  height: 180px;
-  border-radius: 18px;
-}
-
-.hero-side {
-  display: grid;
-  grid-template-rows: 1fr 1fr;
-  gap: 12px;
-}
-
-.hero-side-item {
-  border-radius: 18px;
-}
+.hero-main { height: 180px; border-radius: 18px; }
+.hero-side { display: grid; grid-template-rows: 1fr 1fr; gap: 12px; }
+.hero-side-item { border-radius: 18px; }
 
 /* Skeleton */
-
-.skeleton {
-  background: linear-gradient(135deg, #ffe0cf, #ffd4bf);
-}
-
-.best-thumb {
-  position: relative;
-  height: 140px;             
-  overflow: hidden;
-  border-radius: 18px 18px 0 0;
-  background: #f3f4f6;
-}
-
-.thumb-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
-}
-
-/* Chips */
-
-.category-chips {
-  display: flex;
-  gap: 14px;
-  padding: 14px 10px;
-  background: #fff;
-  border-radius: 18px;
-  margin-bottom: 24px;
-  overflow-x: auto;
-}
-
-.chip {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-}
-
-.chip-circle {
-  width: 52px;
-  height: 52px;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #ff7b56, #ffb094);
-}
-
-.chip-label {
-  font-size: 11px;
-  color: #555;
-}
+.skeleton { background: linear-gradient(135deg, #ffe0cf, #ffd4bf); }
 
 /* Sections */
-
 .section-block {
   background: #fff;
   border-radius: 20px;
   padding: 18px 20px 22px;
   margin-bottom: 20px;
 }
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 16px;
-}
-
-.section-header h2 {
-  margin: 0;
-  font-size: 18px;
-}
-
-.section-subtitle {
-  margin: 4px 0 0;
-  font-size: 12px;
-  color: #777;
-}
-
-.link-button {
-  border: none;
-  background: none;
-  color: #ff6b3d;
-  font-size: 12px;
-  cursor: pointer;
-}
+.section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; }
+.section-header h2 { margin: 0; font-size: 18px; }
+.section-subtitle { margin: 4px 0 0; font-size: 12px; color: #777; }
 
 /* Category cards */
-
 .category-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -394,50 +283,77 @@ export default {
 
 .category-card {
   background: #f7f8fc;
-  border-radius: 14px;
+  border-radius: 16px;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
   cursor: pointer;
   transition: transform 0.12s ease, box-shadow 0.12s ease;
+  border: 1px solid rgba(255, 203, 186, 0.6);
 }
 
 .category-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.10);
 }
 
-.category-thumb {
-  height: 90px;
+/* Stylish cover (no image) */
+.category-cover {
+  position: relative;
+  height: 120px;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, #ffe0cf, #ffd4bf);
 }
 
-.category-body {
-  padding: 10px 10px 12px;
+.category-cover-line {
+  position: absolute;
+  left: -30%;
+  top: 55%;
+  width: 160%;
+  height: 46px;
+  background: rgba(255, 255, 255, 0.22);
+  transform: rotate(-6deg);
 }
 
-.category-body h3 {
-  margin: 0 0 2px;
-  font-size: 13px;
+.category-icon {
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.75);
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  box-shadow: 0 10px 18px rgba(0,0,0,0.07);
 }
 
-.category-body p {
-  margin: 0 0 4px;
+.category-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
   font-size: 11px;
-  color: #777;
-}
-
-.category-hint {
-  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
   color: #ff6b3d;
+  font-weight: 700;
 }
+
+/* Per-category gradient variants */
+.cover-kemeja { background: linear-gradient(135deg, #ffd7c2, #ffe7dc); }
+.cover-kaos   { background: linear-gradient(135deg, #ffe3b5, #ffd6c9); }
+.cover-jaket  { background: linear-gradient(135deg, #ffd0e0, #ffd9c9); }
+.cover-celana { background: linear-gradient(135deg, #ffd7c2, #ffefc9); }
+.cover-dress  { background: linear-gradient(135deg, #ffd0c9, #ffe0f3); }
+
+.category-body { padding: 10px 10px 12px; }
+.category-body h3 { margin: 0 0 2px; font-size: 13px; }
+.category-body p { margin: 0 0 4px; font-size: 11px; color: #777; }
+.category-hint { font-size: 11px; color: #ff6b3d; }
 
 /* Best seller */
-
-.section-title-center {
-  text-align: center;
-  font-size: 16px;
-  margin: 0 0 14px;
-}
+.section-title-center { text-align: center; font-size: 16px; margin: 0 0 14px; }
 
 .best-seller-grid {
   display: grid;
@@ -461,6 +377,22 @@ export default {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
 }
 
+.best-thumb {
+  position: relative;
+  height: 140px;
+  overflow: hidden;
+  border-radius: 18px 18px 0 0;
+  background: #f3f4f6;
+}
+
+.thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
 .discount-badge {
   position: absolute;
   top: 8px;
@@ -472,27 +404,10 @@ export default {
   border-radius: 999px;
 }
 
-.best-body {
-  padding: 10px 10px 12px;
-}
-
-.best-body h3 {
-  margin: 0 0 4px;
-  font-size: 13px;
-}
-
-.best-tagline {
-  margin: 0 0 8px;
-  font-size: 11px;
-  color: #777;
-}
-
-.label-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-bottom: 6px;
-}
+.best-body { padding: 10px 10px 12px; }
+.best-body h3 { margin: 0 0 4px; font-size: 13px; }
+.best-tagline { margin: 0 0 8px; font-size: 11px; color: #777; }
+.label-row { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
 
 .pill {
   font-size: 10px;
@@ -509,18 +424,9 @@ export default {
 }
 
 /* Responsive sederhana */
-
 @media (max-width: 1024px) {
-  .hero-section {
-    grid-template-columns: 1fr;
-  }
-
-  .category-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .best-seller-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
+  .hero-section { grid-template-columns: 1fr; }
+  .category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .best-seller-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 </style>
