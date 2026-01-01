@@ -2,8 +2,14 @@
   <header class="topbar">
     <!-- ====== [DISESUAIKAN: KLIK LOGO KEMBALI KE DASHBOARD] ====== -->
     <div class="topbar-left brand-click" @click="goDashboard">
-      <div class="logo-badge"></div>
-      <span class="logo-text">Thriftly Admin</span>
+      <div class="navbar-brand" @click="goHome">
+        <img
+          src="@/assets/foto/logo.jpg"
+          alt="Thriftly Logo"
+          class="navbar-logo"
+        />
+        <span class="brand-text">Thriftly</span>
+      </div>
     </div>
     <!-- ====== [AKHIR PENYESUAIAN] ====== -->
 
@@ -130,16 +136,30 @@ export default {
 }
 
 /* ====== LOGO LEBIH BESAR ====== */
-.logo-badge {
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  background: #ffd46c;
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
 }
 
-.logo-text {
-  font-weight: 700;
-  font-size: 20px;
+.navbar-logo {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+
+  background: #ffffff;
+  padding: 6px;
+  border-radius: 50%;
+
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+.brand-text {
+  font-size:40px;
+  font-weight: 800;
+  color: white;       /* karena navbar kamu gradient orange */
+  letter-spacing: 0.3px;
 }
 /* ============================= */
 

@@ -3,7 +3,11 @@
     <div class="content">
       <div class="left">
         <div class="brand">
-          <div class="logo-big">🛍️</div>
+          <img
+            src="@/assets/foto/logo.jpg"
+            alt="Thriftly Logo"
+            class="logo"
+          />
           <div class="brand-name">Thriftly</div>
         </div>
       </div>
@@ -30,10 +34,6 @@
             <button type="submit" class="btn-login" :disabled="loading">
               {{ loading ? 'Memproses...' : 'Login' }}
             </button>
-
-            <p class="link-small">
-              <a href="#">Lupa Password?</a>
-            </p>
 
             <p class="bottom-text">
               Belum punya akun?
@@ -146,8 +146,10 @@ export default {
   text-align: center;
 }
 
-.logo-big {
-  font-size: 120px;
+.logo {
+  height: 150px; 
+  width: auto;
+  object-fit: contain;
 }
 
 .brand-name {
@@ -157,7 +159,7 @@ export default {
 }
 
 .card {
-  width: 360px;
+  width: 390px;
   padding: 32px 28px;
   border-radius: 24px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
