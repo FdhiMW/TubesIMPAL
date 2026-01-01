@@ -32,7 +32,12 @@
             @click="goToDetail(p.idProduk)"
           >
             <div class="thumb">
-              <!-- kalau nanti pakai imageUrl dari backend, tinggal ganti jadi <img :src="p.imageUrl" /> -->
+              <img
+                v-if="p && p.imageUrl"
+                :src="resolveImageUrl(p.imageUrl)"
+                class="thumb-img"
+                alt="Foto produk"
+              />
             </div>
             <div class="body">
               <h3 class="title">{{ p.namaProduk }}</h3>
@@ -105,6 +110,16 @@ export default {
     goToDetail(id) {
       this.$router.push(`/produk/${id}`)
     },
+    resolveImageUrl(url) {
+      const API = "http://localhost:8080";
+
+      if (!url) return "";
+      if (url.startsWith("http")) return url;
+      if (url.startsWith("/uploads/")) return API + url;
+      if (url.startsWith("/foto-barang/")) return url;
+
+      return API + "/uploads/" + url;
+    },
   },
 }
 </script>
@@ -146,8 +161,33 @@ export default {
 }
 
 .thumb {
-  height: 140px;
-  background: linear-gradient(135deg, #fee2e2, #fed7aa);
+  width: 100%;
+  height: 180px;
+  background: #f3f6ff;
+  overflow: hidden;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.thumb-placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: #6b7280;
+  font-size: 13px;
 }
 
 .body {

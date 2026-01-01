@@ -4,7 +4,12 @@
       <!-- KIRI: gambar produk -->
       <section class="image-section">
         <div class="main-image">
-          <!-- kalau nanti ada imageUrl, tinggal ganti div ini jadi <img> -->
+          <img
+            v-if="produk && produk.imageUrl"
+            :src="resolveImageUrl(produk.imageUrl)"
+            alt="Foto produk"
+            class="main-image"
+          />
         </div>
         <div class="thumb-row">
           <div class="thumb-box"></div>
@@ -234,7 +239,17 @@ export default {
           qty: this.qty
         }
       })
-    }
+    },
+    resolveImageUrl(url) {
+      const API = "http://localhost:8080";
+
+      if (!url) return "";
+      if (url.startsWith("http")) return url;
+      if (url.startsWith("/uploads/")) return API + url;
+      if (url.startsWith("/foto-barang/")) return url;
+
+      return API + "/uploads/" + url;
+    },
   }
 }
 </script>

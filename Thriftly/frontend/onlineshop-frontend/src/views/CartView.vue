@@ -33,9 +33,10 @@
                 <div class="cart-item-image">
                   <div v-if="!item.imageUrl" class="image-placeholder"></div>
                   <img
-                    v-else
-                    :src="item.imageUrl"
-                    :alt="item.namaProduk"
+                    v-if="item && item.imageUrl"
+                    :src="resolveImageUrl(item.imageUrl)"
+                    class="thumb-img"
+                    alt="Foto produk"
                   />
                 </div>
                 <div class="cart-item-info">
@@ -221,6 +222,16 @@ export default {
     },
     goToHome() {
       this.$router.push('/')
+    },
+    resolveImageUrl(url) {
+      const API = "http://localhost:8080";
+
+      if (!url) return "";
+      if (url.startsWith("http")) return url;
+      if (url.startsWith("/uploads/")) return API + url;
+      if (url.startsWith("/foto-barang/")) return url;
+
+      return API + "/uploads/" + url;
     },
   },
 }
@@ -519,5 +530,13 @@ export default {
     position: static;
     top: unset;
   }
+}
+
+.thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 </style>

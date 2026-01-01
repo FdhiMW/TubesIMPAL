@@ -28,10 +28,10 @@
 
           <div class="thumb">
             <img
-              v-if="p.imageUrl"
-              :src="p.imageUrl"
-              alt="Foto produk"
+              v-if="p && p.imageUrl"
+              :src="resolveImageUrl(p.imageUrl)"
               class="thumb-img"
+              alt="Foto produk"
             />
           </div>
 
@@ -101,7 +101,17 @@ export default {
         this.deletingId = null
       }
     },
-    // ====== [AKHIR SISIPAN] ======
+
+    resolveImageUrl(url) {
+      const API = "http://localhost:8080";
+
+      if (!url) return "";
+      if (url.startsWith("http")) return url;
+      if (url.startsWith("/uploads/")) return API + url;
+      if (url.startsWith("/foto-barang/")) return url;
+
+      return API + "/uploads/" + url;
+    },
   },
   mounted() {
     this.loadProducts()
@@ -172,14 +182,33 @@ export default {
 
 /* ====== gambar katalog ====== */
 .thumb {
-  height: 140px;
-  background: linear-gradient(135deg, #eef3ff, #f6f8ff);
+  width: 100%;
+  height: 180px;
+  background: #f3f6ff;
+  overflow: hidden;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .thumb-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.thumb-placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  color: #6b7280;
+  font-size: 13px;
 }
 
 /* ====== body ====== */

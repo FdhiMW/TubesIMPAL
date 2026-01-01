@@ -8,9 +8,14 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/produk")
@@ -81,12 +86,10 @@ public class ProdukController {
             @RequestParam(value = "warna", required = false) String warna,
             @RequestParam(value = "merek", required = false) String merek,
             @RequestParam(value = "jenisKelamin", required = false) String jenisKelamin,
-
-            // ✅ TAMBAHAN: idKategori dikirim dari frontend
             @RequestParam(value = "idKategori", required = false) Long idKategori,
-
             @RequestPart(value = "gambar", required = false) MultipartFile gambar
-    ) {
+    ) throws Exception {
+
         ProdukDetailDto dto = new ProdukDetailDto();
         dto.setNamaProduk(namaProduk);
         dto.setDeskripsi(deskripsi);
@@ -97,12 +100,29 @@ public class ProdukController {
         dto.setWarna(warna);
         dto.setMerek(merek);
         dto.setJenisKelamin(jenisKelamin);
-
-        // ✅ TAMBAHAN
         dto.setIdKategori(idKategori);
 
+        // ===== simpan file upload ke folder "uploads" =====
         if (gambar != null && !gambar.isEmpty()) {
-            dto.setImageUrl(gambar.getOriginalFilename());
+            String original = gambar.getOriginalFilename();
+            String ext = "";
+
+            if (original != null && original.contains(".")) {
+                ext = original.substring(original.lastIndexOf("."));
+            }
+
+            String filename = UUID.randomUUID().toString() + ext;
+
+            Path uploadDir = Paths.get("uploads");
+            if (!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+            }
+
+            Path target = uploadDir.resolve(filename);
+            Files.copy(gambar.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
+
+            // URL yang nanti dipakai frontend
+            dto.setImageUrl("/uploads/" + filename);
         }
 
         return produkService.createProduk(dto);

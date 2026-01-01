@@ -702,6 +702,17 @@ export default {
     goBack() {
       this.$router.back()
     },
+
+    resolveImageUrl(url) {
+      const API = "http://localhost:8080";
+
+      if (!url) return "";
+      if (url.startsWith("http")) return url;
+      if (url.startsWith("/uploads/")) return API + url;
+      if (url.startsWith("/foto-barang/")) return url;
+
+      return API + "/uploads/" + url;
+    },
   },
 }
 </script>

@@ -13,7 +13,12 @@
       <div v-else class="list">
         <div v-for="(it, idx) in items" :key="idx" class="card">
           <div class="thumb">
-            <img :src="it.imageUrl || placeholder" alt="produk" @error="onImgError" />
+            <img
+              v-if="it && it.imageUrl"
+              :src="resolveImageUrl(it.imageUrl)"
+              alt="Foto produk"
+              class="thumb-img"
+            />
           </div>
 
           <div class="info">
@@ -159,6 +164,16 @@ export default {
       } finally {
         this.confirmingId = null
       }
+    },
+    resolveImageUrl(url) {
+      const API = "http://localhost:8080";
+
+      if (!url) return "";
+      if (url.startsWith("http")) return url;
+      if (url.startsWith("/uploads/")) return API + url;
+      if (url.startsWith("/foto-barang/")) return url;
+
+      return API + "/uploads/" + url;
     },
   },
   mounted() {
@@ -364,6 +379,14 @@ export default {
     width: 140px;
     height: 110px;
     border-radius: 18px;
+  }
+
+  .thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
   }
 
   .name { font-size: 20px; }
