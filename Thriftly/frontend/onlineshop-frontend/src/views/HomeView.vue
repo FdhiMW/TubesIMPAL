@@ -6,8 +6,8 @@
       <section class="hero-section">
         <div class="hero-main"></div>
         <div class="hero-side">
-          <div class="hero-side-item skeleton"></div>
-          <div class="hero-side-item skeleton"></div>
+          <div class="hero-side-item1"></div>
+          <div class="hero-side-item2"></div>
         </div>
       </section>
 
@@ -253,7 +253,7 @@ export default {
 .hero-section {
   display: grid;
   grid-template-columns: 2fr 1fr;
-  gap: 16px;
+  gap: 1px;
   margin-bottom: 20px;
 }
 .hero-main{
@@ -262,11 +262,29 @@ export default {
   overflow: hidden;
   background-image: url("~@/assets/foto/Banner1.jpg");
   background-size: cover;
-  background-position: center 30%; /* atur posisi */
+  background-position: center 30%;
   background-repeat: no-repeat;
 }
-.hero-side { display: grid; grid-template-rows: 1fr 1fr; gap: 12px; }
-.hero-side-item { border-radius: 18px; }
+.hero-side { 
+  grid-template-rows: 1fr 1fr; 
+  gap: -10px;
+}
+.hero-side-item1 { 
+  height: 79px;
+  border-radius: 18px; 
+  background-image: url("~@/assets/foto/Banner2.png");
+  background-size: cover;
+  background-position: center 50%;
+  background-repeat: no-repeat;
+}
+.hero-side-item2 { 
+  height: 122px;
+  border-radius: 18px;
+  background-image: url("~@/assets/foto/Banner3.png"); 
+  background-size: cover;
+  background-position: center 30%;
+  background-repeat: no-repeat;
+}
 
 /* Skeleton */
 .skeleton { background: linear-gradient(135deg, #ffe0cf, #ffd4bf); }

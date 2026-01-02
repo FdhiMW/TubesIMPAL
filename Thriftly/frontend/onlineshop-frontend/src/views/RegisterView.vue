@@ -3,7 +3,11 @@
     <div class="content">
       <div class="left">
         <div class="brand">
-          <div class="logo-big">🛍️</div>
+          <img
+            src="@/assets/foto/logo.jpg"
+            alt="Thriftly Logo"
+            class="logo"
+          />
           <div class="brand-name">Thriftly</div>
         </div>
       </div>
@@ -158,8 +162,10 @@ export default {
   text-align: center;
 }
 
-.logo-big {
-  font-size: 120px;
+.logo {
+  height: 150px; 
+  width: auto;
+  object-fit: contain;
 }
 
 .brand-name {
