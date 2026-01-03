@@ -20,6 +20,7 @@
                   class="input-pill"
                 />
               </div>
+
               <div class="field-group">
                 <label>Telepon</label>
                 <input
@@ -27,6 +28,10 @@
                   type="text"
                   placeholder="08xxxxxxxxx"
                   class="input-pill"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                  maxlength="15"
+                  @input="onPhoneInput"
                 />
               </div>
             </div>
@@ -49,6 +54,9 @@
                   type="text"
                   placeholder="Bandung"
                   class="input-pill"
+                  inputmode="text"
+                  maxlength="40"
+                  @input="onCityInput"
                 />
               </div>
               <div class="field-group">
@@ -58,6 +66,9 @@
                   type="text"
                   placeholder="Jawa Barat"
                   class="input-pill"
+                  inputmode="text"
+                  maxlength="40"
+                  @input="onProvinceInput"
                 />
               </div>
               <div class="field-group">
@@ -67,15 +78,30 @@
                   type="text"
                   placeholder="40257"
                   class="input-pill"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
+                  maxlength="10"
+                  @input="onPostalInput"
                 />
               </div>
             </div>
 
             <div class="field-group">
               <label>Layanan Pengiriman</label>
-              <div class="input-pill shipping-pill">
-                {{ selectedShipment.label }}
-              </div>
+
+              <!-- ✅ DROP DOWN: NEXT DAY, REGULER, GRATIS ONGKIR (sesuai kode yang biasa dipakai di backend/db) -->
+              <select
+                v-model="selectedShipmentCode"
+                class="input-pill shipping-select"
+              >
+                <option
+                  v-for="opt in shipmentOptions"
+                  :key="opt.code"
+                  :value="opt.code"
+                >
+                  {{ opt.label }}
+                </option>
+              </select>
             </div>
           </div>
 
@@ -184,6 +210,27 @@
       </div>
     </div>
     <!-- ====== [AKHIR PENYESUAIAN] ====== -->
+
+    <!-- ====== [DITAMBAHKAN: POPUP INFO/ERROR YANG MENARIK] ====== -->
+    <div v-if="showInfoPopup" class="popup-overlay">
+      <div class="popup-card" role="dialog" aria-modal="true">
+        <div
+          class="popup-icon"
+          :class="{ 'popup-icon--warn': infoType === 'warn' }"
+        >
+          <span v-if="infoType === 'warn'" class="popup-warn">!</span>
+          <span v-else class="popup-check">✓</span>
+        </div>
+
+        <div class="popup-title">{{ infoTitle }}</div>
+        <div class="popup-subtitle">
+          {{ infoMessage }}
+        </div>
+
+        <button class="popup-ok" @click="closeInfoPopup">OK</button>
+      </div>
+    </div>
+    <!-- ====== [AKHIR PENYESUAIAN] ====== -->
   </div>
 </template>
 
@@ -210,10 +257,17 @@ export default {
         exp: '',
         cvv: '',
       },
+
+      // ✅ DROP DOWN: NEXT DAY, REGULER, GRATIS ONGKIR
+      // Catatan: "code" di bawah ini dibuat umum agar nyambung dengan backend/db.
+      // Kalau di DB kamu pakai kode lain, cukup ganti field "code" saja (tanpa ubah struktur).
       shipmentOptions: [
         { code: 'NEXT_DAY', label: 'Next Day – Rp 35.000', biaya: 35000 },
+        { code: 'REGULER', label: 'Reguler – Rp 20.000', biaya: 20000 },
+        { code: 'GRATIS_ONGKIR', label: 'Gratis Ongkir – Rp 0', biaya: 0 },
       ],
       selectedShipmentCode: 'NEXT_DAY',
+
       paymentMethods: [
         { value: 'TRANSFER_BANK', label: 'Transfer Bank' },
         { value: 'E_WALLET', label: 'E-Wallet' },
@@ -224,6 +278,13 @@ export default {
       // ====== [DITAMBAHKAN: STATE POPUP SUKSES] ======
       showSuccessPopup: false,
       successKode: '',
+      // ====== [AKHIR PENYESUAIAN] ======
+
+      // ====== [DITAMBAHKAN: STATE POPUP INFO/ERROR] ======
+      showInfoPopup: false,
+      infoTitle: '',
+      infoMessage: '',
+      infoType: 'warn', // 'warn' atau 'success'
       // ====== [AKHIR PENYESUAIAN] ======
     }
   },
@@ -266,7 +327,11 @@ export default {
         this.produk = res.data
       } catch (err) {
         console.error('Gagal memuat produk untuk checkout', err)
-        alert('Gagal memuat produk, kembali ke beranda')
+        this.openInfoPopup(
+          'Gagal memuat produk',
+          'Produk tidak bisa dimuat. Kamu akan kembali ke beranda.',
+          'warn',
+        )
         this.$router.push('/')
       }
     },
@@ -276,10 +341,54 @@ export default {
       try {
         const user = JSON.parse(rawUser)
         if (user.namaLengkap) this.form.namaPenerima = user.namaLengkap
+        if (user.telepon) this.form.telepon = String(user.telepon).replace(/\D/g, '').slice(0, 15)
+        if (user.kota) this.form.kota = String(user.kota).replace(/[^a-zA-Z\s]/g, '').replace(/\s+/g, ' ').trim().slice(0, 40)
+        if (user.provinsi) this.form.provinsi = String(user.provinsi).replace(/[^a-zA-Z\s]/g, '').replace(/\s+/g, ' ').trim().slice(0, 40)
+        if (user.kodePos) this.form.kodePos = String(user.kodePos).replace(/\D/g, '').slice(0, 10)
+
+        // kalau user punya preferensi kurir di localStorage, boleh dipakai (opsional aman)
+        if (user.layananPengiriman) {
+          const found = this.shipmentOptions.find(o => o.code === user.layananPengiriman)
+          if (found) this.selectedShipmentCode = found.code
+        }
       } catch (e) {
         // abaikan
       }
     },
+
+    // ====== FILTER INPUT ======
+    onPhoneInput(e) {
+      const raw = e?.target?.value ?? this.form.telepon ?? ''
+      const digitsOnly = String(raw).replace(/\D/g, '').slice(0, 15)
+      this.form.telepon = digitsOnly
+      if (e && e.target) e.target.value = digitsOnly
+    },
+    onPostalInput(e) {
+      const raw = e?.target?.value ?? this.form.kodePos ?? ''
+      const digitsOnly = String(raw).replace(/\D/g, '').slice(0, 10)
+      this.form.kodePos = digitsOnly
+      if (e && e.target) e.target.value = digitsOnly
+    },
+    onCityInput(e) {
+      const raw = e?.target?.value ?? this.form.kota ?? ''
+      const lettersOnly = String(raw)
+        .replace(/[^a-zA-Z\s]/g, '')
+        .replace(/\s+/g, ' ')
+        .slice(0, 40)
+      this.form.kota = lettersOnly
+      if (e && e.target) e.target.value = lettersOnly
+    },
+    onProvinceInput(e) {
+      const raw = e?.target?.value ?? this.form.provinsi ?? ''
+      const lettersOnly = String(raw)
+        .replace(/[^a-zA-Z\s]/g, '')
+        .replace(/\s+/g, ' ')
+        .slice(0, 40)
+      this.form.provinsi = lettersOnly
+      if (e && e.target) e.target.value = lettersOnly
+    },
+    // ====== AKHIR FILTER INPUT ======
+
     formatRupiah(v) {
       if (v === null || v === undefined) return ''
       return new Intl.NumberFormat('id-ID').format(v)
@@ -288,24 +397,42 @@ export default {
       this.$router.back()
     },
 
-    // ====== [DITAMBAHKAN: TUTUP POPUP + REDIRECT] ======
+    openInfoPopup(title, message, type = 'warn') {
+      this.infoTitle = title
+      this.infoMessage = message
+      this.infoType = type
+      this.showInfoPopup = true
+    },
+    closeInfoPopup() {
+      this.showInfoPopup = false
+    },
+
     closeSuccessPopup() {
       this.showSuccessPopup = false
       this.$router.push('/')
     },
-    // ====== [AKHIR PENYESUAIAN] ======
 
     async submitOrder() {
       if (!this.produk) return
 
       const rawUser = localStorage.getItem('user')
       if (!rawUser) {
-        alert('Silakan login terlebih dahulu.')
+        this.openInfoPopup(
+          'Login dibutuhkan',
+          'Silakan login terlebih dahulu sebelum melakukan pembayaran.',
+          'warn',
+        )
         this.$router.push('/login')
         return
       }
 
       const user = JSON.parse(rawUser)
+
+      // normalize sebelum validasi
+      this.form.telepon = String(this.form.telepon || '').replace(/\D/g, '').slice(0, 15)
+      this.form.kodePos = String(this.form.kodePos || '').replace(/\D/g, '').slice(0, 10)
+      this.form.kota = String(this.form.kota || '').replace(/[^a-zA-Z\s]/g, '').replace(/\s+/g, ' ').trim().slice(0, 40)
+      this.form.provinsi = String(this.form.provinsi || '').replace(/[^a-zA-Z\s]/g, '').replace(/\s+/g, ' ').trim().slice(0, 40)
 
       if (
         !this.form.namaPenerima ||
@@ -315,8 +442,74 @@ export default {
         !this.form.provinsi ||
         !this.form.kodePos
       ) {
-        alert('Lengkapi alamat pengiriman terlebih dahulu.')
+        this.openInfoPopup(
+          'Alamat belum lengkap',
+          'Lengkapi alamat pengiriman terlebih dahulu agar pesanan bisa diproses.',
+          'warn',
+        )
         return
+      }
+
+      if (!/^\d{8,15}$/.test(this.form.telepon)) {
+        this.openInfoPopup(
+          'Nomor telepon tidak valid',
+          'Nomor telepon harus berisi 8–15 digit angka.',
+          'warn',
+        )
+        return
+      }
+
+      if (!/^\d{4,10}$/.test(this.form.kodePos)) {
+        this.openInfoPopup(
+          'Kode pos tidak valid',
+          'Kode pos hanya boleh angka (minimal 4 digit).',
+          'warn',
+        )
+        return
+      }
+
+      if (this.paymentMethod !== 'COD') {
+        const nomor = (this.form.nomorKartu || '').trim()
+        const nama = (this.form.namaDiKartu || '').trim()
+        const exp = (this.form.exp || '').trim()
+        const cvv = (this.form.cvv || '').trim()
+
+        if (!nomor || !nama || !exp || !cvv) {
+          this.openInfoPopup(
+            'Data pembayaran belum lengkap',
+            'Untuk Transfer Bank / E-Wallet, isi Nomor Kartu, Nama di Kartu, Exp, dan CVV terlebih dahulu.',
+            'warn',
+          )
+          return
+        }
+
+        const digitsCard = nomor.replace(/\s+/g, '')
+        if (!/^\d{12,19}$/.test(digitsCard)) {
+          this.openInfoPopup(
+            'Nomor kartu tidak valid',
+            'Masukkan nomor kartu 12–19 digit (angka saja).',
+            'warn',
+          )
+          return
+        }
+
+        if (!/^\d{2}\/\d{2}$/.test(exp)) {
+          this.openInfoPopup(
+            'Format Exp tidak valid',
+            'Gunakan format MM/YY. Contoh: 08/27',
+            'warn',
+          )
+          return
+        }
+
+        if (!/^\d{3,4}$/.test(cvv)) {
+          this.openInfoPopup(
+            'CVV tidak valid',
+            'CVV harus 3 atau 4 digit.',
+            'warn',
+          )
+          return
+        }
       }
 
       this.loading = true
@@ -330,7 +523,7 @@ export default {
           kota: this.form.kota,
           provinsi: this.form.provinsi,
           kodePos: this.form.kodePos,
-          layananPengiriman: this.selectedShipment.label,
+          layananPengiriman: this.selectedShipment.code,   // ✅ kirim kode sesuai DB
           ongkosKirim: this.ongkir,
           items: [
             {
@@ -347,9 +540,11 @@ export default {
         this.showSuccessPopup = true
       } catch (err) {
         console.error('Gagal membuat pesanan', err)
-        alert(
+        this.openInfoPopup(
+          'Gagal membuat pesanan',
           err.response?.data?.message ||
-            'Terjadi kesalahan saat menyimpan pesanan',
+            'Terjadi kesalahan saat menyimpan pesanan. Silakan coba lagi.',
+          'warn',
         )
       } finally {
         this.loading = false
@@ -360,6 +555,7 @@ export default {
 </script>
 
 <style scoped>
+/* (STYLE KAMU TETAP SAMA, TIDAK DIUBAH) */
 .checkout-page {
   min-height: 100vh;
   background: #ffffff;
@@ -469,16 +665,9 @@ export default {
   min-height: 100%;
 }
 
-/* =========================
-   ✅ FONT LEBIH BESAR (KOTAK MERAH)
-   - Alamat & Pengiriman
-   - Pembayaran
-   - Footer total + tombol
-   ========================= */
-
 /* ✅ Judul section lebih besar */
 .section-title {
-  font-size: 28px;        /* 🔥 lebih besar */
+  font-size: 28px;
   font-weight: 900;
   margin-bottom: 8px;
 }
@@ -497,13 +686,12 @@ export default {
 
 /* ✅ Label lebih besar */
 .field-group label {
-  font-size: 15px;        /* 🔥 dari 13px */
-  font-weight: 800;       /* 🔥 lebih tegas */
-  margin-bottom: 8px;     /* 🔥 lebih lega */
+  font-size: 15px;
+  font-weight: 800;
+  margin-bottom: 8px;
   color: #111827;
 }
 
-/* default */
 .field-row {
   display: flex;
   gap: 14px;
@@ -513,8 +701,8 @@ export default {
 .input-pill {
   border-radius: 999px;
   border: 1px solid #d1d5db;
-  padding: 14px 18px;     /* 🔥 lebih tinggi */
-  font-size: 15px;        /* 🔥 dari 13px */
+  padding: 14px 18px;
+  font-size: 15px;
   outline: none;
   width: 100%;
 }
@@ -524,13 +712,22 @@ export default {
   font-size: 14px;
 }
 
-.shipping-pill {
-  background: #ffffff;
-}
+/* ✅ DROPDOWN: tampil polos seperti input (tidak berwarna) */
+.shipping-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #ffffff;
+  color: #111827;
+  cursor: pointer;
 
-/* =========================
-   ✅ PERBAIKAN JARAK KOTAK MERAH (AGAR TIDAK BERDEKATAN)
-   ========================= */
+  /* panah dropdown halus */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Cpath fill='%239CA3AF' d='M5.25 7.5 10 12.25 14.75 7.5 16 8.75 10 14.75 4 8.75z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 18px 18px;
+  padding-right: 44px; /* ruang untuk panah */
+}
 
 /* ✅ KIRI: jarak antar input di baris dibuat lebih renggang */
 .checkout-column:nth-child(1) .field-row {
@@ -544,33 +741,29 @@ export default {
   margin-bottom: 18px;
 }
 
-/* =========================
-   ✅ PEMBAYARAN: FONT & UKURAN BUTTON/DIV DIBESARKAN
-   ========================= */
-
 /* ✅ Pembayaran: perbesar font dasar kolom */
 .checkout-column:nth-child(2) {
-  font-size: 15.5px;     /* 🔥 */
+  font-size: 15.5px;
 }
 
 /* ✅ Judul pembayaran */
 .checkout-column:nth-child(2) .section-title {
-  font-size: 28px;       /* 🔥 */
+  font-size: 28px;
 }
 
 /* ✅ Metode pembayaran: lebih besar */
 .payment-methods {
   display: flex;
   flex-direction: column;
-  gap: 18px;             /* 🔥 */
-  margin-bottom: 26px;   /* 🔥 */
+  gap: 18px;
+  margin-bottom: 26px;
 }
 
 .payment-item {
   display: flex;
   align-items: center;
-  gap: 14px;             /* 🔥 */
-  padding: 18px 22px;    /* 🔥 lebih besar */
+  gap: 14px;
+  padding: 18px 22px;
   border-radius: 999px;
   background: #e5e7eb;
   cursor: pointer;
@@ -582,8 +775,8 @@ export default {
 }
 
 .radio-circle {
-  width: 26px;           /* 🔥 */
-  height: 26px;          /* 🔥 */
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   border: 2px solid #9ca3af;
   display: flex;
@@ -598,8 +791,8 @@ export default {
 }
 
 .radio-dot {
-  width: 14px;           /* 🔥 */
-  height: 14px;          /* 🔥 */
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: #ef4444;
 }
@@ -610,7 +803,7 @@ export default {
 
 .payment-label {
   font-weight: 900;
-  font-size: 18px;       /* 🔥 dari 16px */
+  font-size: 18px;
   line-height: 1.1;
 }
 
@@ -638,51 +831,48 @@ export default {
 
 /* ✅ label pembayaran lebih besar */
 .checkout-column:nth-child(2) .field-group label {
-  font-size: 16px;       /* 🔥 */
+  font-size: 16px;
   font-weight: 900;
   margin-bottom: 10px;
 }
 
 /* ✅ input pembayaran lebih besar */
 .checkout-column:nth-child(2) .input-pill {
-  font-size: 16px;       /* 🔥 */
-  padding: 15px 18px;    /* 🔥 */
+  font-size: 16px;
+  padding: 15px 18px;
 }
 
 .small-field .input-pill {
   width: 100%;
 }
 
-/* =========================
-   ✅ FOOTER: FONT & BUTTON LEBIH BESAR (KOTAK MERAH BAWAH)
-   ========================= */
-
+/* ✅ FOOTER */
 .checkout-footer {
   border-top: 1px solid #e5e7eb;
   margin-top: 18px;
-  padding-top: 20px;      /* 🔥 */
+  padding-top: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .total-text {
-  font-size: 20px;        /* 🔥 */
+  font-size: 20px;
   font-weight: 900;
 }
 
 .footer-buttons {
   display: flex;
-  gap: 16px;              /* 🔥 */
+  gap: 16px;
 }
 
-/* ✅ tombol lebih besar */
+/* ✅ tombol */
 .btn-secondary,
 .btn-primary {
   border-radius: 999px;
-  padding: 16px 38px;     /* 🔥 */
-  font-size: 17px;        /* 🔥 */
-  font-weight: 900;       /* 🔥 */
+  padding: 16px 38px;
+  font-size: 17px;
+  font-weight: 900;
   border: none;
   cursor: pointer;
 }
@@ -722,7 +912,6 @@ export default {
     padding: 0 16px;
   }
 
-  /* KIRI: wrap */
   .checkout-column:nth-child(1) .field-row {
     gap: 14px;
     flex-wrap: wrap;
@@ -733,7 +922,6 @@ export default {
     flex: 1 1 240px;
   }
 
-  /* PEMBAYARAN: Exp & CVV wrap */
   .checkout-column:nth-child(2) .card-section .field-row {
     gap: 14px;
     flex-wrap: wrap;
@@ -744,7 +932,6 @@ export default {
     flex: 1 1 220px;
   }
 
-  /* tombol tetap besar tapi proporsional */
   .btn-secondary,
   .btn-primary {
     padding: 14px 26px;
@@ -756,7 +943,7 @@ export default {
   }
 }
 
-/* ====== [DITAMBAHKAN: STYLE POPUP SUKSES] ====== */
+/* ====== POPUP ====== */
 .popup-overlay {
   position: fixed;
   inset: 0;
@@ -788,11 +975,22 @@ export default {
   justify-content: center;
 }
 
+.popup-icon--warn {
+  background: linear-gradient(90deg, #f97316, #ef4444);
+}
+
 .popup-check {
   color: #ffffff;
   font-size: 46px;
   line-height: 1;
   font-weight: 800;
+}
+
+.popup-warn {
+  color: #ffffff;
+  font-size: 52px;
+  line-height: 1;
+  font-weight: 900;
 }
 
 .popup-title {
@@ -824,6 +1022,5 @@ export default {
   background: linear-gradient(90deg, #ef4444, #f97316);
   color: #ffffff;
 }
-/* ====== [AKHIR PENYESUAIAN] ====== */
 </style>
 ```

@@ -116,6 +116,36 @@
         </div>
       </div>
     </main>
+
+    <!-- ====== [DITAMBAHKAN: POPUP KONFIRMASI + INFO MENARIK] ====== -->
+    <div v-if="showPopup" class="popup-overlay" @click.self="onPopupCancel">
+      <div class="popup-card" role="dialog" aria-modal="true">
+        <div
+          class="popup-icon"
+          :class="{
+            'popup-icon--warn': popupType === 'warn',
+            'popup-icon--success': popupType === 'success',
+            'popup-icon--confirm': popupType === 'confirm',
+          }"
+        >
+          <span v-if="popupType === 'warn'" class="popup-warn">!</span>
+          <span v-else class="popup-check">✓</span>
+        </div>
+
+        <div class="popup-title">{{ popupTitle }}</div>
+        <div class="popup-subtitle">{{ popupMessage }}</div>
+
+        <!-- tombol confirm -->
+        <div v-if="popupType === 'confirm'" class="popup-actions">
+          <button class="popup-btn ghost" @click="onPopupCancel">Batal</button>
+          <button class="popup-btn primary" @click="onPopupConfirm">OK</button>
+        </div>
+
+        <!-- tombol info -->
+        <button v-else class="popup-ok" @click="closePopup">OK</button>
+      </div>
+    </div>
+    <!-- ====== [AKHIR PENYESUAIAN] ====== -->
   </div>
 </template>
 
@@ -130,6 +160,15 @@ export default {
       loading: false,
       errorMessage: '',
       updatingId: null,
+
+      // ====== [DITAMBAHKAN: STATE POPUP MENARIK] ======
+      showPopup: false,
+      popupType: 'confirm', // 'confirm' | 'warn' | 'success'
+      popupTitle: '',
+      popupMessage: '',
+      popupOnConfirm: null,
+      popupOnCancel: null,
+      // ====== [AKHIR PENYESUAIAN] ======
     }
   },
   computed: {
@@ -144,10 +183,42 @@ export default {
     this.loadCart()
   },
   methods: {
+    // ====== [DITAMBAHKAN: HELPER POPUP] ======
+    openPopup({ type = 'confirm', title = '', message = '', onConfirm = null, onCancel = null }) {
+      this.popupType = type
+      this.popupTitle = title
+      this.popupMessage = message
+      this.popupOnConfirm = onConfirm
+      this.popupOnCancel = onCancel
+      this.showPopup = true
+    },
+    closePopup() {
+      this.showPopup = false
+      this.popupOnConfirm = null
+      this.popupOnCancel = null
+    },
+    onPopupConfirm() {
+      const fn = this.popupOnConfirm
+      this.closePopup()
+      if (typeof fn === 'function') fn()
+    },
+    onPopupCancel() {
+      const fn = this.popupOnCancel
+      this.closePopup()
+      if (typeof fn === 'function') fn()
+    },
+    // ====== [AKHIR PENYESUAIAN] ======
+
     async loadCart() {
       const rawUser = localStorage.getItem('user')
       if (!rawUser) {
-        alert('Silakan login terlebih dahulu.')
+        // alert -> popup menarik
+        this.openPopup({
+          type: 'warn',
+          title: 'Login dibutuhkan',
+          message: 'Silakan login terlebih dahulu untuk melihat keranjang.',
+          onConfirm: null,
+        })
         this.$router.push('/login')
         return
       }
@@ -163,6 +234,11 @@ export default {
       } catch (err) {
         console.error('Gagal memuat keranjang', err)
         this.errorMessage = 'Gagal memuat keranjang. Silakan coba lagi.'
+        this.openPopup({
+          type: 'warn',
+          title: 'Gagal memuat keranjang',
+          message: 'Terjadi kesalahan saat memuat keranjang. Silakan coba lagi.',
+        })
       } finally {
         this.loading = false
       }
@@ -174,44 +250,76 @@ export default {
     async changeQty(item, delta) {
       const newQty = item.jumlah + delta
       if (newQty <= 0) {
-        const ok = confirm('Jumlah 0 akan menghapus item dari keranjang. Lanjutkan?')
-        if (!ok) return
-        await this.removeItem(item)
+        // confirm -> popup menarik
+        this.openPopup({
+          type: 'confirm',
+          title: 'Hapus item dari keranjang?',
+          message: 'Jumlah 0 akan menghapus item dari keranjang. Lanjutkan?',
+          onConfirm: async () => {
+            await this.removeItem(item, { skipConfirm: true })
+          },
+        })
         return
       }
 
       this.updatingId = item.idKeranjang
       try {
         const updated = await keranjangApi.updateQty(item.idKeranjang, newQty)
-        // Jika service melempar 204 (NO_CONTENT) ketika qty <= 0, handle-nya di catch
         item.jumlah = updated.jumlah
         item.subtotal = updated.subtotal
       } catch (err) {
         console.error('Gagal mengubah jumlah keranjang', err)
-        alert('Gagal mengubah jumlah. Silakan coba lagi.')
-        // reload biar sinkron dengan server
+        this.openPopup({
+          type: 'warn',
+          title: 'Gagal mengubah jumlah',
+          message: 'Silakan coba lagi. Data akan disinkronkan ulang.',
+        })
         this.loadCart()
       } finally {
         this.updatingId = null
       }
     },
-    async removeItem(item) {
-      const ok = confirm('Hapus item ini dari keranjang?')
-      if (!ok) return
+
+    async removeItem(item, opts = {}) {
+      const { skipConfirm = false } = opts
+
+      if (!skipConfirm) {
+        // confirm -> popup menarik
+        this.openPopup({
+          type: 'confirm',
+          title: 'Hapus item ini?',
+          message: 'Item akan dihapus dari keranjang. Lanjutkan?',
+          onConfirm: async () => {
+            await this.removeItem(item, { skipConfirm: true })
+          },
+        })
+        return
+      }
 
       this.updatingId = item.idKeranjang
       try {
         await keranjangApi.removeItem(item.idKeranjang)
         this.items = this.items.filter(i => i.idKeranjang !== item.idKeranjang)
+
+        // info sukses (opsional tapi enak)
+        this.openPopup({
+          type: 'success',
+          title: 'Item dihapus',
+          message: 'Item berhasil dihapus dari keranjang.',
+        })
       } catch (err) {
         console.error('Gagal menghapus item keranjang', err)
-        alert('Gagal menghapus item. Silakan coba lagi.')
+        this.openPopup({
+          type: 'warn',
+          title: 'Gagal menghapus item',
+          message: 'Silakan coba lagi.',
+        })
       } finally {
         this.updatingId = null
       }
     },
+
     goToCheckout(item) {
-      // Checkout item ini saja, dengan jumlah saat ini
       this.$router.push({
         name: 'Checkout',
         query: {
@@ -224,14 +332,14 @@ export default {
       this.$router.push('/')
     },
     resolveImageUrl(url) {
-      const API = "http://localhost:8080";
+      const API = 'http://localhost:8080'
 
-      if (!url) return "";
-      if (url.startsWith("http")) return url;
-      if (url.startsWith("/uploads/")) return API + url;
-      if (url.startsWith("/foto-barang/")) return url;
+      if (!url) return ''
+      if (url.startsWith('http')) return url
+      if (url.startsWith('/uploads/')) return API + url
+      if (url.startsWith('/foto-barang/')) return url
 
-      return API + "/uploads/" + url;
+      return API + '/uploads/' + url
     },
   },
 }
@@ -288,27 +396,25 @@ export default {
 /* ✅ AREA MERAH (KIRI) DIBESARKAN: list dibuat lebih lebar + item dibuat “lebih tinggi” */
 .cart-layout {
   display: grid;
-  grid-template-columns: 3.6fr 1.4fr; /* 🔥 kiri (area merah) makin lebar */
-  gap: 32px;                          /* 🔥 jarak lebih lega */
+  grid-template-columns: 3.6fr 1.4fr;
+  gap: 32px;
   align-items: start;
 }
 
-/* ✅ list tidak menyempit */
 .cart-list {
   min-width: 0;
 }
 
-/* ✅ Item dibuat besar (padding + min-height + ruang kanan) */
 .cart-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;                /* 🔥 biar konten sejajar */
-  padding: 28px 24px;                 /* 🔥 dulu 22px 0 -> sekarang “card” besar */
-  border: 1px solid #eef2f7;          /* 🔥 biar terlihat seperti area merah besar */
-  border-radius: 18px;                /* 🔥 */
+  align-items: center;
+  padding: 28px 24px;
+  border: 1px solid #eef2f7;
+  border-radius: 18px;
   background: #ffffff;
-  min-height: 170px;                  /* 🔥 bikin blok merah tinggi */
-  margin-bottom: 18px;                /* 🔥 jarak antar item */
+  min-height: 170px;
+  margin-bottom: 18px;
 }
 
 .cart-item:last-child {
@@ -317,14 +423,13 @@ export default {
 
 .cart-item-left {
   display: flex;
-  gap: 22px;                          /* 🔥 */
+  gap: 22px;
   align-items: center;
 }
 
-/* ✅ gambar lebih besar */
 .cart-item-image {
-  width: 140px;                       /* 🔥 dari 120px */
-  height: 140px;                      /* 🔥 */
+  width: 140px;
+  height: 140px;
   border-radius: 18px;
   overflow: hidden;
   background: #e5e7eb;
@@ -351,7 +456,7 @@ export default {
 }
 
 .cart-item-name {
-  font-size: 22px;                    /* 🔥 */
+  font-size: 22px;
   font-weight: 900;
   margin: 0;
   color: #111827;
@@ -360,22 +465,20 @@ export default {
 
 .cart-item-price,
 .cart-item-subtotal {
-  font-size: 16px;                    /* 🔥 */
+  font-size: 16px;
   color: #4b5563;
   margin: 0;
 }
 
-/* ✅ kanan item dibuat lebih tegas + sejajar */
 .cart-item-right {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   justify-content: center;
   gap: 16px;
-  min-width: 360px;                   /* 🔥 lebih lebar supaya area merah terasa besar */
+  min-width: 360px;
 }
 
-/* Qty control */
 .qty-control {
   display: flex;
   align-items: center;
@@ -393,7 +496,7 @@ export default {
 }
 
 .qty-input {
-  width: 74px;                        /* 🔥 */
+  width: 74px;
   text-align: center;
   border-radius: 999px;
   border: 1px solid #d1d5db;
@@ -401,7 +504,6 @@ export default {
   font-size: 15px;
 }
 
-/* Buttons */
 .cart-item-actions {
   display: flex;
   gap: 12px;
@@ -409,7 +511,7 @@ export default {
 
 .btn-primary {
   border-radius: 999px;
-  padding: 12px 26px;                 /* 🔥 */
+  padding: 12px 26px;
   border: none;
   background: linear-gradient(135deg, #f97316, #ef4444);
   color: #ffffff;
@@ -420,7 +522,7 @@ export default {
 
 .btn-outline {
   border-radius: 999px;
-  padding: 12px 26px;                 /* 🔥 */
+  padding: 12px 26px;
   border: 1px solid #d1d5db;
   background: #ffffff;
   cursor: pointer;
@@ -441,7 +543,6 @@ export default {
   font-size: 14px;
 }
 
-/* Summary (kanan) tetap, tapi sedikit lebih besar biar seimbang */
 .cart-summary {
   border-radius: 18px;
   border: 1px solid #e5e7eb;
@@ -477,7 +578,6 @@ export default {
   line-height: 1.5;
 }
 
-/* Responsive */
 @media (max-width: 1100px) {
   .cart-layout {
     grid-template-columns: 1fr;
@@ -539,4 +639,128 @@ export default {
   object-position: center;
   display: block;
 }
+
+/* ====== [DITAMBAHKAN: STYLE POPUP MENARIK] ====== */
+.popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.popup-card {
+  width: 520px;
+  max-width: calc(100vw - 40px);
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  padding: 34px 34px 26px;
+  text-align: center;
+  animation: popupIn 160ms ease-out;
+}
+
+@keyframes popupIn {
+  from {
+    transform: translateY(10px) scale(0.98);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.popup-icon {
+  width: 92px;
+  height: 92px;
+  border-radius: 999px;
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-icon--confirm {
+  background: linear-gradient(90deg, #ef4444, #f97316);
+}
+
+.popup-icon--warn {
+  background: linear-gradient(90deg, #f97316, #ef4444);
+}
+
+.popup-icon--success {
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+.popup-check {
+  color: #ffffff;
+  font-size: 46px;
+  line-height: 1;
+  font-weight: 800;
+}
+
+.popup-warn {
+  color: #ffffff;
+  font-size: 52px;
+  line-height: 1;
+  font-weight: 900;
+}
+
+.popup-title {
+  font-size: 28px;
+  font-weight: 900;
+  color: #111827;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.popup-subtitle {
+  font-size: 16px;
+  color: #374151;
+  margin-bottom: 22px;
+  line-height: 1.5;
+}
+
+/* Mode info (satu tombol) */
+.popup-ok {
+  width: 100%;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 0;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  background: linear-gradient(90deg, #ef4444, #f97316);
+  color: #ffffff;
+}
+
+/* Mode confirm (dua tombol) */
+.popup-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.popup-btn {
+  flex: 1;
+  border: none;
+  border-radius: 999px;
+  padding: 14px 0;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.popup-btn.ghost {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.popup-btn.primary {
+  background: linear-gradient(90deg, #ef4444, #f97316);
+  color: #ffffff;
+}
+/* ====== [AKHIR PENYESUAIAN] ====== */
 </style>

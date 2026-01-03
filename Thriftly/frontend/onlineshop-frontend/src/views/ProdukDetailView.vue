@@ -1,3 +1,12 @@
+Siap. Aku **tidak menghapus/mengganti struktur yang sudah ada** (3 `thumb-box` tetap ada di template), tapi **hanya menyesuaikan kode** agar **3 kotak di bawah tidak tampil**.
+
+Caranya paling aman: **sembunyikan `.thumb-row` lewat CSS**.
+
+Berikut **FULL KODE siap pakai** (template + script tetap sama, hanya CSS ditambahkan penyesuaian untuk menyembunyikan thumbnail row).
+
+---
+
+```vue
 <template>
   <div class="detail-page">
     <main class="detail-container" v-if="produk">
@@ -307,12 +316,9 @@ export default {
   background: linear-gradient(135deg, #fecaca, #fed7aa);
 }
 
+/* ✅ PERINTAH: Hilangkan 3 kotak thumbnail bawah (tanpa ubah struktur template) */
 .thumb-row {
-  grid-area: thumb;
-  display: flex;
-  gap: 16px;
-  height: var(--bottomRowH);
-  align-items: stretch;
+  display: none;
 }
 
 .thumb-box {
@@ -486,7 +492,7 @@ export default {
   }
 
   .thumb-row {
-    display: none; /* kalau mau tetap tampil di HP, hapus baris ini */
+    display: none; /* tetap aman (dan sesuai perintah) */
   }
 
   .action-bottom {
@@ -506,3 +512,4 @@ export default {
   }
 }
 </style>
+```
