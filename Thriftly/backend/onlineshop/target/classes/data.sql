@@ -99,7 +99,7 @@ VALUES
 (2, 'INV-2025-0001', NOW() - INTERVAL 10 DAY, 'DIKEMAS',
  'Transfer Bank', 2, 15000, 225000,
  'Budi Thrift', '081200000002', 'Jl. Budi No. 1, Bandung', '40111',
- 'Next Day – Rp 35.000', NULL, NULL, NULL, 0),
+ 'Next Day', NULL, NULL, NULL, 0),
 
 -- 2 DIKEMAS: 45000 + 15000 = 60000 | qty=1
 (3, 'INV-2025-0002', NOW() - INTERVAL 9 DAY, 'DIKEMAS',
@@ -111,7 +111,7 @@ VALUES
 (2, 'INV-2025-0003', NOW() - INTERVAL 8 DAY, 'DALAM_PERJALANAN',
  'COD', 3, 20000, 415000,
  'Budi Thrift', '081200000002', 'Jl. Mawar No. 10, Cimahi', '40511',
- 'Next Day – Rp 35.000', 'SC123456789', NOW() - INTERVAL 7 DAY, NULL, 0),
+ 'Next Day', 'SC123456789', NOW() - INTERVAL 7 DAY, NULL, 0),
 
 -- 4 SELESAI: 55000 + 15000 = 70000 | qty=1
 (3, 'INV-2025-0004', NOW() - INTERVAL 7 DAY, 'SELESAI',
@@ -135,7 +135,7 @@ VALUES
 (2, 'INV-2025-0007', NOW() - INTERVAL 4 DAY, 'SELESAI',
  'Transfer Bank', 3, 20000, 280000,
  'Budi Thrift', '081200000002', 'Jl. Kenanga No. 4, Bandung', '40119',
- 'Next Day – Rp 35.000', 'JN777888999', NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 2 DAY, 1),
+ 'Next Day', 'JN777888999', NOW() - INTERVAL 3 DAY, NOW() - INTERVAL 2 DAY, 1),
 
 -- 8 MENUNGGU_PEMBAYARAN: 85000 + 15000 = 100000 | qty=1
 (3, 'INV-2025-0008', NOW() - INTERVAL 3 DAY, 'DIKEMAS',
@@ -147,7 +147,7 @@ VALUES
 (2, 'INV-2025-0009', NOW() - INTERVAL 2 DAY, 'DIKEMAS',
  'Transfer Bank', 2, 15000, 310000,
  'Budi Thrift', '081200000002', 'Jl. Teratai No. 2, Bandung', '40122',
- 'Next Day – Rp 35.000', NULL, NULL, NULL, 0),
+ 'Next Day', NULL, NULL, NULL, 0),
 
 -- 10 SELESAI: (270000 + 160000) + 30000 = 460000 | qty=5
 (3, 'INV-2025-0010', NOW() - INTERVAL 1 DAY, 'SELESAI',
