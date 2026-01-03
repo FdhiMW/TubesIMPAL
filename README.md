@@ -40,6 +40,14 @@ Pastikan perangkat telah terpasang:
 - MySQL
 - IDE (IntelliJ IDEA / Eclipse / NetBeans)
 
+Running Program
+- Backend
+- cd Thriftly/backend/onlineshop
+- mvn spring-boot:run
+  
+- Frontend
+- cd Thriftly/frontend/onlineshop-frontend
+- npm run serve
 ---
 
 ## 👨‍💻 Tim Pengembang
