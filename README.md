@@ -41,11 +41,10 @@ Pastikan perangkat telah terpasang:
 - IDE (IntelliJ IDEA / Eclipse / NetBeans)
 
 Running Program
-- Backend
+Backend
 - cd Thriftly/backend/onlineshop
 - mvn spring-boot:run
-  
-- Frontend
+Frontend
 - cd Thriftly/frontend/onlineshop-frontend
 - npm run serve
 ---
