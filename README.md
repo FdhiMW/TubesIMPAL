@@ -31,6 +31,10 @@ Sistem ini dirancang untuk mempermudah proses transaksi jual beli secara online,
 - Penyediaan REST API untuk frontend
 
 ---
+
+## ▶️ Cara Menjalankan Aplikasi
+
+### Persiapan Lingkungan
 Pastikan perangkat telah terpasang:
 - Java JDK 11 atau 17
 - Maven
@@ -38,3 +42,15 @@ Pastikan perangkat telah terpasang:
 - IDE (IntelliJ IDEA / Eclipse / NetBeans)
 
 ---
+
+## 👨‍💻 Tim Pengembang
+
+| Nama Anggota | NIM | 
+|--------------|-----|
+| FADHILA M WIRYASUKMA  | 103012300303 | 
+| SENA RIZKY PRATAMA | 103012330375 | 
+| AHMAD REFI WIDI KATIBIN | 103012300231 | 
+| Bintang Saputra | 103012300070  |
+
+---
+
