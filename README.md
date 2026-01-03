@@ -21,5 +21,3 @@ Sistem ini dirancang untuk mempermudah proses transaksi jual beli secara online,
 - **Postman** (untuk pengujian API)
 
 ---
-
-## 📂 Struktur Proyek (Ringkas)
