@@ -1,6 +1,5 @@
 <template>
   <header class="topbar">
-    <!-- ====== [DISESUAIKAN: KLIK LOGO KEMBALI KE DASHBOARD] ====== -->
     <div class="topbar-left brand-click" @click="goDashboard">
       <div class="navbar-brand" @click="goHome">
         <img
@@ -11,7 +10,6 @@
         <span class="brand-text">Thriftly</span>
       </div>
     </div>
-    <!-- ====== [AKHIR PENYESUAIAN] ====== -->
 
     <div class="search-wrapper">
       <input
@@ -49,13 +47,29 @@ export default {
     }
   },
 
+  created() {
+    const q = this.$route?.query?.q
+    if (q != null && String(q).trim() !== '') {
+      this.searchQuery = String(q)
+    }
+  },
+
+  watch: {
+    '$route.query.q'(val) {
+      this.searchQuery = val != null ? String(val) : ''
+    },
+  },
+
   methods: {
+    goHome() {
+      this.goDashboard()
+    },
+
     goDashboard() {
       if (this.$route.path !== '/admin') {
         this.$router.push('/admin').catch((err) => {
-          // ✅ cegah error "NavigationDuplicated"
           if (err && err.name === 'NavigationDuplicated') return
-          const msg = (err && err.message) ? err.message : ''
+          const msg = err?.message ? String(err.message) : ''
           if (msg.includes('Avoided redundant navigation')) return
           throw err
         })
@@ -65,37 +79,29 @@ export default {
     logout() {
       localStorage.removeItem('user')
       this.$router.push('/login').catch((err) => {
-        // ✅ cegah error duplikat navigation
         if (err && err.name === 'NavigationDuplicated') return
-        const msg = (err && err.message) ? err.message : ''
+        const msg = err?.message ? String(err.message) : ''
         if (msg.includes('Avoided redundant navigation')) return
         throw err
       })
     },
 
     submitSearch() {
-      const q = this.searchQuery && this.searchQuery.trim()
-      if (!q) return
+      const q = (this.searchQuery || '').trim()
 
-      // ✅ target route yang kamu pakai sekarang
-      const target = {
-        name: 'admin-product-list',
-        query: { q },
-      }
+      const target = q
+        ? { name: 'admin-product-list', query: { q } }
+        : { name: 'admin-product-list' }
 
-      // ✅ CEGAH push ke lokasi yang sama persis (penyebab error)
-      const currentName = this.$route.name
-      const currentQ = (this.$route.query && this.$route.query.q) ? String(this.$route.query.q) : ''
-      const nextQ = String(q)
+      const currentName = this.$route?.name
+      const currentQ = this.$route?.query?.q != null ? String(this.$route.query.q) : ''
+      const nextQ = q ? String(q) : ''
 
-      if (currentName === target.name && currentQ === nextQ) {
-        return
-      }
+      if (currentName === 'admin-product-list' && currentQ === nextQ) return
 
-      // ✅ push aman: ignore NavigationDuplicated
       this.$router.push(target).catch((err) => {
         if (err && err.name === 'NavigationDuplicated') return
-        const msg = (err && err.message) ? err.message : ''
+        const msg = err?.message ? String(err.message) : ''
         if (msg.includes('Avoided redundant navigation')) return
         throw err
       })
@@ -108,12 +114,8 @@ export default {
 .topbar {
   display: flex;
   align-items: center;
-
-  /* ====== NAVBAR SEDIKIT LEBIH BESAR LAGI ====== */
   padding: 16px 32px;
   min-height: 68px;
-  /* =========================================== */
-
   background: linear-gradient(90deg, #ff5a3c, #ff9f1c);
   box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
   gap: 26px;
@@ -135,7 +137,6 @@ export default {
   opacity: 0.9;
 }
 
-/* ====== LOGO LEBIH BESAR ====== */
 .navbar-brand {
   display: flex;
   align-items: center;
@@ -147,21 +148,18 @@ export default {
   width: 50px;
   height: 50px;
   object-fit: contain;
-
   background: #ffffff;
   padding: 6px;
   border-radius: 50%;
-
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
 }
 
 .brand-text {
-  font-size:40px;
+  font-size: 40px;
   font-weight: 800;
-  color: white;       /* karena navbar kamu gradient orange */
+  color: white;
   letter-spacing: 0.3px;
 }
-/* ============================= */
 
 .search-wrapper {
   flex: 1;
@@ -175,12 +173,8 @@ export default {
   max-width: 100%;
   border-radius: 999px;
   border: none;
-
-  /* ====== SEARCH IKUT PROPORSIONAL ====== */
   padding: 12px 20px;
   font-size: 15px;
-  /* ===================================== */
-
   outline: none;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
@@ -193,7 +187,6 @@ export default {
   white-space: nowrap;
 }
 
-/* ====== MENU LEBIH BESAR ====== */
 .topbar-link {
   font-size: 15px;
   color: #fff;
@@ -204,9 +197,7 @@ export default {
   font-weight: 600;
   text-decoration: underline;
 }
-/* ============================== */
 
-/* ====== LOGOUT BUTTON LEBIH BESAR ====== */
 .logout-btn {
   border-radius: 999px;
   border: none;
@@ -217,5 +208,4 @@ export default {
   color: #ff5a3c;
   font-weight: 600;
 }
-/* ====================================== */
 </style>

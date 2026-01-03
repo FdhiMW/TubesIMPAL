@@ -332,7 +332,11 @@
 
         <div class="form-group full-width">
           <label>Deskripsi</label>
-          <textarea v-model="form.deskripsi" rows="3" placeholder="Tuliskan deskripsi singkat produk..."></textarea>
+          <textarea
+            v-model="form.deskripsi"
+            rows="3"
+            placeholder="Tuliskan deskripsi singkat produk..."
+          ></textarea>
         </div>
 
         <div class="form-group full-width">
@@ -469,6 +473,49 @@ export default {
   methods: {
     norm(s) {
       return (s || '').toString().trim().toLowerCase()
+    },
+
+    /* =========================
+       [DITAMBAHKAN] VALIDASI WAJIB ISI SEMUA FIELD
+       - tidak menghapus struktur, hanya menambah helper
+       ========================= */
+    validateAllFields() {
+      const missing = []
+
+      // Nama Produk
+      if (!this.form.namaProduk || !String(this.form.namaProduk).trim()) missing.push('Nama Produk')
+
+      // Kategori (harus ada teks kategoriInput)
+      if (!this.kategoriInput || !String(this.kategoriInput).trim()) missing.push('Kategori')
+
+      // Harga
+      if (this.form.harga == null || Number(this.form.harga) <= 0) missing.push('Harga (Rp)')
+
+      // Stok (boleh 0? kalau kamu mau wajib >0, ubah jadi <=0)
+      if (this.form.stok == null || Number(this.form.stok) < 0) missing.push('Stok')
+
+      // Kondisi
+      if (!this.form.kondisi || !String(this.form.kondisi).trim()) missing.push('Kondisi')
+
+      // Ukuran
+      if (!this.form.ukuran || !String(this.form.ukuran).trim()) missing.push('Ukuran')
+
+      // Warna
+      if (!this.form.warna || !String(this.form.warna).trim()) missing.push('Warna')
+
+      // Merek
+      if (!this.form.merek || !String(this.form.merek).trim()) missing.push('Merek')
+
+      // Jenis Kelamin
+      if (!this.form.jenisKelamin || !String(this.form.jenisKelamin).trim()) missing.push('Jenis Kelamin')
+
+      // Deskripsi
+      if (!this.form.deskripsi || !String(this.form.deskripsi).trim()) missing.push('Deskripsi')
+
+      // Gambar
+      if (!this.fileGambar) missing.push('Gambar Produk')
+
+      return missing
     },
 
     closeAllDropdowns() {
@@ -656,8 +703,13 @@ export default {
     },
 
     async onSubmit() {
-      if (!this.form.namaProduk || this.form.harga == null) {
-        this.showPopup('Gagal menyimpan', 'Nama produk dan harga wajib diisi.')
+      /* ✅ [DISESUAIKAN] validasi semua field WAJIB isi */
+      const missing = this.validateAllFields()
+      if (missing.length > 0) {
+        const desc =
+          `Semua field wajib diisi terlebih dahulu.\n` +
+          `Yang belum diisi: ${missing.join(', ')}`
+        this.showPopup('Lengkapi Data', desc)
         return
       }
 
@@ -780,11 +832,11 @@ export default {
 
 /* ✅ tombol dinaikkan + diperbesar */
 .form-actions {
-  margin-top: 18px;          /* ✅ sebelumnya auto (terlalu bawah). sekarang naik */
+  margin-top: 18px;
   display: flex;
   justify-content: flex-end;
   gap: 14px;
-  padding-top: 10px;         /* ✅ lebih rapat */
+  padding-top: 10px;
 }
 
 /* =========================================================
@@ -865,28 +917,28 @@ export default {
   border: 1px solid #e5e7eb;
 }
 
-/* buttons (✅ diperbesar) */
+/* buttons */
 .ghost-btn {
   border-radius: 999px;
   border: 1px solid #d3d7e6;
   background: #fff;
-  padding: 14px 26px;        /* ✅ lebih besar */
-  font-size: 15px;           /* ✅ lebih besar */
+  padding: 14px 26px;
+  font-size: 15px;
   font-weight: 800;
   cursor: pointer;
-  min-height: 46px;          /* ✅ konsisten tinggi tombol */
+  min-height: 46px;
 }
 
 .primary-btn {
   border-radius: 999px;
   border: none;
   background: linear-gradient(135deg, #ff5a3c, #ff9f1c);
-  padding: 14px 28px;        /* ✅ lebih besar */
+  padding: 14px 28px;
   color: #fff;
-  font-size: 15px;           /* ✅ lebih besar */
+  font-size: 15px;
   font-weight: 900;
   cursor: pointer;
-  min-height: 46px;          /* ✅ konsisten tinggi tombol */
+  min-height: 46px;
 }
 
 /* combobox */
@@ -1058,6 +1110,7 @@ export default {
   margin: 0 0 16px;
   position: relative;
   z-index: 1;
+  white-space: pre-line; /* ✅ agar \n di popup desc tampil sebagai baris baru */
 }
 
 .popup-btn {
@@ -1089,7 +1142,6 @@ export default {
   .product-form { padding: 18px 16px 18px; border-radius: 18px; }
   .form-grid { grid-template-columns: 1fr; }
 
-  /* tetap enak di mobile */
   .form-actions { flex-direction: column; align-items: stretch; gap: 10px; }
   .ghost-btn, .primary-btn { width: 100%; }
 }

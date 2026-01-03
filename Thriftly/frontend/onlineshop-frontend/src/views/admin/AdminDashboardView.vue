@@ -94,10 +94,15 @@
                     </span>
                   </td>
                   <td>
-                    <button class="link-small" @click="editProduct(item.id)">
+                    <!-- ✅ EDIT DISEMBUNYIKAN (STRUKTUR TETAP ADA) -->
+                    <button class="link-small" @click="editProduct(item.id)" v-if="false">
                       Edit
                     </button>
-                    <span class="divider">|</span>
+
+                    <!-- ✅ divider juga disembunyikan supaya tidak ada sisa garis -->
+                    <span class="divider" v-if="false">|</span>
+
+                    <!-- ✅ hanya Hapus yang tampil -->
                     <button
                       class="link-small danger"
                       :disabled="deletingId === item.id"
@@ -189,6 +194,9 @@ import NavbarAdmin from '@/components/layout/NavbarAdmin.vue'
 import ConfirmModal from '@/components/confirmmodal/ConfirmModal.vue'
 import SuccessModal from '@/components/confirmmodal/SuccessModal.vue'
 
+/* ===== [DITAMBAHKAN] ambil kategori dari database ===== */
+import http from '@/api/httpClient'
+
 export default {
   name: 'AdminDashboardView',
   components: { NavbarAdmin, ConfirmModal, SuccessModal },
@@ -223,11 +231,70 @@ export default {
       /* ===== [DITAMBAHKAN] popup sukses hapus ===== */
       showDeleteSuccess: false,
       deleteSuccessTitle: 'Produk berhasil dihapus',
+
+      /* ===== [DITAMBAHKAN] MAP kategori dari DB: { [idKategori]: namaKategori } ===== */
+      kategoriMap: {},
     }
   },
   methods: {
     formatPrice(value) {
       return Number(value || 0).toLocaleString('id-ID')
+    },
+
+    /* ===== [DITAMBAHKAN] load kategori dari DB ===== */
+    async loadKategoriMap() {
+      try {
+        // Endpoint diasumsikan: GET /kategori
+        const res = await http.get('/kategori')
+        const list = Array.isArray(res.data) ? res.data : []
+
+        const map = {}
+        for (const k of list) {
+          const id =
+            k.idKategori ?? k.id_kategori ?? k.id ?? k.kode ?? k.kodeKategori
+          const nama =
+            k.namaKategori ?? k.nama_kategori ?? k.nama ?? k.name ?? k.label
+
+          if (id != null && nama) map[String(id)] = String(nama)
+        }
+
+        this.kategoriMap = map
+      } catch (err) {
+        console.error('[DASHBOARD] Gagal memuat kategori dari DB', err)
+        this.kategoriMap = {}
+      }
+    },
+
+    /* ===== [DITAMBAHKAN] ambil nama kategori produk dari data produk + kategoriMap ===== */
+    getKategoriName(p) {
+      const direct =
+        p.kategoriName ??
+        p.namaKategori ??
+        p.kategori_nama ??
+        p.kategoriNama ??
+        p.nama_kategori
+      if (direct) return String(direct)
+
+      const objName =
+        p.kategori?.namaKategori ??
+        p.kategori?.nama_kategori ??
+        p.kategori?.name ??
+        p.kategori?.nama
+      if (objName) return String(objName)
+
+      const id =
+        p.idKategori ??
+        p.id_kategori ??
+        p.kategoriId ??
+        p.kategori_id ??
+        p.kategori?.idKategori ??
+        p.kategori?.id_kategori
+
+      if (id != null && this.kategoriMap[String(id)]) {
+        return this.kategoriMap[String(id)]
+      }
+
+      return '-'
     },
 
     async loadTotalBarangAktif() {
@@ -317,8 +384,21 @@ export default {
       }
     },
 
+    // ✅ FIX NavigationDuplicated TANPA MENGUBAH STRUKTUR
     goToAdminProductList() {
-      this.$router.push({ name: 'admin-product-list' })
+      const currentName = this.$route?.name
+      const currentPath = this.$route?.path
+
+      // kalau sudah berada di halaman list, jangan push lagi
+      if (currentName === 'admin-product-list' || currentPath === '/admin/produk') {
+        return
+      }
+
+      // push + catch untuk Vue Router 3
+      this.$router.push({ name: 'admin-product-list' }).catch((err) => {
+        if (err && err.name === 'NavigationDuplicated') return
+        throw err
+      })
     },
 
     goToCreateProduct() {
@@ -335,10 +415,11 @@ export default {
         this.inventory = list.map((p) => {
           const stok = p.stok || 0
           const statusAktif = stok > 0
+
           return {
             id: p.idProduk,
             name: p.namaProduk,
-            category: p.kategoriName || 'Elektronik',
+            category: this.getKategoriName(p),
             stock: stok,
             price: p.harga || 0,
             statusLabel: statusAktif ? 'Aktif' : 'Stok Habis',
@@ -353,6 +434,7 @@ export default {
       }
     },
 
+    // ✅ method edit tetap ada (struktur tidak dihilangkan), tapi tombolnya sudah disembunyikan
     editProduct(id) {
       this.$router.push({
         name: 'admin-product-create',
@@ -438,13 +520,18 @@ export default {
         console.error('Gagal memuat pesanan terbaru', err)
       }
     },
+
+    async initDashboard() {
+      await this.loadKategoriMap()
+      await this.loadInventory()
+      await this.loadRecentOrders()
+      await this.loadTotalBarangAktif()
+      await this.loadTotalPesananAktif()
+      await this.loadTotalPesananSelesai()
+    },
   },
   mounted() {
-    this.loadRecentOrders()
-    this.loadInventory()
-    this.loadTotalBarangAktif()
-    this.loadTotalPesananAktif()
-    this.loadTotalPesananSelesai()
+    this.initDashboard()
   },
 }
 </script>

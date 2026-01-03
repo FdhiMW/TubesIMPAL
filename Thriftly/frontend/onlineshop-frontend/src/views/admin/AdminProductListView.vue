@@ -47,21 +47,76 @@
         </div>
       </section>
     </main>
+
+    <!-- =========================
+         [DITAMBAHKAN] POPUP KONFIRMASI HAPUS (MENARIK)
+         ========================= -->
+    <ConfirmModal
+      :show="showDeleteConfirm"
+      title="Hapus Produk?"
+      :message="`Yakin ingin menghapus produk: ${pendingDeleteName || 'produk ini'}?`"
+      okText="Ya"
+      cancelText="Tidak"
+      @confirm="onDeleteConfirm"
+      @cancel="onDeleteCancel"
+    />
+
+    <!-- =========================
+         [DITAMBAHKAN] POPUP SUKSES HAPUS (MIRIP CONTOH)
+         ========================= -->
+    <SuccessModal
+      :show="showDeleteSuccess"
+      title="Produk berhasil dihapus"
+      buttonText="OK"
+      @close="showDeleteSuccess = false"
+    />
   </div>
 </template>
 
 <script>
 import { searchProduk, deleteProduk } from '@/api/produkApi'
 
+/* ===== [DITAMBAHKAN] modal components ===== */
+import ConfirmModal from '@/components/confirmmodal/ConfirmModal.vue'
+import SuccessModal from '@/components/confirmmodal/SuccessModal.vue'
+
 export default {
   name: 'AdminProductListView',
+  components: { ConfirmModal, SuccessModal },
+
   data() {
     return {
       products: [],
       loading: false,
       deletingId: null,
+
+      // ✅ [DITAMBAHKAN] simpan keyword dari navbar (query ?q=)
+      searchKeyword: '',
+
+      /* ✅ [DITAMBAHKAN] state untuk popup hapus */
+      showDeleteConfirm: false,
+      pendingDeleteId: null,
+      pendingDeleteName: '',
+
+      /* ✅ [DITAMBAHKAN] state popup sukses */
+      showDeleteSuccess: false,
     }
   },
+
+  created() {
+    // ✅ ambil keyword dari URL saat pertama kali masuk/refresh
+    const q = this.$route?.query?.q
+    this.searchKeyword = q != null ? String(q).trim() : ''
+  },
+
+  watch: {
+    // ✅ kalau navbar search saat sudah di katalog -> reload data
+    '$route.query.q'(val) {
+      this.searchKeyword = val != null ? String(val).trim() : ''
+      this.loadProducts()
+    },
+  },
+
   methods: {
     formatPrice(value) {
       return Number(value || 0).toLocaleString('id-ID')
@@ -69,15 +124,20 @@ export default {
 
     // ====== [SISIPKAN: NAVIGASI KE FORM TAMBAH BARANG] ======
     goToCreateProduct() {
-      this.$router.push({ name: 'admin-product-create' })
+      this.$router.push({ name: 'admin-product-create' }).catch((err) => {
+        if (err && err.name === 'NavigationDuplicated') return
+        const msg = err?.message ? String(err.message) : ''
+        if (msg.includes('Avoided redundant navigation')) return
+        throw err
+      })
     },
     // ====== [AKHIR SISIPAN] ======
 
     async loadProducts() {
       this.loading = true
       try {
-        // katalog admin: ambil semua (tanpa keyword)
-        const res = await searchProduk(null, null)
+        const keyword = (this.searchKeyword || '').trim()
+        const res = await searchProduk(keyword || null, null)
         this.products = Array.isArray(res.data) ? res.data : []
       } catch (e) {
         console.error('Gagal memuat katalog admin', e)
@@ -87,32 +147,56 @@ export default {
       }
     },
 
-    // ====== [SISIPKAN: HAPUS DARI CARD (BUTTON MINUS)] ======
-    async confirmDeleteCard(idProduk, namaProduk) {
-      if (!window.confirm(`Yakin ingin menghapus produk: ${namaProduk || idProduk}?`)) return
+    // ====== [DISESUAIKAN] HAPUS DARI CARD -> BUKA MODAL (bukan window.confirm) ======
+    confirmDeleteCard(idProduk, namaProduk) {
+      this.pendingDeleteId = idProduk
+      this.pendingDeleteName = namaProduk || String(idProduk)
+      this.showDeleteConfirm = true
+    },
+
+    onDeleteCancel() {
+      this.showDeleteConfirm = false
+      this.pendingDeleteId = null
+      this.pendingDeleteName = ''
+    },
+
+    async onDeleteConfirm() {
+      const idProduk = this.pendingDeleteId
+      if (!idProduk) {
+        this.onDeleteCancel()
+        return
+      }
+
+      this.showDeleteConfirm = false
       this.deletingId = idProduk
+
       try {
         await deleteProduk(idProduk)
         this.products = this.products.filter((x) => x.idProduk !== idProduk)
+
+        this.showDeleteSuccess = true
       } catch (e) {
         console.error('Gagal menghapus produk (card)', e)
         alert('Gagal menghapus produk, cek console.')
       } finally {
         this.deletingId = null
+        this.pendingDeleteId = null
+        this.pendingDeleteName = ''
       }
     },
 
     resolveImageUrl(url) {
-      const API = "http://localhost:8080";
+      const API = 'http://localhost:8080'
 
-      if (!url) return "";
-      if (url.startsWith("http")) return url;
-      if (url.startsWith("/uploads/")) return API + url;
-      if (url.startsWith("/foto-barang/")) return url;
+      if (!url) return ''
+      if (url.startsWith('http')) return url
+      if (url.startsWith('/uploads/')) return API + url
+      if (url.startsWith('/foto-barang/')) return url
 
-      return API + "/uploads/" + url;
+      return API + '/uploads/' + url
     },
   },
+
   mounted() {
     this.loadProducts()
   },
@@ -216,31 +300,27 @@ export default {
   padding: 14px 14px 18px;
 }
 
-/* =========================================================
-   [DISESUAIKAN] FONT NAMA BARANG, STOK, HARGA DIBESARKAN
-   ========================================================= */
 .name {
   margin: 0 0 8px;
-  font-size: 18px;     /* 🔥 lebih besar */
-  font-weight: 900;    /* 🔥 lebih tegas */
+  font-size: 18px;
+  font-weight: 900;
   line-height: 1.25;
 }
 
 .meta {
   margin: 0 0 12px;
-  font-size: 14px;     /* 🔥 stok/merek lebih besar */
-  font-weight: 700;    /* 🔥 lebih tegas */
+  font-size: 14px;
+  font-weight: 700;
   color: #6b7280;
   line-height: 1.35;
 }
 
 .price {
   margin: 0;
-  font-size: 18px;     /* 🔥 harga lebih besar */
-  font-weight: 950;    /* 🔥 paling tegas */
+  font-size: 18px;
+  font-weight: 950;
   color: #2563eb;
 }
-/* ====== [AKHIR PENYESUAIAN FONT] ====== */
 
 /* ====== button minus ====== */
 .minus-btn {
