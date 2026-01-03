@@ -57,7 +57,7 @@
                 <td>{{ order.kodePesanan }}</td>
 
                 <!-- ====== [DISESUAIKAN: Jumlah Barang] ====== -->
-                <td>{{ order.totalBarang }}</td>
+                <td>{{ order.jumlahBarang ?? 0 }}</td>
 
                 <!-- ====== [DITAMBAHKAN: Alamat terhubung dari field DB/API] ====== -->
                 <td class="alamat-cell" :title="getAlamat(order)">

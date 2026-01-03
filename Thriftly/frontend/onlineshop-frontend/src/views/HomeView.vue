@@ -63,7 +63,6 @@
                 class="thumb-img"
                 alt="Foto produk"
               />
-              <span class="discount-badge">-{{ item.discount }}%</span>
             </div>
 
             <div class="best-body">
@@ -417,17 +416,6 @@ export default {
   object-fit: cover;
   object-position: center;
   display: block;
-}
-
-.discount-badge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  background: #ff4b4b;
-  color: #fff;
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 999px;
 }
 
 .best-body { padding: 10px 10px 12px; }

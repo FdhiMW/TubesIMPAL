@@ -74,6 +74,11 @@ public class PesananService {
         pesanan.setOngkosKirim(ongkir);
 
         BigDecimal totalBarang = BigDecimal.ZERO;
+
+        // ====== [DITAMBAHKAN: JUMLAH BARANG (QTY) UNTUK ADMIN] ======
+        int jumlahBarang = 0;
+        // ====== [AKHIR PENYESUAIAN] ======
+
         List<PesananItem> itemList = new ArrayList<>();
 
         for (PesananDtos.ItemRequest itemReq : req.getItems()) {
@@ -106,6 +111,11 @@ public class PesananService {
             item.setSubtotal(subtotal);
 
             totalBarang = totalBarang.add(subtotal);
+
+            // ====== [DITAMBAHKAN: AKUMULASI JUMLAH ITEM] ======
+            jumlahBarang += itemReq.getJumlah();
+            // ====== [AKHIR PENYESUAIAN] ======
+
             itemList.add(item);
 
             produk.setStok(produk.getStok() - itemReq.getJumlah());
@@ -132,6 +142,11 @@ public class PesananService {
         resp.setKodePesanan(saved.getKodePesanan());
         resp.setStatusPesanan(saved.getStatusPesanan());
         resp.setTotalBarang(saved.getTotalBarang());
+
+        // ====== [DITAMBAHKAN: KIRIM JUMLAH BARANG (QTY) KE FRONTEND] ======
+        resp.setJumlahBarang(jumlahBarang);
+        // ====== [AKHIR PENYESUAIAN] ======
+
         resp.setOngkosKirim(saved.getOngkosKirim());
         resp.setTotalPembayaran(saved.getTotalPembayaran());
 
@@ -164,6 +179,18 @@ public class PesananService {
             resp.setTotalBarang(p.getTotalBarang());
             resp.setOngkosKirim(p.getOngkosKirim());
             resp.setTotalPembayaran(p.getTotalPembayaran());
+
+            // ====== [DITAMBAHKAN: HITUNG JUMLAH BARANG (QTY) DARI ITEMS] ======
+            int totalQty = 0;
+            if (p.getItems() != null) {
+                for (PesananItem it : p.getItems()) {
+                    if (it != null && it.getJumlah() != null) {
+                        totalQty += it.getJumlah();
+                    }
+                }
+            }
+            resp.setJumlahBarang(totalQty);
+            // ====== [AKHIR PENYESUAIAN] ======
 
             // ====== [DITAMBAHKAN: alamat dari DB pm_pesanan.alamat_lengkap] ======
             resp.setAlamatLengkap(p.getAlamatLengkap());
@@ -205,6 +232,18 @@ public class PesananService {
         resp.setTotalBarang(saved.getTotalBarang());
         resp.setOngkosKirim(saved.getOngkosKirim());
         resp.setTotalPembayaran(saved.getTotalPembayaran());
+
+        // ====== [DITAMBAHKAN: JUMLAH BARANG (QTY) TETAP DIKIRIM] ======
+        int totalQty = 0;
+        if (saved.getItems() != null) {
+            for (PesananItem it : saved.getItems()) {
+                if (it != null && it.getJumlah() != null) {
+                    totalQty += it.getJumlah();
+                }
+            }
+        }
+        resp.setJumlahBarang(totalQty);
+        // ====== [AKHIR PENYESUAIAN] ======
 
         // ====== [DITAMBAHKAN: agar setelah update status alamat tetap ada] ======
         resp.setAlamatLengkap(saved.getAlamatLengkap());

@@ -71,6 +71,11 @@ public class PesananDtos {
         private String kodePesanan;
         private String statusPesanan;
         private BigDecimal totalBarang;
+
+        // ====== [DITAMBAHKAN: JUMLAH BARANG (QTY), BUKAN RUPIAH] ======
+        private Integer jumlahBarang;
+        // ====== [AKHIR PENYESUAIAN] ======
+
         private BigDecimal ongkosKirim;
         private BigDecimal totalPembayaran;
 
@@ -89,6 +94,11 @@ public class PesananDtos {
 
         public BigDecimal getTotalBarang() { return totalBarang; }
         public void setTotalBarang(BigDecimal totalBarang) { this.totalBarang = totalBarang; }
+
+        // ====== [DITAMBAHKAN] ======
+        public Integer getJumlahBarang() { return jumlahBarang; }
+        public void setJumlahBarang(Integer jumlahBarang) { this.jumlahBarang = jumlahBarang; }
+        // ====== [AKHIR PENYESUAIAN] ======
 
         public BigDecimal getOngkosKirim() { return ongkosKirim; }
         public void setOngkosKirim(BigDecimal ongkosKirim) { this.ongkosKirim = ongkosKirim; }
