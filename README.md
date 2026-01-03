@@ -21,3 +21,20 @@ Sistem ini dirancang untuk mempermudah proses transaksi jual beli secara online,
 - **Postman** (untuk pengujian API)
 
 ---
+
+## ⚙️ Fitur Utama
+- Manajemen data produk
+- Pengelolaan keranjang belanja
+- Proses checkout pesanan
+- Penyimpanan dan pengelolaan data pesanan
+- Pelacakan status pesanan
+- Penyediaan REST API untuk frontend
+
+---
+Pastikan perangkat telah terpasang:
+- Java JDK 11 atau 17
+- Maven
+- MySQL
+- IDE (IntelliJ IDEA / Eclipse / NetBeans)
+
+---
