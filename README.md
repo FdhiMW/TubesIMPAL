@@ -34,7 +34,6 @@ Sistem ini dirancang untuk mempermudah proses transaksi jual beli secara online,
 
 ## ▶️ Cara Menjalankan Aplikasi
 
-### Persiapan Lingkungan
 Pastikan perangkat telah terpasang:
 - Java JDK 11 atau 17
 - Maven
